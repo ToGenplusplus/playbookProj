@@ -2,7 +2,7 @@ package com.example.playbookProjApplicationBackend.Team;
 
 import javax.persistence.*;
 
-@Entity(name="team")
+@Entity
 @Table(name="team", uniqueConstraints = {
     @UniqueConstraint(name="unique_team_name",columnNames ={"name"})
 })

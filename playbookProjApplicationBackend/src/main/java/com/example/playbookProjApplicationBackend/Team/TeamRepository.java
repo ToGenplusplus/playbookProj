@@ -8,10 +8,10 @@ import org.springframework.stereotype.Repository;
 public interface TeamRepository extends JpaRepository<Team,Long> {
 
     @Query("" +
-            "SELECT CASE WHEN COUNT(s) > 0 THEN " +
+            "SELECT CASE WHEN COUNT(t) > 0 THEN " +
             "TRUE ELSE FALSE END " +
             "FROM team t " +
             "WHERE t.name = ?1"
     )
-    boolean selectExistsByName(String Name);
+    Boolean selectExistsByName(String Name);
 }
