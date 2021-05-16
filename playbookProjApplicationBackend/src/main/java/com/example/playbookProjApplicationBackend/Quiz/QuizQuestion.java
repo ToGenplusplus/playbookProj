@@ -11,7 +11,7 @@ import java.util.Set;
 public class QuizQuestion {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(name="image_location", nullable = false, columnDefinition="TEXT")
     private String imageLocation;
