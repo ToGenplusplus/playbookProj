@@ -1,6 +1,7 @@
 package com.example.playbookProjApplicationBackend.Team;
 
 import com.example.playbookProjApplicationBackend.Coach.Coach;
+import com.example.playbookProjApplicationBackend.Player.Player;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -24,7 +25,10 @@ public class Team {
             cascade = CascadeType.ALL)
     private Set<Coach> coaches;
 
-    //need to implement players OneToMany mapping
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private Set<Player> players;
+
 
     protected Team() {
     }
@@ -56,6 +60,22 @@ public class Team {
 
     public void setTeamPageLink(String teamPageLink) {
         TeamPageLink = teamPageLink;
+    }
+
+    public Set<Coach> getCoaches() {
+        return coaches;
+    }
+
+    public void setCoaches(Set<Coach> coaches) {
+        this.coaches = coaches;
+    }
+
+    public Set<Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(Set<Player> players) {
+        this.players = players;
     }
 
     @Override
