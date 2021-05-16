@@ -1,8 +1,10 @@
 package com.example.playbookProjApplicationBackend.Coach;
 
+import com.example.playbookProjApplicationBackend.Player.PlayerPosition;
 import com.example.playbookProjApplicationBackend.Team.Team;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "coach")
@@ -21,6 +23,10 @@ public class Coach {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
+
+    @OneToMany(mappedBy = "coach", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private Set<CoachPosition> positions;
 
     protected Coach() {
     }
