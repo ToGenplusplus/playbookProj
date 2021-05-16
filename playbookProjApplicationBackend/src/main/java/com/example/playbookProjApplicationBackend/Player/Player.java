@@ -3,6 +3,7 @@ package com.example.playbookProjApplicationBackend.Player;
 import com.example.playbookProjApplicationBackend.Team.Team;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name="players", uniqueConstraints = {
@@ -18,12 +19,16 @@ public class Player {
     private String lastName;
     @Column(nullable = false, name = "email")
     private String email;
-    @Column(name = "jersey")
+    @Column(name = "jersey", length = 2)
     private String jerseyNumber;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
+
+    @OneToMany(mappedBy = "player", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private Set<PlayerPosition> positions;
 
     protected Player() {
     }
