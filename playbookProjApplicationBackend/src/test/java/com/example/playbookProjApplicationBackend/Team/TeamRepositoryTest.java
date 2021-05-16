@@ -18,13 +18,6 @@ class TeamRepositoryTest {
 
     @Test
     void CanAddNewTeam(){
-        //given
-        Team myteam = new Team("Western Mens Football","www.uwo.ca");
-        underTest.save(myteam);
-        //when
-        boolean exists = underTest.selectExistsByName(myteam.getName());
-        //then
-        assertThat(exists).isTrue();
     }
 
 }

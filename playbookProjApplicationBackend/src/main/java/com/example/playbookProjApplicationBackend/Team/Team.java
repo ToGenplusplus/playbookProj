@@ -1,6 +1,9 @@
 package com.example.playbookProjApplicationBackend.Team;
 
+import com.example.playbookProjApplicationBackend.Coach.Coach;
+
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name="team", uniqueConstraints = {
@@ -16,6 +19,12 @@ public class Team {
     private String Name;
     @Column(nullable = false,name="link")
     private String TeamPageLink;
+
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private Set<Coach> coaches;
+
+    //need to implement players OneToMany mapping
 
     protected Team() {
     }
