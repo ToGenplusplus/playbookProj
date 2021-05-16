@@ -17,9 +17,11 @@ public class QuizQuestion {
     private String imageLocation;
     @Column(name="question_type", nullable = false, length = 4)
     private String questionType;
+    @Column(name="question", nullable = false)
+    private String questionText;
     @Column(name="correct_answer", nullable = false)
     private String correctAnswer;
-    @Column(name="wrong_answer1", columnDefinition="TEXT")
+    @Column(name="wrong_answer1", columnDefinition="TEXT", nullable = false)
     private String incorrectAnswerOne;
     @Column(name="wrong_answer2", columnDefinition="TEXT")
     private String incorrectAnswerTwo;
@@ -34,29 +36,32 @@ public class QuizQuestion {
     protected QuizQuestion() {
     }
 
-    public QuizQuestion(String imageLocation, String questionType,
+    public QuizQuestion(String imageLocation, String questionType,String questionText,
                         String correctAnswer, String incorrectAnswerOne,
                         String incorrectAnswerTwo, String incorrectAnswerThree) {
         this.imageLocation = imageLocation;
         this.questionType = questionType;
+        this.questionText = questionText;
         this.correctAnswer = correctAnswer;
         this.incorrectAnswerOne = incorrectAnswerOne;
         this.incorrectAnswerTwo = incorrectAnswerTwo;
         this.incorrectAnswerThree = incorrectAnswerThree;
     }
 
-    public QuizQuestion(String imageLocation, String questionType,
+    public QuizQuestion(String imageLocation, String questionType,String questionText,
                         String correctAnswer, String incorrectAnswerOne) {
         this.imageLocation = imageLocation;
         this.questionType = questionType;
+        this.questionText = questionText;
         this.correctAnswer = correctAnswer;
         this.incorrectAnswerOne = incorrectAnswerOne;
     }
 
-    public QuizQuestion(String imageLocation, String questionType,
+    public QuizQuestion(String imageLocation, String questionType,String questionText,
                         String correctAnswer, String incorrectAnswerOne, String incorrectAnswerTwo) {
         this.imageLocation = imageLocation;
         this.questionType = questionType;
+        this.questionText = questionText;
         this.correctAnswer = correctAnswer;
         this.incorrectAnswerOne = incorrectAnswerOne;
         this.incorrectAnswerTwo = incorrectAnswerTwo;
@@ -97,6 +102,14 @@ public class QuizQuestion {
 
     public void setQuestionType(String questionType) {
         this.questionType = questionType;
+    }
+
+    public String getQuestionText() {
+        return questionText;
+    }
+
+    public void setQuestionText(String questionText) {
+        this.questionText = questionText;
     }
 
     public String getCorrectAnswer() {
