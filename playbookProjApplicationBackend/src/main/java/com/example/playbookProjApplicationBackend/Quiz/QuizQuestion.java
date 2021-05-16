@@ -1,6 +1,10 @@
 package com.example.playbookProjApplicationBackend.Quiz;
 
+import com.example.playbookProjApplicationBackend.Player.Player;
+import com.example.playbookProjApplicationBackend.Player.PlayerAnswer;
+
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "quiz_question")
@@ -21,6 +25,10 @@ public class QuizQuestion {
     private String incorrectAnswerTwo;
     @Column(name="wrong_answer3", columnDefinition="TEXT")
     private String incorrectAnswerThree;
+
+    @OneToMany(mappedBy = "player", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private Set<PlayerAnswer> answers;
 
 
     protected QuizQuestion() {

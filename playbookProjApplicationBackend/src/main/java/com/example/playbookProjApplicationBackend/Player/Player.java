@@ -1,5 +1,6 @@
 package com.example.playbookProjApplicationBackend.Player;
 
+import com.example.playbookProjApplicationBackend.Quiz.QuizQuestion;
 import com.example.playbookProjApplicationBackend.Team.Team;
 
 import javax.persistence.*;
@@ -29,6 +30,10 @@ public class Player {
     @OneToMany(mappedBy = "player", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
     private Set<PlayerPosition> positions;
+
+    @OneToMany(mappedBy = "player", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private Set<PlayerAnswer> answers;
 
     protected Player() {
     }
