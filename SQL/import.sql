@@ -1,41 +1,63 @@
-INSERT INTO coach (email,first_name,last_name,team_id) VALUES 
-('Quisque.tincidunt.pede@sagittis.edu','Colby','Moses',2),
-('urna.suscipit.nonummy@sitametorci.com','Caldwell','Valenzuela',2),
-('mus@Donecsollicitudin.co.uk','Kenneth','Hudson',2),
-('risus.Quisque@magnaUttincidunt.ca','Luke','Farmer',2),
-('magna.Phasellus@risusDonecnibh.co.uk','Keane','Curtis',2);
+INSERT INTO team (name,link) VALUES ('Western Mens Football','www.uwo.ca');
 
-INSERT INTO coach_positions (position,coach_id) VALUES 
+INSERT INTO coach (email,first_name,last_name,team_id) VALUES 
+('Quisque.tincidunt.pede@sagittis.edu','Colby','Moses',1),
+('urna.suscipit.nonummy@sitametorci.com','Caldwell','Valenzuela',1),
+('mus@Donecsollicitudin.co.uk','Kenneth','Hudson',1),
+('risus.Quisque@magnaUttincidunt.ca','Luke','Farmer',1),
+('magna.Phasellus@risusDonecnibh.co.uk','Keane','Curtis',1);
+
+INSERT INTO positions (position) VALUES 
+('HC'),
+('AHC'),
+('OC'),
+('AOC'),
+('DC'),
+('ADC'),
+('OL'),
+('QB'),
+('RB'),
+('FB'),
+('REC'),
+('TE'),
+('DL'),
+('LB'),
+('DB'),
+('K'),
+('P'),
+('ST');
+
+INSERT INTO coach_positions (position_id,coach_id) VALUES 
 ('ST',1),
-('QB,',4),
-('DB,',5),
+('QB',4),
+('DB',5),
 ('RB',3),
 ('OL',2),
 ('OC',3),
 ('DL',1);
 
 INSERT INTO players (student_number,email,first_name,jersey,last_name,team_id) VALUES 
-('386246256','fringilla.Donec@pharetra.edu','Nissim','42','Hanson',2),
-('562428070','Nulla.facilisi@Etiam.co.uk','Hayden','4','Bentley',2),
-('703583295','in.magna.Phasellus@tristique.edu','Upton','9','Rivers',2),
-('748696152','enim@lectus.co.uk','Colin','75','Talley',2),
-('394801499','neque.et@elit.com','Emery','33','Humphrey',2),
-('292023563','natoque@afeugiat.net','Chase','59','Woods',2),
-('003722324','sed@nibhenimgravida.co.uk','Amal','67','Franks',2),
-('402609636','vel.vulputate@cursus.net','Flynn','63','Warner',2),
-('120718978','sit@disparturientmontes.ca','Valentine','86','Thomas',2),
-('259445079','nec@quis.ca','Quinn','99','Kaufman',2),
-('304939192','Quisque@faucibusMorbi.org','Grant','76','Douglas',2),
-('019283778','turpis.non.enim@maurisipsumporta.ca','Dane','52','Baxter',2),
-('794911849','Donec.consectetuer@Namac.co.uk','Ezra','1','Obrien',2),
-('197123463','consequat.dolor.vitae@Maecenasmalesuada.co.uk','Kirk','16','Weaver',2),
-('185479784','auctor@nonquam.org','Allen','11','Randolph',2),
-('850873008','adipiscing.fringilla.porttitor@temporeratneque.co.uk','Cameron','8','Barker',2),
-('741159390','Suspendisse@habitantmorbi.edu','Levi','7','Sharpe',2),
-('062474263','arcu.ac.orci@lobortisnisinibh.org','Jackson','32','Craig',2),
-('673582657','rutrum.eu.ultrices@semconsequat.ca','Oren','3','Macdonald',2);
+('386246256','fringilla.Donec@pharetra.edu','Nissim','42','Hanson',1),
+('562428070','Nulla.facilisi@Etiam.co.uk','Hayden','4','Bentley',1),
+('703583295','in.magna.Phasellus@tristique.edu','Upton','9','Rivers',1),
+('748696152','enim@lectus.co.uk','Colin','75','Talley',1),
+('394801499','neque.et@elit.com','Emery','33','Humphrey',1),
+('292023563','natoque@afeugiat.net','Chase','59','Woods',1),
+('003722324','sed@nibhenimgravida.co.uk','Amal','67','Franks',1),
+('402609636','vel.vulputate@cursus.net','Flynn','63','Warner',1),
+('120718978','sit@disparturientmontes.ca','Valentine','86','Thomas',1),
+('259445079','nec@quis.ca','Quinn','99','Kaufman',1),
+('304939192','Quisque@faucibusMorbi.org','Grant','76','Douglas',1),
+('019283778','turpis.non.enim@maurisipsumporta.ca','Dane','52','Baxter',1),
+('794911849','Donec.consectetuer@Namac.co.uk','Ezra','1','Obrien',1),
+('197123463','consequat.dolor.vitae@Maecenasmalesuada.co.uk','Kirk','16','Weaver',1),
+('185479784','auctor@nonquam.org','Allen','11','Randolph',1),
+('850873008','adipiscing.fringilla.porttitor@temporeratneque.co.uk','Cameron','8','Barker',1),
+('741159390','Suspendisse@habitantmorbi.edu','Levi','7','Sharpe',1),
+('062474263','arcu.ac.orci@lobortisnisinibh.org','Jackson','32','Craig',1),
+('673582657','rutrum.eu.ultrices@semconsequat.ca','Oren','3','Macdonald',1);
 
-INSERT INTO player_positions (position,player_id) VALUES 
+INSERT INTO player_positions (position_id,player_id) VALUES 
 ('QB','673582657'),
 ('LB','386246256'),
 ('RB','562428070'),
