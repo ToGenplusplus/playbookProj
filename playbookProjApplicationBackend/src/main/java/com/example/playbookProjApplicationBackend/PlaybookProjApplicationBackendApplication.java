@@ -2,6 +2,7 @@ package com.example.playbookProjApplicationBackend;
 
 import com.example.playbookProjApplicationBackend.Player.Player;
 import com.example.playbookProjApplicationBackend.Player.PlayerRepository;
+import com.example.playbookProjApplicationBackend.Player.PlayerService;
 import com.example.playbookProjApplicationBackend.Position.Position;
 import com.example.playbookProjApplicationBackend.Position.PositionRepository;
 import com.example.playbookProjApplicationBackend.Team.Team;
@@ -24,15 +25,16 @@ public class PlaybookProjApplicationBackendApplication {
 		SpringApplication.run(PlaybookProjApplicationBackendApplication.class, args);
 	}
 
-	/*
+/*
 	@Bean
 	public CommandLineRunner commandLineRunner(PlayerRepository PR){
 		return (args) -> {
-			for (Player player: PR.getPlayersByTeamPosition(1l,"OL")){
-				System.out.println(player);
-			}
+			System.out.println(PR.findById("386246256").isPresent());
+
 		};
 	}
-	*/
+
+ */
+
 
 }
