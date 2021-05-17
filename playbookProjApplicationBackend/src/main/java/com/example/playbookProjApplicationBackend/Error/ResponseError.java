@@ -25,7 +25,7 @@ public class ResponseError{
         JSONObject headers = new JSONObject();
         headers.put("Access-Control-Allow-Origin","*");
         mainObj.put("headers",headers);
-        mainObj.put("statusCode",errorCode);
+        mainObj.put("status",errorCode);
         mainObj.put("body",message);
 
         return mainObj.toJSONString();

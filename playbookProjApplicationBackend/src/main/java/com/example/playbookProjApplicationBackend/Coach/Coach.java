@@ -2,6 +2,7 @@ package com.example.playbookProjApplicationBackend.Coach;
 
 import com.example.playbookProjApplicationBackend.Position.Position;
 import com.example.playbookProjApplicationBackend.Team.Team;
+import org.json.simple.JSONObject;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -43,6 +44,17 @@ public class Coach {
         this.lastName = lastName;
         this.email = email;
         this.team = team;
+    }
+
+    public String toJSONString(){
+        JSONObject player= new JSONObject();
+        player.put("coach_id",id);
+        player.put("first_name",firstName);
+        player.put("last_name",lastName);
+        player.put("email",email);
+        player.put("team_id",team.getId());
+
+        return player.toJSONString();
     }
 
     public Long getId() {

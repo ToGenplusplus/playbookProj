@@ -31,7 +31,7 @@ public class PlayerService {
     public String getPlayer(String player_id){
         //check if player exist, if it does return player else return exception
         String response;
-        if(!(PR.findById(player_id).isPresent())){
+        if(!(doesPlayerExist(player_id))){
             response = new ResponseError("This player does not exists",404).toJson();
             return response;
         }
@@ -51,6 +51,10 @@ public class PlayerService {
         p.put("players",playersArray);
         return p;
 
+    }
+
+    public boolean doesPlayerExist(String player_id){
+        return PR.findById(player_id).isPresent();
     }
 
 
