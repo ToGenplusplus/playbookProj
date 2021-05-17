@@ -1,5 +1,9 @@
 package com.example.playbookProjApplicationBackend;
 
+import com.example.playbookProjApplicationBackend.Player.Player;
+import com.example.playbookProjApplicationBackend.Player.PlayerRepository;
+import com.example.playbookProjApplicationBackend.Position.Position;
+import com.example.playbookProjApplicationBackend.Position.PositionRepository;
 import com.example.playbookProjApplicationBackend.Team.Team;
 import com.example.playbookProjApplicationBackend.Team.TeamRepository;
 import org.slf4j.ILoggerFactory;
@@ -10,6 +14,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.util.Optional;
+
 @SpringBootApplication
 public class PlaybookProjApplicationBackendApplication {
 
@@ -17,5 +23,16 @@ public class PlaybookProjApplicationBackendApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(PlaybookProjApplicationBackendApplication.class, args);
 	}
+
+	/*
+	@Bean
+	public CommandLineRunner commandLineRunner(PlayerRepository PR){
+		return (args) -> {
+			for (Player player: PR.getPlayersByTeamPosition(1l,"OL")){
+				System.out.println(player);
+			}
+		};
+	}
+	*/
 
 }

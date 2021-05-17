@@ -8,7 +8,11 @@ import java.util.List;
 
 public interface PlayerRepository extends JpaRepository<Player, String> {
 
-    @Query(value="SELECT * FROM players pl WHERE pl.team_id = :team_id", nativeQuery = true)
+    @Query(value="SELECT * FROM players p WHERE p.team_id = :team_id", nativeQuery = true)
     List<Player> getPlayersByTeamId(@Param("team_id")Long id);
+
+    @Query(value="SELECT * FROM players p where p.team_id = :team_id AND p.student_number IN " +
+            "(SELECT player_id FROM player_positions WHERE position_id = :position_id)", nativeQuery = true)
+    List<Player> getPlayersByTeamPosition(@Param("team_id")Long team_id, @Param("position_id") String position_id);
 
 }

@@ -27,7 +27,8 @@ public class Player {
     @Column(name = "jersey", length = 2)
     private String jerseyNumber;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    //changed from fetchtype.lazy to eager
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
