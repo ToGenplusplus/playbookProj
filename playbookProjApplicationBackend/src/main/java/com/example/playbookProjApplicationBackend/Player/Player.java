@@ -8,6 +8,7 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.NavigableMap;
 import java.util.Set;
+import org.json.simple.JSONObject;
 
 @Entity
 @Table(name="players", uniqueConstraints = {
@@ -28,7 +29,7 @@ public class Player {
     private String jerseyNumber;
 
     //changed from fetchtype.lazy to eager
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
@@ -69,6 +70,19 @@ public class Player {
                 ", team=" + team +
                 '}';
     }
+
+    public String toJSONString(){
+        JSONObject player= new JSONObject();
+        player.put("player_id",studentNumber);
+        player.put("first_name",firstName);
+        player.put("last_name",lastName);
+        player.put("email",email);
+        player.put("jersey_number",jerseyNumber);
+        player.put("team_id",team.getId());
+
+        return player.toJSONString();
+    }
+
 
     public String getStudentNumber() {
         return studentNumber;
