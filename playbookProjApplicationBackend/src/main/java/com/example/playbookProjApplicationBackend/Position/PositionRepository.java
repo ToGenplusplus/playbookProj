@@ -2,5 +2,5 @@ package com.example.playbookProjApplicationBackend.Position;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PositionRepository extends JpaRepository {
+public interface PositionRepository extends JpaRepository<Position,String>{
 }

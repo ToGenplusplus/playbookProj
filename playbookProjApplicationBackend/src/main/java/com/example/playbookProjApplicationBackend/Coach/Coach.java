@@ -1,9 +1,10 @@
 package com.example.playbookProjApplicationBackend.Coach;
 
-import com.example.playbookProjApplicationBackend.Player.PlayerPosition;
+import com.example.playbookProjApplicationBackend.Position.Position;
 import com.example.playbookProjApplicationBackend.Team.Team;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -24,9 +25,15 @@ public class Coach {
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
-    @OneToMany(mappedBy = "coach", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
-    private Set<CoachPosition> positions;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "coach_positions",
+            joinColumns = {
+                    @JoinColumn(name = "coach_id", referencedColumnName = "id",
+                            nullable = false, updatable = false)},
+            inverseJoinColumns = {
+                    @JoinColumn(name = "position_id", referencedColumnName = "position",
+                            nullable = false, updatable = false)})
+    private Set<Position> positions = new HashSet<>();
 
     protected Coach() {
     }

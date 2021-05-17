@@ -1,9 +1,12 @@
 package com.example.playbookProjApplicationBackend.Player;
 
+import com.example.playbookProjApplicationBackend.Position.Position;
 import com.example.playbookProjApplicationBackend.Quiz.QuizQuestion;
 import com.example.playbookProjApplicationBackend.Team.Team;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.NavigableMap;
 import java.util.Set;
 
 @Entity
@@ -13,6 +16,7 @@ import java.util.Set;
 public class Player {
 
     @Id
+    @Column(name = "student_number")
     private String studentNumber;
     @Column(nullable = false, name = "first_name")
     private String firstName;
@@ -27,9 +31,15 @@ public class Player {
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
-    @OneToMany(mappedBy = "player", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
-    private Set<PlayerPosition> positions;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "player_positions",
+            joinColumns = {
+                    @JoinColumn(name = "player_id", referencedColumnName = "student_number",
+                            nullable = false, updatable = false)},
+            inverseJoinColumns = {
+                    @JoinColumn(name = "position_id", referencedColumnName = "position",
+                            nullable = false, updatable = false)})
+    private Set<Position> positions = new HashSet<>();
 
     @OneToMany(mappedBy = "player", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
