@@ -27,20 +27,18 @@ public class PlaybookProjApplicationBackendApplication {
 		SpringApplication.run(PlaybookProjApplicationBackendApplication.class, args);
 	}
 
-
+/*
 	@Bean
 	public CommandLineRunner commandLineRunner(QuizQuestionRepository QR) {
 		return (args) -> {
 			String pos = "OL";
 			Long id = 1l;
 			String player_id = "748696152";
-			log.info("Testing out quiz repository retrieval queiries");
-			log.info("---------------------------");
-
-
+			log.info("Testing out quiz repository retrieval queiries\n");
+			log.info("---------------------------\n");
 		};
 	}
-
+*/
 
 
 }
