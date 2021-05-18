@@ -2,6 +2,7 @@ package com.example.playbookProjApplicationBackend.Team;
 
 import com.example.playbookProjApplicationBackend.Coach.Coach;
 import com.example.playbookProjApplicationBackend.Player.Player;
+import com.example.playbookProjApplicationBackend.Quiz.QuizQuestion;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -28,6 +29,9 @@ public class Team {
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
     private Set<Player> players;
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private Set<QuizQuestion> questions;
 
 
     protected Team() {
@@ -76,6 +80,14 @@ public class Team {
 
     public void setPlayers(Set<Player> players) {
         this.players = players;
+    }
+
+    public Set<QuizQuestion> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(Set<QuizQuestion> questions) {
+        this.questions = questions;
     }
 
     @Override

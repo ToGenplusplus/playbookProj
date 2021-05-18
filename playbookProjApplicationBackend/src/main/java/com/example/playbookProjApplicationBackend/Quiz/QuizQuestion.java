@@ -2,12 +2,14 @@ package com.example.playbookProjApplicationBackend.Quiz;
 
 import com.example.playbookProjApplicationBackend.Player.Player;
 import com.example.playbookProjApplicationBackend.Player.PlayerAnswer;
+import com.example.playbookProjApplicationBackend.Team.Team;
+import org.json.simple.JSONObject;
 
 import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "quiz_question")
+@Table(name = "quiz_questions")
 public class QuizQuestion {
 
     @Id
@@ -27,6 +29,9 @@ public class QuizQuestion {
     private String incorrectAnswerTwo;
     @Column(name="wrong_answer3", columnDefinition="TEXT")
     private String incorrectAnswerThree;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "team_id", nullable = false)
+    private Team team;
 
     @OneToMany(mappedBy = "player", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
@@ -38,7 +43,7 @@ public class QuizQuestion {
 
     public QuizQuestion(String imageLocation, String questionType,String questionText,
                         String correctAnswer, String incorrectAnswerOne,
-                        String incorrectAnswerTwo, String incorrectAnswerThree) {
+                        String incorrectAnswerTwo, String incorrectAnswerThree,Team team) {
         this.imageLocation = imageLocation;
         this.questionType = questionType;
         this.questionText = questionText;
@@ -46,25 +51,28 @@ public class QuizQuestion {
         this.incorrectAnswerOne = incorrectAnswerOne;
         this.incorrectAnswerTwo = incorrectAnswerTwo;
         this.incorrectAnswerThree = incorrectAnswerThree;
+        this.team = team;
     }
 
     public QuizQuestion(String imageLocation, String questionType,String questionText,
-                        String correctAnswer, String incorrectAnswerOne) {
+                        String correctAnswer, String incorrectAnswerOne, Team team) {
         this.imageLocation = imageLocation;
         this.questionType = questionType;
         this.questionText = questionText;
         this.correctAnswer = correctAnswer;
         this.incorrectAnswerOne = incorrectAnswerOne;
+        this.team = team;
     }
 
     public QuizQuestion(String imageLocation, String questionType,String questionText,
-                        String correctAnswer, String incorrectAnswerOne, String incorrectAnswerTwo) {
+                        String correctAnswer, String incorrectAnswerOne, String incorrectAnswerTwo, Team team) {
         this.imageLocation = imageLocation;
         this.questionType = questionType;
         this.questionText = questionText;
         this.correctAnswer = correctAnswer;
         this.incorrectAnswerOne = incorrectAnswerOne;
         this.incorrectAnswerTwo = incorrectAnswerTwo;
+        this.team = team;
     }
 
     @Override
@@ -73,11 +81,28 @@ public class QuizQuestion {
                 "id=" + id +
                 ", imageLocation='" + imageLocation + '\'' +
                 ", questionType='" + questionType + '\'' +
+                ", questionText='" + questionText + '\'' +
                 ", correctAnswer='" + correctAnswer + '\'' +
                 ", incorrectAnswerOne='" + incorrectAnswerOne + '\'' +
                 ", incorrectAnswerTwo='" + incorrectAnswerTwo + '\'' +
                 ", incorrectAnswerThree='" + incorrectAnswerThree + '\'' +
+                ", team=" + team +
+                ", answers=" + answers +
                 '}';
+    }
+
+    public String toJSONString(){
+        JSONObject question= new JSONObject();
+        question.put("question_id",id);
+        question.put("image_location",imageLocation);
+        question.put("question_type",questionType);
+        question.put("correctAnswer",correctAnswer);
+        question.put("incorrect_answer_1",incorrectAnswerOne);
+        question.put("incorrect_answer_2",incorrectAnswerTwo);
+        question.put("incorrect_answer_3",incorrectAnswerThree);
+        question.put("team_id",team.getId());
+
+        return question.toJSONString();
     }
 
     public long getId() {
@@ -142,5 +167,13 @@ public class QuizQuestion {
 
     public void setIncorrectAnswerThree(String incorrectAnswerThree) {
         this.incorrectAnswerThree = incorrectAnswerThree;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
     }
 }
