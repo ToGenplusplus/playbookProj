@@ -1,6 +1,7 @@
 package com.example.playbookProjApplicationBackend.Player;
 
 import com.example.playbookProjApplicationBackend.Quiz.QuizQuestion;
+import org.json.simple.JSONObject;
 
 import javax.persistence.*;
 
@@ -44,6 +45,17 @@ public class PlayerAnswer {
                 ", correctAnswerSelected=" + correctAnswerSelected +
                 ", timeToAnswerQuestion=" + timeToAnswerQuestion +
                 '}';
+    }
+
+    public String toJSONString(){
+        JSONObject playerAnswer= new JSONObject();
+        playerAnswer.put("id",id);
+        playerAnswer.put("player_id",player.getStudentNumber());
+        playerAnswer.put("question_id",question.getId());
+        playerAnswer.put("is_correct",correctAnswerSelected);
+        playerAnswer.put("question_answered_time",timeToAnswerQuestion);
+
+        return playerAnswer.toJSONString();
     }
 
     public long getId() {

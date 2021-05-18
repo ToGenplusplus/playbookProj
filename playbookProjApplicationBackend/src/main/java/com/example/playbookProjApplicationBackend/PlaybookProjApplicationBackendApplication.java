@@ -1,8 +1,6 @@
 package com.example.playbookProjApplicationBackend;
 
-import com.example.playbookProjApplicationBackend.Player.Player;
-import com.example.playbookProjApplicationBackend.Player.PlayerRepository;
-import com.example.playbookProjApplicationBackend.Player.PlayerService;
+import com.example.playbookProjApplicationBackend.Player.*;
 import com.example.playbookProjApplicationBackend.Position.Position;
 import com.example.playbookProjApplicationBackend.Position.PositionRepository;
 import com.example.playbookProjApplicationBackend.Quiz.QuizQuestion;
@@ -27,18 +25,14 @@ public class PlaybookProjApplicationBackendApplication {
 		SpringApplication.run(PlaybookProjApplicationBackendApplication.class, args);
 	}
 
-/*
+
 	@Bean
-	public CommandLineRunner commandLineRunner(QuizQuestionRepository QR) {
+	public CommandLineRunner commandLineRunner(PlayerAnswerRepository PAR) {
 		return (args) -> {
-			String pos = "OL";
-			Long id = 1l;
-			String player_id = "748696152";
-			log.info("Testing out quiz repository retrieval queiries\n");
-			log.info("---------------------------\n");
+			
 		};
 	}
-*/
+
 
 
 }
