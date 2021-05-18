@@ -78,13 +78,13 @@ INSERT INTO player_positions (position_id,player_id) VALUES
 ('QB','741159390'),
 ('LB','062474263');
 
-INSERT INTO quiz_question (correct_answer,image_location,wrong_answer1,wrong_answer2,wrong_answer3,question,question_type) VALUES 
-('elementum, dui quis accumsan convallis,','aliquam@AliquamnislNulla.org','laoreet ipsum. Curabitur','elit sed consequat auctor, nunc nulla vulputate dui, nec','lorem, vehicula','lectus sit amet luctus vulputate, nisi sem','GEN'),
-('semper auctor.','Morbi.quis.urna@maurisa.net','malesuada ut,','molestie tortor nibh sit amet','pede.','imperdiet dictum magna. Ut tincidunt orci quis','DL'),
-('Nulla aliquet. Proin velit. Sed','placerat.orci@eratin.net','aliquam eu,','Integer tincidunt aliquam arcu. Aliquam ultrices iaculis odio. Nam interdum enim non nisi. Aenean','consectetuer','eu, placerat eget, venenatis a, magna. Lorem','DB'),
-('elit erat','porttitor.scelerisque.neque@vitae.com','elementum, lorem','facilisis vitae, orci. Phasellus dapibus quam quis diam.','lobortis risus.','faucibus orci luctus et ultrices posuere cubilia','OL'),
-('nec, diam. Duis mi','senectus.et@Loremipsum.edu','dui,','Nam nulla magna, malesuada','metus.','sed leo. Cras vehicula aliquet libero. Integer','OL'),
-('dictum. Phasellus in felis. Nulla tempor','Nunc.quis.arcu@aliquetmagna.net','pellentesque','amet massa.','et','dolor vitae dolor. Donec fringilla. Donec feugiat','ST');
+INSERT INTO quiz_questions (correct_answer,image_location,wrong_answer1,wrong_answer2,wrong_answer3,question,question_type,team_id) VALUES 
+('elementum, dui quis accumsan convallis,','aliquam@AliquamnislNulla.org','laoreet ipsum. Curabitur','elit sed consequat auctor, nunc nulla vulputate dui, nec','lorem, vehicula','lectus sit amet luctus vulputate, nisi sem','GEN',1),
+('semper auctor.','Morbi.quis.urna@maurisa.net','malesuada ut,','molestie tortor nibh sit amet','pede.','imperdiet dictum magna. Ut tincidunt orci quis','DL',1),
+('Nulla aliquet. Proin velit. Sed','placerat.orci@eratin.net','aliquam eu,','Integer tincidunt aliquam arcu. Aliquam ultrices iaculis odio. Nam interdum enim non nisi. Aenean','consectetuer','eu, placerat eget, venenatis a, magna. Lorem','DB',1),
+('elit erat','porttitor.scelerisque.neque@vitae.com','elementum, lorem','facilisis vitae, orci. Phasellus dapibus quam quis diam.','lobortis risus.','faucibus orci luctus et ultrices posuere cubilia','OL',1),
+('nec, diam. Duis mi','senectus.et@Loremipsum.edu','dui,','Nam nulla magna, malesuada','metus.','sed leo. Cras vehicula aliquet libero. Integer','OL',1),
+('dictum. Phasellus in felis. Nulla tempor','Nunc.quis.arcu@aliquetmagna.net','pellentesque','amet massa.','et','dolor vitae dolor. Donec fringilla. Donec feugiat','ST',1);
 
 INSERT INTO player_answers (is_correct,answered_time,player_id,question_id) VALUES 
 ('1',7,'794911849',6),

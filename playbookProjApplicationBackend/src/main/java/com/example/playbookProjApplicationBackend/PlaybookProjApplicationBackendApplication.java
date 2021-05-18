@@ -5,6 +5,8 @@ import com.example.playbookProjApplicationBackend.Player.PlayerRepository;
 import com.example.playbookProjApplicationBackend.Player.PlayerService;
 import com.example.playbookProjApplicationBackend.Position.Position;
 import com.example.playbookProjApplicationBackend.Position.PositionRepository;
+import com.example.playbookProjApplicationBackend.Quiz.QuizQuestion;
+import com.example.playbookProjApplicationBackend.Quiz.QuizQuestionRepository;
 import com.example.playbookProjApplicationBackend.Team.Team;
 import com.example.playbookProjApplicationBackend.Team.TeamRepository;
 import org.slf4j.ILoggerFactory;
@@ -20,21 +22,25 @@ import java.util.Optional;
 @SpringBootApplication
 public class PlaybookProjApplicationBackendApplication {
 
-	//private static final Logger log = LoggerFactory.getLogger(PlaybookProjApplicationBackendApplication.class);
+	private static final Logger log = LoggerFactory.getLogger(PlaybookProjApplicationBackendApplication.class);
 	public static void main(String[] args) {
 		SpringApplication.run(PlaybookProjApplicationBackendApplication.class, args);
 	}
 
-/*
+
 	@Bean
-	public CommandLineRunner commandLineRunner(PlayerRepository PR){
+	public CommandLineRunner commandLineRunner(QuizQuestionRepository QR) {
 		return (args) -> {
-			System.out.println(PR.findById("386246256").isPresent());
+			String pos = "OL";
+			Long id = 1l;
+			String player_id = "748696152";
+			log.info("Testing out quiz repository retrieval queiries");
+			log.info("---------------------------");
+
 
 		};
 	}
 
- */
 
 
 }

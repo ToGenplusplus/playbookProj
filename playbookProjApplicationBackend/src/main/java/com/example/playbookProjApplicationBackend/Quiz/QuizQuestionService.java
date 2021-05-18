@@ -19,8 +19,12 @@ public class QuizQuestionService {
         this.QR = QR;
     }
 
-    public String getAllQuizQuestions(){
+    public String getAllQuizQuestionsInDatabase(){
         return new ResponseError(jsonify(QR.findAll()),200).toJson();
+    }
+
+    public String getAllQuizQuestionsForTeam(Long id){
+        return new ResponseError(jsonify(QR.getAllQuestionsForTeam(id)),200).toJson();
     }
 
     private JSONObject jsonify(Collection<QuizQuestion> questions){
