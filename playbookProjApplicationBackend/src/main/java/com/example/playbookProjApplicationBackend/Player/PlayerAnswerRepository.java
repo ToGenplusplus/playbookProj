@@ -20,7 +20,7 @@ public interface PlayerAnswerRepository extends JpaRepository<PlayerAnswer,Long>
     List<PlayerAnswer> getAllPlayerAnswersInTeamByPositionByPlayer(@Param("team_id") Long team_id,@Param("position_id")String position,@Param("player_id")String player);
     @Query(value="SELECT AVG(pa.answered_time) FROM player_answers pa WHERE pa.question_id IN " +
             "(SELECT qq.id FROM quiz_questions qq WHERE qq.question_type = :type and qq.team_id = :team_id)",nativeQuery = true)
-    float getTotalAverageAnswerSpeedForQuizCategory(@Param("team_id") Long team_id,@Param("type") String category);
+    Object getTotalAverageAnswerSpeedForQuizCategory(@Param("team_id") Long team_id,@Param("type") String category);
     @Query(value="SELECT AVG(pa.answered_time) FROM player_answers pa WHERE pa.player_id=:" +
             "player_id AND pa.player_id IN(SELECT p.student_number FROM players p WHERE p.team_id = :team_id)",nativeQuery = true)
     float getPlayerAverageAnswerSpeed(@Param("team_id") Long team_id,@Param("player_id")String player);

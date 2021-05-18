@@ -25,14 +25,13 @@ public class PlaybookProjApplicationBackendApplication {
 		SpringApplication.run(PlaybookProjApplicationBackendApplication.class, args);
 	}
 
-
+/*
 	@Bean
 	public CommandLineRunner commandLineRunner(PlayerAnswerRepository PAR) {
 		return (args) -> {
-			
+
 		};
 	}
-
-
+*/
 
 }
