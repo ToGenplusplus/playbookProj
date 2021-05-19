@@ -1,6 +1,7 @@
 package com.example.playbookProjApplicationBackend.Team;
 
 import com.example.playbookProjApplicationBackend.Coach.Coach;
+import com.example.playbookProjApplicationBackend.Organization.Organization;
 import com.example.playbookProjApplicationBackend.Player.Player;
 import com.example.playbookProjApplicationBackend.Quiz.QuizQuestion;
 import org.json.simple.JSONObject;
@@ -20,8 +21,6 @@ public class Team {
 
     @Column(nullable = false, name = "name")
     private String Name;
-    @Column(nullable = false,name="link")
-    private String TeamPageLink;
 
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
@@ -33,14 +32,16 @@ public class Team {
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
     private Set<QuizQuestion> questions;
-
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "organization_id", nullable = false)
+    private Organization organization;
 
     protected Team() {
     }
 
-    public Team(String Name, String TeamPageLink){
-        this.Name = Name;
-        this.TeamPageLink = TeamPageLink;
+    public Team(String name, Organization organization) {
+        Name = name;
+        this.organization = organization;
     }
 
     public Long getId() {
@@ -57,14 +58,6 @@ public class Team {
 
     public void setName(String name) {
         Name = name;
-    }
-
-    public String getTeamPageLink() {
-        return TeamPageLink;
-    }
-
-    public void setTeamPageLink(String teamPageLink) {
-        TeamPageLink = teamPageLink;
     }
 
     public Set<Coach> getCoaches() {
@@ -91,12 +84,20 @@ public class Team {
         this.questions = questions;
     }
 
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
     @Override
     public String toString() {
         return "Team{" +
                 "id=" + id +
                 ", Name='" + Name + '\'' +
-                ", TeamPageLink='" + TeamPageLink + '\'' +
+                ", organization=" + organization +
                 '}';
     }
 
@@ -104,7 +105,7 @@ public class Team {
         JSONObject teamObj = new JSONObject();
         teamObj.put("id",id);
         teamObj.put("name",Name);
-        teamObj.put("link",TeamPageLink);
+        teamObj.put("organization_id",organization.getId());
 
         return  teamObj;
     }

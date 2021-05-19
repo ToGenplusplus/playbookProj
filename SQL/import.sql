@@ -1,4 +1,7 @@
-INSERT INTO team (name,link) VALUES ('Western Mens Football','www.uwo.ca');
+INSERT INTO organizations (name,country,state,organization_type,organization_link,logo_image_location) VALUES
+('University of Western Ontario','Canada','Ontario','College','www.uwo.ca','some.image.location.inS3');
+
+INSERT INTO team (organization_id,name) VALUES (1,'Mens Football');
 
 INSERT INTO coach (email,first_name,last_name,team_id) VALUES 
 ('Quisque.tincidunt.pede@sagittis.edu','Colby','Moses',1),
