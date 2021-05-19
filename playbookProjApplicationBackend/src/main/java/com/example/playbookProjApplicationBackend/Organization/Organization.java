@@ -33,6 +33,9 @@ public class Organization {
     @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Team> teams;
 
+    protected Organization() {
+    }
+
     public Organization(String name, String country,
                         String state, String organizationType,
                         String logoImageLocation, String organizationLink, Set<Team> teams) {
