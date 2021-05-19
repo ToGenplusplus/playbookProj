@@ -46,7 +46,7 @@ public class Coach {
         this.team = team;
     }
 
-    public String toJSONString(){
+    public JSONObject toJSONObj(){
         JSONObject coach= new JSONObject();
         coach.put("coach_id",id);
         coach.put("first_name",firstName);
@@ -54,7 +54,7 @@ public class Coach {
         coach.put("email",email);
         coach.put("team_id",team.getId());
 
-        return coach.toJSONString();
+        return coach;
     }
 
     public Long getId() {

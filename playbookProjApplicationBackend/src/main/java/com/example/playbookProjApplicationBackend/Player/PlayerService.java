@@ -37,7 +37,7 @@ public class PlayerService {
         }
 
         Player foundPlayer = PR.getOne(player_id);
-        response = new ResponseError(foundPlayer.toJSONString(),200).toJson();
+        response = new ResponseError(foundPlayer.toJSONObj(),200).toJson();
         return response;
     }
 
@@ -45,7 +45,7 @@ public class PlayerService {
         JSONObject p = new JSONObject();
         JSONArray playersArray = new JSONArray();
         for (Player player : players){
-            playersArray.add(player.toJSONString());
+            playersArray.add(player.toJSONObj());
         }
 
         p.put("players",playersArray);

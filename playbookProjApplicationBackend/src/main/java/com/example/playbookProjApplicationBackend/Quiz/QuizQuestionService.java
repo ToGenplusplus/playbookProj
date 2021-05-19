@@ -1,17 +1,21 @@
 package com.example.playbookProjApplicationBackend.Quiz;
 
-import com.example.playbookProjApplicationBackend.Coach.Coach;
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
 import com.example.playbookProjApplicationBackend.Player.PlayerRepository;
 import com.example.playbookProjApplicationBackend.Position.PositionRepository;
 import com.example.playbookProjApplicationBackend.Team.TeamRepository;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class QuizQuestionService {
@@ -32,84 +36,87 @@ public class QuizQuestionService {
     public String getAllQuizQuestionsInDatabase(){
         return new ResponseError(jsonify(QR.findAll()),200).toJson();
     }
-    public String getAllQuizQuestionsForTeam(Long id){
-        return processResponse(id,QR.getAllQuestionsForTeam(id));
+    public String getAllQuizQuestionsForTeam(Long team_id){
+        return processResponse(team_id,null,"getAllQuizQuestionsForTeam",false);
     }
-    public String getAllQuestionsForTeamRandom(Long id){
-        return processResponse(id,QR.getAllQuestionsForTeamRandom(id));
+    public String getAllQuestionsForTeamRandom(Long team_id){
+        return processResponse(team_id,null,"getAllQuestionsForTeamRandom",false);
     }
-    public String getAllQuestionsForTeamByPosition(Long id, String position){
-        return processResponsePos(id,position,QR.getAllQuestionsForTeamByPosition(id,position));
+    public String getAllQuestionsForTeamByPosition(Long team_id, String position){
+        return processResponse(team_id,position,"getAllQuestionsForTeamByPosition",false);
     }
-    public String getAllQuestionsForTeamByPositionRandom(Long id, String position){
-        return processResponsePos(id,position,QR.getAllQuestionsForTeamByPositionRandom(id,position));
+    public String getAllQuestionsForTeamByPositionRandom(Long team_id, String position){
+        return processResponse(team_id,position,"getAllQuestionsForTeamByPositionRandom",false);
     }
-    public String getAllAnsweredQuestionsForTeam(Long id){
-        return processResponse(id,QR.getAllAnsweredQuestionsForTeam(id));
+    public String getAllAnsweredQuestionsForTeam(Long team_id){
+        return processResponse(team_id,null,"getAllAnsweredQuestionsForTeam",false);
     }
-    public String getCountAllAnsweredQuestionsForTeam(Long id){
-        int count = QR.getAllAnsweredQuestionsForTeam(id).size();
-        return processResponse(id,count);
+    public String getCountAllAnsweredQuestionsForTeam(Long team_id){
+        return processResponse(team_id,null,"getCountAllAnsweredQuestionsForTeam",false);
     }
-    public String getAllAnsweredQuestionsForTeamByPlayer(Long id, String player_id){
-        return processResponsePlayer(id,player_id,QR.getAllAnsweredQuestionsForTeamByPlayer(id,player_id));
+    public String getAllAnsweredQuestionsForTeamByPlayer(Long team_id, String player_id){
+        return processResponse(team_id,player_id,"getAllAnsweredQuestionsForTeamByPlayer",true);
     }
-    public String getCountAnsweredQuestionsForTeamByCategory(Long id, String category){
-        return processResponse(id,category,QR.getCountAnsweredQuestionsForTeamByCategory(id,category));
-    }
-
-    private String processResponse(Long team_id, List<QuizQuestion> questions){
-        ResponseError resp;
-        if(!doesTeamExist(team_id)){
-            resp = new ResponseError("Team does not exist",404);
-        }else{
-            resp = new ResponseError(jsonify(questions),200);
-        }
-        return resp.toJson();
-    }
-    private String processResponsePos(Long team_id, String position,List<QuizQuestion> questions){
-        ResponseError resp;
-        if(!doesTeamExist(team_id)){
-            resp = new ResponseError("Team does not exist",404);
-        }else if(!doesPositionExist(position)){
-            resp = new ResponseError("Position does not exist",404);
-        }else{
-            resp = new ResponseError(jsonify(questions),200);
-        }
-        return resp.toJson();
+    public String getCountAnsweredQuestionsForTeamByCategory(Long team_id, String category){
+        return processResponse(team_id,category,"getCountAnsweredQuestionsForTeamByCategory",false);
     }
 
-    private String processResponsePlayer(Long team_id, String player,List<QuizQuestion> questions){
+    private String processResponse(Long team_id, String arg,String methodToCall, boolean argIsPlayer){
         ResponseError resp;
-        if(!doesTeamExist(team_id)){
-            resp = new ResponseError("Team does not exist",404);
-        }else if(!doesPlayerExist(player)){
-            resp = new ResponseError("Player does not exist",404);
+        boolean exists;
+        String errMessage;
+        if (!(arg == null)){
+            Map<String,Boolean> posorplay = PositionOrPlayer( arg,argIsPlayer);
+            exists = posorplay.get("exists");
+            errMessage = argIsPlayer ? "Player " +arg+ " does not exist" : "Position " +arg+ " does not exist";
         }else{
-            resp = new ResponseError(jsonify(questions),200);
+            exists = true;
+            errMessage = "";
         }
+
+        if(!doesTeamExist(team_id)){
+            resp = new ResponseError("Team with id: " +String.valueOf(team_id) + " does not exist",404);
+        }else if(!exists){
+            resp = new ResponseError(errMessage,404);
+        }else{
+            resp = callMethod(team_id,arg,methodToCall);
+        }
+
         return resp.toJson();
     }
 
-    private String processResponse(Long team_id,String category,int number){
+    private ResponseError callMethod(Long team_id, String arg, String methodToCall){
         ResponseError resp;
-        if(!doesTeamExist(team_id)){
-            resp = new ResponseError("Team does not exist",404);
-        }else if(!doesPositionExist(category)){
-            resp = new ResponseError("Position does not exist",404);
-        }else{
-            resp = new ResponseError(number,200);
+        switch (methodToCall) {
+            case "getAllQuizQuestionsForTeam":
+                resp = new ResponseError(jsonify(QR.getAllQuestionsForTeam(team_id)),200);
+                break;
+            case "getAllQuestionsForTeamRandom":
+                resp = new ResponseError(jsonify(QR.getAllQuestionsForTeamRandom(team_id)),200);
+                break;
+            case "getAllQuestionsForTeamByPosition":
+                resp = new ResponseError(jsonify(QR.getAllQuestionsForTeamByPosition(team_id,arg)),200);
+                break;
+            case "getAllQuestionsForTeamByPositionRandom":
+                resp = new ResponseError(jsonify(QR.getAllQuestionsForTeamByPositionRandom(team_id,arg)),200);
+                break;
+            case "getAllAnsweredQuestionsForTeam":
+                resp = new ResponseError(jsonify(QR.getAllAnsweredQuestionsForTeam(team_id)),200);
+                break;
+            case "getCountAllAnsweredQuestionsForTeam":
+                int count = QR.getAllAnsweredQuestionsForTeam(team_id).size();
+                resp = new ResponseError(count,200);
+                break;
+            case "getAllAnsweredQuestionsForTeamByPlayer":
+                resp = new ResponseError(jsonify(QR.getAllAnsweredQuestionsForTeamByPlayer(team_id,arg)),200);
+                break;
+            case "getCountAnsweredQuestionsForTeamByCategory":
+                resp = new ResponseError(QR.getCountAnsweredQuestionsForTeamByCategory(team_id,arg),200);
+                break;
+            default:
+                resp = new ResponseError("Invalid request",500);
         }
-        return resp.toJson();
-    }
-    private String processResponse(Long team_id,int number){
-        ResponseError resp;
-        if(!doesTeamExist(team_id)){
-            resp = new ResponseError("Team does not exist",404);
-        }else{
-            resp = new ResponseError(number,200);
-        }
-        return resp.toJson();
+        return resp;
     }
 
     private boolean doesTeamExist(Long id){
@@ -123,16 +130,25 @@ public class QuizQuestionService {
         return PosR.findById(pos_id).isPresent();
     }
 
+    private Map<String,Boolean> PositionOrPlayer(String arg, boolean isPlayer){
+        Map<String,Boolean> ret = new HashMap<>();
+        if (isPlayer){
+            ret.put("exists",doesPlayerExist(arg));
+        }else{
+            ret.put("exists",doesPositionExist(arg));
+        }
+        return  ret;
+    }
+
 
     private JSONObject jsonify(Collection<QuizQuestion> questions){
         JSONObject questionObject = new JSONObject();
         JSONArray questionArray = new JSONArray();
         for (QuizQuestion quest : questions){
-            questionArray.add(quest.toJSONString());
+            questionArray.add(quest.toJSONObj());
         }
 
         questionObject.put("questions",questionArray);
         return questionObject;
-
     }
 }

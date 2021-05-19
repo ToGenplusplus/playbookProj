@@ -138,7 +138,7 @@ public class PlayerAnswerService {
         JSONObject answerObject = new JSONObject();
         JSONArray answerArray = new JSONArray();
         for (PlayerAnswer playerAnswer : answers){
-            answerArray.add(playerAnswer.toJSONString());
+            answerArray.add(playerAnswer.toJSONObj());
         }
 
         answerObject.put("answers",answerArray);

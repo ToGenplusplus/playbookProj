@@ -35,7 +35,7 @@ public class CoachService {
         }
 
        Coach foundCoach = CR.getOne(coach_id);
-        response = new ResponseError(foundCoach.toJSONString(),200).toJson();
+        response = new ResponseError(foundCoach.toJSONObj(),200).toJson();
         return response;
     }
 
@@ -43,7 +43,7 @@ public class CoachService {
         JSONObject coachObject = new JSONObject();
         JSONArray coachesArray = new JSONArray();
         for (Coach coach : coaches){
-            coachesArray.add(coach.toJSONString());
+            coachesArray.add(coach.toJSONObj());
         }
 
         coachObject.put("coaches",coachesArray);

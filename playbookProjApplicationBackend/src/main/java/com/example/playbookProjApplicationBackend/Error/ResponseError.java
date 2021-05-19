@@ -1,5 +1,8 @@
 package com.example.playbookProjApplicationBackend.Error;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 import org.json.simple.JSONObject;
 
 public class ResponseError{
@@ -28,7 +31,12 @@ public class ResponseError{
         mainObj.put("status",errorCode);
         mainObj.put("body",message);
 
-        return mainObj.toJSONString();
+        return preetyJson(mainObj.toJSONString());
+    }
+
+    private String preetyJson(String uglyJSONString){
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(JsonParser.parseString(uglyJSONString));
     }
 
 

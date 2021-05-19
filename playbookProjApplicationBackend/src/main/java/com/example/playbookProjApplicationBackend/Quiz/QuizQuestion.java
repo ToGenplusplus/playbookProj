@@ -91,7 +91,7 @@ public class QuizQuestion {
                 '}';
     }
 
-    public String toJSONString(){
+    public JSONObject toJSONObj(){
         JSONObject question= new JSONObject();
         question.put("question_id",id);
         question.put("image_location",imageLocation);
@@ -102,7 +102,7 @@ public class QuizQuestion {
         question.put("incorrect_answer_3",incorrectAnswerThree);
         question.put("team_id",team.getId());
 
-        return question.toJSONString();
+        return question;
     }
 
     public long getId() {

@@ -47,7 +47,7 @@ public class PlayerAnswer {
                 '}';
     }
 
-    public String toJSONString(){
+    public JSONObject toJSONObj(){
         JSONObject playerAnswer= new JSONObject();
         playerAnswer.put("id",id);
         playerAnswer.put("player_id",player.getStudentNumber());
@@ -55,7 +55,7 @@ public class PlayerAnswer {
         playerAnswer.put("is_correct",correctAnswerSelected);
         playerAnswer.put("question_answered_time",timeToAnswerQuestion);
 
-        return playerAnswer.toJSONString();
+        return playerAnswer;
     }
 
     public long getId() {

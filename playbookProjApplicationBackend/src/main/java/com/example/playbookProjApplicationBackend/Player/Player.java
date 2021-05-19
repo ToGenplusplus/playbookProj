@@ -70,7 +70,7 @@ public class Player {
                 '}';
     }
 
-    public String toJSONString(){
+    public JSONObject toJSONObj(){
         JSONObject player= new JSONObject();
         player.put("player_id",studentNumber);
         player.put("first_name",firstName);
@@ -79,7 +79,7 @@ public class Player {
         player.put("jersey_number",jerseyNumber);
         player.put("team_id",team.getId());
 
-        return player.toJSONString();
+        return player;
     }
 
 
