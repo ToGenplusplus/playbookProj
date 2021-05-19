@@ -114,7 +114,7 @@ public class QuizQuestionService {
                 resp = new ResponseError(QR.getCountAnsweredQuestionsForTeamByCategory(team_id,arg),200);
                 break;
             default:
-                resp = new ResponseError("Invalid request",500);
+                resp = new ResponseError("Invalid request",404);
         }
         return resp;
     }

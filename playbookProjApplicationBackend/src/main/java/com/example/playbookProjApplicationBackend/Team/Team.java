@@ -3,6 +3,7 @@ package com.example.playbookProjApplicationBackend.Team;
 import com.example.playbookProjApplicationBackend.Coach.Coach;
 import com.example.playbookProjApplicationBackend.Player.Player;
 import com.example.playbookProjApplicationBackend.Quiz.QuizQuestion;
+import org.json.simple.JSONObject;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -97,5 +98,14 @@ public class Team {
                 ", Name='" + Name + '\'' +
                 ", TeamPageLink='" + TeamPageLink + '\'' +
                 '}';
+    }
+
+    public JSONObject toJSONObj() {
+        JSONObject teamObj = new JSONObject();
+        teamObj.put("id",id);
+        teamObj.put("name",Name);
+        teamObj.put("link",TeamPageLink);
+
+        return  teamObj;
     }
 }
