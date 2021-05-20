@@ -4,14 +4,11 @@ import com.example.playbookProjApplicationBackend.Error.ResponseError;
 import com.example.playbookProjApplicationBackend.Player.PlayerRepository;
 import com.example.playbookProjApplicationBackend.Position.PositionRepository;
 import com.example.playbookProjApplicationBackend.Team.TeamRepository;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -61,8 +58,49 @@ public class QuizQuestionService {
         return processResponse(team_id,category,"getCountAnsweredQuestionsForTeamByCategory",false);
     }
 
+    @Transactional
+    public String insertNewQuestion(Map<String,Object> newQuestion){
+        ResponseError resp = null;
+        if(!newQuestion.containsKey("question") || !newQuestion.containsKey("question_type") ||!newQuestion.containsKey("correct_answer")
+        || !newQuestion.containsKey("wrong_answer1")|| !newQuestion.containsKey("image_location")|| !newQuestion.containsKey("team_id")) {
+            return new ResponseError("invalid quiz question", 404).toJson();
+        }
+
+        String question = (String) newQuestion.get("question");
+        String type = (String) newQuestion.get("question_type");
+        String correct = (String) newQuestion.get("correct_answer");
+        String wrongone = (String) newQuestion.get("wrong_answer1");
+        Object wrongtwo=  newQuestion.get("wrong_answer2");
+        Object wrongthree = newQuestion.get("wrong_answer3");
+        String img = (String) newQuestion.get("image_location");
+        Integer id =  (Integer) newQuestion.get("team_id");
+        long team_id = id;
+        try{
+            if(doesTeamExist(team_id)){
+                QR.insertNewQuizQuestion(question,type,correct,wrongone,wrongtwo,wrongthree,img,team_id);
+                resp = new ResponseError("success",200);
+            }
+            else{
+                resp = new ResponseError("invalid request team does not exist",404);
+            }
+
+        }catch (Exception e){
+            resp = new ResponseError(e.getMessage(),500);
+        }finally {
+            return resp.toJson();
+        }
+    }
+/*
+
+    public String updateQuizQuestion(Long team_id, Long question_id, Map<String,Object> updates){}
+
+    public String deleteAQuizQuestion(Long team_id, Long question_id){}
+    public String deleteAllQuestionForTeam(Long team_id){}
+    public String deleteAllQuestionsForPosition(Long team_id, Long position_id){}
+    */
+
     private String processResponse(Long team_id, String arg,String methodToCall, boolean argIsPlayer){
-        ResponseError resp;
+        ResponseError resp = null;
         boolean exists;
         String errMessage;
         if (!(arg == null)){
@@ -73,16 +111,19 @@ public class QuizQuestionService {
             exists = true;
             errMessage = "";
         }
-
-        if(!doesTeamExist(team_id)){
-            resp = new ResponseError("Team with id: " +String.valueOf(team_id) + " does not exist",404);
-        }else if(!exists){
-            resp = new ResponseError(errMessage,404);
-        }else{
-            resp = callMethod(team_id,arg,methodToCall);
+        try{
+            if(!doesTeamExist(team_id)){
+                resp = new ResponseError("Team with id: " +String.valueOf(team_id) + " does not exist",404);
+            }else if(!exists){
+                resp = new ResponseError(errMessage,404);
+            }else{
+                resp = callMethod(team_id,arg,methodToCall);
+            }
+        }catch (Exception e){
+            resp = new ResponseError(e.getMessage(),500);
+        }finally {
+            return resp.toJson();
         }
-
-        return resp.toJson();
     }
 
     private ResponseError callMethod(Long team_id, String arg, String methodToCall){

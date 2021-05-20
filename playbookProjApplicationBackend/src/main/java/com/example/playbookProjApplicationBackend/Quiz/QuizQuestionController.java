@@ -51,13 +51,8 @@ public class QuizQuestionController {
     }
 
     @PostMapping(path = "/new")
-    public void insertNewQuestion(@RequestBody Map<String,Object> newQuestion){
-        System.out.println(newQuestion.get("correct_answer"));
-        System.out.println(newQuestion.get("image_location"));
-        System.out.println(newQuestion.get("wrong_answer1"));
-        System.out.println(newQuestion.get("question"));
-        System.out.println(newQuestion.get("question_type"));
-        System.out.println(newQuestion.get("team_id"));
+    public String insertNewQuestion(@RequestBody Map<String,Object> newQuestion){
+        return QQS.insertNewQuestion(newQuestion);
     }
 
 }
