@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 import javax.persistence.*;
 import java.util.Set;
 
-@Entity
+@Entity(name = "question")
 @Table(name = "quiz_questions", uniqueConstraints = {
         @UniqueConstraint(name = "unique_question_name_team", columnNames = {"question","team_id"})
 })
@@ -30,11 +30,13 @@ public class QuizQuestion {
     private String incorrectAnswerTwo;
     @Column(name="wrong_answer3", columnDefinition="TEXT")
     private String incorrectAnswerThree;
+    @Column(name="is_active", nullable = false)
+    private boolean isActive;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
-    @OneToMany(mappedBy = "player", fetch = FetchType.LAZY,
+    @OneToMany(mappedBy = "question", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
     private Set<PlayerAnswer> answers;
 
@@ -44,7 +46,7 @@ public class QuizQuestion {
 
     public QuizQuestion(String imageLocation, String questionType,String questionText,
                         String correctAnswer, String incorrectAnswerOne,
-                        String incorrectAnswerTwo, String incorrectAnswerThree,Team team) {
+                        String incorrectAnswerTwo, String incorrectAnswerThree,boolean isActive, Team team) {
         this.imageLocation = imageLocation;
         this.questionType = questionType;
         this.questionText = questionText;
@@ -53,20 +55,22 @@ public class QuizQuestion {
         this.incorrectAnswerTwo = incorrectAnswerTwo;
         this.incorrectAnswerThree = incorrectAnswerThree;
         this.team = team;
+        this.isActive = isActive;
     }
 
     public QuizQuestion(String imageLocation, String questionType,String questionText,
-                        String correctAnswer, String incorrectAnswerOne, Team team) {
+                        String correctAnswer, String incorrectAnswerOne,boolean isActive, Team team) {
         this.imageLocation = imageLocation;
         this.questionType = questionType;
         this.questionText = questionText;
         this.correctAnswer = correctAnswer;
         this.incorrectAnswerOne = incorrectAnswerOne;
         this.team = team;
+        this.isActive = isActive;
     }
 
     public QuizQuestion(String imageLocation, String questionType,String questionText,
-                        String correctAnswer, String incorrectAnswerOne, String incorrectAnswerTwo, Team team) {
+                        String correctAnswer, String incorrectAnswerOne, String incorrectAnswerTwo,boolean isActive, Team team) {
         this.imageLocation = imageLocation;
         this.questionType = questionType;
         this.questionText = questionText;
@@ -74,6 +78,7 @@ public class QuizQuestion {
         this.incorrectAnswerOne = incorrectAnswerOne;
         this.incorrectAnswerTwo = incorrectAnswerTwo;
         this.team = team;
+        this.isActive = isActive;
     }
 
     @Override
@@ -102,6 +107,7 @@ public class QuizQuestion {
         question.put("incorrect_answer_2",incorrectAnswerTwo);
         question.put("incorrect_answer_3",incorrectAnswerThree);
         question.put("team_id",team.getId());
+        question.put("is_active",isActive);
 
         return question;
     }
@@ -168,6 +174,14 @@ public class QuizQuestion {
 
     public void setIncorrectAnswerThree(String incorrectAnswerThree) {
         this.incorrectAnswerThree = incorrectAnswerThree;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
     public Team getTeam() {

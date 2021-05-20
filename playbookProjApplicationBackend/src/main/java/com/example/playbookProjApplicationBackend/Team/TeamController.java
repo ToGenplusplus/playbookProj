@@ -1,10 +1,8 @@
 package com.example.playbookProjApplicationBackend.Team;
 
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.repository.query.Param;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "api/v1/team")
@@ -19,4 +17,8 @@ public class TeamController {
     public String getTeamById(@PathVariable("org_id")Long org_id,@PathVariable("team_id")Long team_id){return TS.getTeamById(org_id,team_id);}
     @GetMapping(path = "/byName/{org_id}/{team_name}")
     public String getTeamByName(@PathVariable("org_id")Long org_id,@PathVariable("team_name")String team_name){return TS.getTeamByName(org_id,team_name); }
+    @DeleteMapping(path = "/questions/delete/{org_id}/{team_id}")
+    public String deleteAllTeamQuestions(@PathVariable("org_id")Long org_id,@PathVariable("team_id")Long team_id){
+        return TS.deleteAllTeamQuestions(org_id,team_id);
+    }
 }

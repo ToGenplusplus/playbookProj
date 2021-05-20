@@ -31,11 +31,11 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion,Long>
     Integer getCountAnsweredQuestionsForTeamByCategory(@Param("team_id")Long id, @Param("type")String position);
 
     @Modifying
-    @Query(value = "INSERT INTO quiz_questions(correct_answer,image_location,wrong_answer1,wrong_answer2,wrong_answer3,question,question_type,team_id) VALUES" +
-            "(:correct,:img_location,:wrongone,:wrongtwo,:wrongthree,:question,:type,:team_id)", nativeQuery = true)
+    @Query(value = "INSERT INTO quiz_questions(correct_answer,image_location,wrong_answer1,wrong_answer2,wrong_answer3,question,question_type,is_active,team_id) VALUES" +
+            "(:correct,:img_location,:wrongone,:wrongtwo,:wrongthree,:question,:type,:is_active,:team_id)", nativeQuery = true)
     int insertNewQuizQuestion(@Param("question") String question,@Param("type") String type,@Param("correct") String correct,
                                @Param("wrongone") String wrongone,@Param("wrongtwo") Object wrongtwo,@Param("wrongthree") Object wrongthree,
-                               @Param("img_location") String image,@Param("team_id") Long team);
+                               @Param("img_location") String image,@Param("is_active")Boolean isactive,@Param("team_id") Long team);
     @Modifying
     @Query(value = "DELETE FROM quiz_questions qq WHERE qq.id = :question_id AND qq.team_id = :team_id",nativeQuery = true)
     int deleteAQuizQuestion(@Param("team_id")Long team_id, @Param("question_id") Long question_id);

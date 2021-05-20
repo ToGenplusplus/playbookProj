@@ -63,7 +63,7 @@ public class QuizQuestionService {
     public String insertNewQuestion(Map<String,Object> newQuestion){
         ResponseError resp = null;
         if(!newQuestion.containsKey("question") || !newQuestion.containsKey("question_type") ||!newQuestion.containsKey("correct_answer")
-        || !newQuestion.containsKey("wrong_answer1")|| !newQuestion.containsKey("image_location")|| !newQuestion.containsKey("team_id")) {
+        || !newQuestion.containsKey("wrong_answer1")|| !newQuestion.containsKey("image_location")|| !newQuestion.containsKey("is_active")|| !newQuestion.containsKey("team_id")) {
             return new ResponseError("invalid quiz question", HttpStatus.BAD_REQUEST.value()).toJson();
         }
 
@@ -74,11 +74,12 @@ public class QuizQuestionService {
         Object wrongtwo=  newQuestion.get("wrong_answer2");
         Object wrongthree = newQuestion.get("wrong_answer3");
         String img = (String) newQuestion.get("image_location");
+        Boolean is_active = (Boolean) newQuestion.get("is_active");
         Integer id =  (Integer) newQuestion.get("team_id");
         long team_id = id;
         try{
             if(doesTeamExist(team_id)){
-                QR.insertNewQuizQuestion(question,type,correct,wrongone,wrongtwo,wrongthree,img,team_id);
+                QR.insertNewQuizQuestion(question,type,correct,wrongone,wrongtwo,wrongthree,img,is_active,team_id);
                 resp = new ResponseError("success",HttpStatus.OK.value());
             }
             else{
@@ -93,7 +94,7 @@ public class QuizQuestionService {
     }
     @Transactional
     public String deleteAQuizQuestion(Long team_id, Long question_id){
-        ResponseError resp;
+        ResponseError resp = null;
         if(!doesTeamExist(team_id) || !QR.findById(question_id).isPresent()){
             return new ResponseError("invalid request", HttpStatus.BAD_REQUEST.value()).toJson();
         }
@@ -102,15 +103,15 @@ public class QuizQuestionService {
             resp = new ResponseError("Success",HttpStatus.OK.value());
         }catch (Exception e){
             resp = new ResponseError(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }finally {
+            return resp.toJson();
         }
-        return resp.toJson();
     }
 /*
 
     public String updateQuizQuestion(Long team_id, Long question_id, Map<String,Object> updates){}
 
     public String deleteAQuizQuestion(Long team_id, Long question_id){}
-    public String deleteAllQuestionForTeam(Long team_id){}
     public String deleteAllQuestionsForPosition(Long team_id, Long position_id){}
     */
 
