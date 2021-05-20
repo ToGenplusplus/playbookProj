@@ -108,6 +108,22 @@ public class QuizQuestionService {
             return resp.toJson();
         }
     }
+
+    @Transactional
+    public String deactivateQuizQuestion(Long team_id, Long question_id){
+        ResponseError resp = null;
+        if(!doesTeamExist(team_id) || !QR.findById(question_id).isPresent()){
+            return new ResponseError("invalid request", HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        try{
+            QR.deactivateQuizQuestion(team_id,question_id);
+            resp = new ResponseError("Success",HttpStatus.OK.value());
+        }catch (Exception e){
+            resp = new ResponseError(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }finally {
+            return resp.toJson();
+        }
+    }
 /*
 
     public String updateQuizQuestion(Long team_id, Long question_id, Map<String,Object> updates){}

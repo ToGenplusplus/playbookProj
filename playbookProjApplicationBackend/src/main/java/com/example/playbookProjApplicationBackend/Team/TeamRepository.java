@@ -18,4 +18,7 @@ public interface TeamRepository extends JpaRepository<Team,Long> {
     @Modifying
     @Query(value = "DELETE FROM quiz_questions qq WHERE qq.team_id IN (SELECT id FROM team t WHERE t.id = :team_id AND t.organization_id = :org_id)",nativeQuery = true)
     int deleteAllTeamQuestions(@Param("org_id")Long org_id,@Param("team_id")Long team_id);
+    @Modifying
+    @Query(value = "UPDATE quiz_questions SET is_active= NOT is_active WHERE team_id IN (SELECT t.id FROM team t WHERE t.id = :team_id AND t.organization_id = :org_id)",nativeQuery = true)
+    int deactivateAllTeamQuestions(@Param("org_id")Long org_id,@Param("team_id")Long team_id);
 }

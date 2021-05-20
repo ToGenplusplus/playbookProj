@@ -31,6 +31,10 @@ public class TeamService {
     public String deleteAllTeamQuestions(Long org_id,Long team_id){
         return processResponse(org_id,team_id,"deleteAllTeamQuestions");
     }
+    @Transactional
+    public String deactivateAllTeamQuestions(Long org_id,Long team_id){
+        return processResponse(org_id,team_id,"deactivateAllTeamQuestions");
+    }
     //update Team
 
     private String processResponse(Long org_id,Object param, String methodName){
@@ -50,6 +54,7 @@ public class TeamService {
 
     private ResponseError callMethod(Long org_id,Object param, String methodName){
         ResponseError resp;
+        Team team;
         switch (methodName){
             case "getTeamById":
                 Team teamId = TR.findTeamById(org_id,(Long) param);
@@ -57,7 +62,7 @@ public class TeamService {
                         new ResponseError(TR.findTeamById(org_id,(Long) param).toJSONObj(),HttpStatus.OK.value());
                 break;
             case "getTeamByName":
-                Team team = TR.findTeamByName(org_id,(String) param);
+                team = TR.findTeamByName(org_id,(String) param);
                 if (team != null)
                     resp = new ResponseError(team.toJSONObj(),HttpStatus.OK.value());
                 else
@@ -67,10 +72,16 @@ public class TeamService {
                 resp = new ResponseError(jsonify(TR.getTeamsInOrganization(org_id)),HttpStatus.OK.value());
                 break;
             case "deleteAllTeamQuestions":
-                Team q = TR.findTeamById(org_id,(Long) param);
-                resp = q == null ? new ResponseError("Team with id " + String.valueOf(param) + " does not exist",HttpStatus.BAD_REQUEST.value()) :
+                team = TR.findTeamById(org_id,(Long) param);
+                resp = team == null ? new ResponseError("Team with id " + String.valueOf(param) + " does not exist",HttpStatus.BAD_REQUEST.value()) :
                         new ResponseError("Sucess",HttpStatus.OK.value());
                 TR.deleteAllTeamQuestions(org_id,(Long) param);
+                break;
+            case "deactivateAllTeamQuestions":
+                team = TR.findTeamById(org_id,(Long) param);
+                resp = team == null ? new ResponseError("Team with id " + String.valueOf(param) + " does not exist",HttpStatus.BAD_REQUEST.value()) :
+                        new ResponseError("Sucess",HttpStatus.OK.value());
+                TR.deactivateAllTeamQuestions(org_id,(Long) param);
                 break;
             default:
                 resp = new ResponseError("Invalid request",HttpStatus.BAD_REQUEST.value());

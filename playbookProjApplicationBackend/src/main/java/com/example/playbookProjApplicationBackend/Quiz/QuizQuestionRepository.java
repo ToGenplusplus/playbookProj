@@ -39,4 +39,8 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion,Long>
     @Modifying
     @Query(value = "DELETE FROM quiz_questions qq WHERE qq.id = :question_id AND qq.team_id = :team_id",nativeQuery = true)
     int deleteAQuizQuestion(@Param("team_id")Long team_id, @Param("question_id") Long question_id);
+
+    @Modifying
+    @Query(value = "UPDATE quiz_questions SET is_active = NOT is_active WHERE id = :question_id AND team_id = :team_id", nativeQuery = true)
+    int deactivateQuizQuestion(@Param("team_id") Long team_id,@Param("question_id") Long question_id);
 }

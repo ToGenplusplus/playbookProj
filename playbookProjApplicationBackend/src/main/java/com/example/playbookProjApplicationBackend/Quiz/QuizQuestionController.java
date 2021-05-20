@@ -61,4 +61,9 @@ public class QuizQuestionController {
         return QQS.deleteAQuizQuestion(id,question_id);
     }
 
+    @PutMapping(path = "/deactivate/{team_id}/{question_id}")
+    public String deactivateQuizQuestion(@PathVariable("team_id")Long id, @PathVariable("question_id") Long question_id){
+        return QQS.deactivateQuizQuestion(id,question_id);
+    }
+
 }
