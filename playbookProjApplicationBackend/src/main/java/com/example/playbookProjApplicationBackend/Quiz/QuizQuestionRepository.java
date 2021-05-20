@@ -36,4 +36,7 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion,Long>
     int insertNewQuizQuestion(@Param("question") String question,@Param("type") String type,@Param("correct") String correct,
                                @Param("wrongone") String wrongone,@Param("wrongtwo") Object wrongtwo,@Param("wrongthree") Object wrongthree,
                                @Param("img_location") String image,@Param("team_id") Long team);
+    @Modifying
+    @Query(value = "DELETE FROM quiz_questions qq WHERE qq.id = :question_id AND qq.team_id = :team_id",nativeQuery = true)
+    int deleteAQuizQuestion(@Param("team_id")Long team_id, @Param("question_id") Long question_id);
 }

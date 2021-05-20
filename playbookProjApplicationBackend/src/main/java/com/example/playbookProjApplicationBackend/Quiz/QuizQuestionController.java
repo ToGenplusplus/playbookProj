@@ -1,6 +1,7 @@
 package com.example.playbookProjApplicationBackend.Quiz;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -53,6 +54,11 @@ public class QuizQuestionController {
     @PostMapping(path = "/new")
     public String insertNewQuestion(@RequestBody Map<String,Object> newQuestion){
         return QQS.insertNewQuestion(newQuestion);
+    }
+
+    @DeleteMapping(path = "/delete/{team_id}/{question_id}")
+    public String deleteAQuizQuestion(@PathVariable("team_id")Long id, @PathVariable("question_id") Long question_id){
+        return QQS.deleteAQuizQuestion(id,question_id);
     }
 
 }
