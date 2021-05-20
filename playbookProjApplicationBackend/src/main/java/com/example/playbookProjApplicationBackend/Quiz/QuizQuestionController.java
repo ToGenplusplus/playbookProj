@@ -3,6 +3,8 @@ package com.example.playbookProjApplicationBackend.Quiz;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController()
 @RequestMapping(path = "api/v1/quiz-question")
 @AllArgsConstructor
@@ -46,6 +48,16 @@ public class QuizQuestionController {
     @GetMapping(path = "/all/answered/count/{team_id}/{position_id}")
     public String getCountAnsweredQuestionsForTeamByCategory(@PathVariable("team_id")Long id,@PathVariable("position_id") String category){
         return QQS.getCountAnsweredQuestionsForTeamByCategory(id,category);
+    }
+
+    @PostMapping(path = "/new")
+    public void insertNewQuestion(@RequestBody Map<String,Object> newQuestion){
+        System.out.println(newQuestion.get("correct_answer"));
+        System.out.println(newQuestion.get("image_location"));
+        System.out.println(newQuestion.get("wrong_answer1"));
+        System.out.println(newQuestion.get("question"));
+        System.out.println(newQuestion.get("question_type"));
+        System.out.println(newQuestion.get("team_id"));
     }
 
 }

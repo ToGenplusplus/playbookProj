@@ -1,6 +1,5 @@
 package com.example.playbookProjApplicationBackend.Quiz;
 
-import com.example.playbookProjApplicationBackend.Player.Player;
 import com.example.playbookProjApplicationBackend.Player.PlayerAnswer;
 import com.example.playbookProjApplicationBackend.Team.Team;
 import org.json.simple.JSONObject;
@@ -9,7 +8,9 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "quiz_questions")
+@Table(name = "quiz_questions", uniqueConstraints = {
+        @UniqueConstraint(name = "unique_question_name_team", columnNames = {"question","team_id"})
+})
 public class QuizQuestion {
 
     @Id
@@ -19,9 +20,9 @@ public class QuizQuestion {
     private String imageLocation;
     @Column(name="question_type", nullable = false, length = 4)
     private String questionType;
-    @Column(name="question", nullable = false)
+    @Column(name="question", nullable = false, columnDefinition="TEXT")
     private String questionText;
-    @Column(name="correct_answer", nullable = false)
+    @Column(name="correct_answer", nullable = false, columnDefinition="TEXT")
     private String correctAnswer;
     @Column(name="wrong_answer1", columnDefinition="TEXT", nullable = false)
     private String incorrectAnswerOne;
