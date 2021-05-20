@@ -92,6 +92,7 @@ public class QuizQuestionService {
             return resp.toJson();
         }
     }
+    //cascade delete not working need to fix.
     @Transactional
     public String deleteAQuizQuestion(Long team_id, Long question_id){
         ResponseError resp = null;
