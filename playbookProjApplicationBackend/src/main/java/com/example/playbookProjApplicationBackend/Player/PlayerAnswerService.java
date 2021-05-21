@@ -7,8 +7,12 @@ import com.example.playbookProjApplicationBackend.Team.TeamRepository;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +45,6 @@ public class PlayerAnswerService {
     public String getAllPlayerAnswersInTeamByPositionByPlayer(Long id, String position, String player_id){
         return processResponse(id,position,player_id,"getAllPlayerAnswersInTeamByPositionByPlayer",true);
     }
-    //check
     public String getTotalAverageAnswerSpeedForQuizCategory(Long id, String type){
         return processResponse(id,type,null,"getTotalAverageAnswerSpeedForQuizCategory",true);
     }
@@ -55,57 +58,87 @@ public class PlayerAnswerService {
         return processResponse(id,position,null,"getTotalNumberOfPlayerAnswerForPosition",true);
     }
 
+    @Transactional
+    public String uploadPlayerAnswer(Long id, Map<String,Object> data){
+        ResponseError resp = null;
+        if(!doesTeamExist(id) || !data.containsKey("player_id")|| !data.containsKey("question_id")|| !data.containsKey("is_correct")
+                || !data.containsKey("answered_time")){
+            return new ResponseError("invalid request missing fields", HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        String player_id = (String) data.get("player_id");
+        Integer qid = (Integer) data.get("question_id");
+        long question_id = qid;
+        if(!doesPlayerExist(player_id) || !doesQuizQuestionExists(question_id)){
+            return new ResponseError("invalid request,does not exist", HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        try{
+            Integer answered_time = (Integer) data.get("answered_time");
+            Boolean is_correct = (Boolean) data.get("is_correct");
+            PAR.uploadPlayerAnswer(player_id,question_id,answered_time,is_correct);
+            resp = new ResponseError("Success",HttpStatus.OK.value());
+        }catch(Exception e){
+            resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }finally {
+            return  resp.toJson();
+        }
+    }
+
 
     private String processResponse(Long team_id, String arg,Object arg2, String methodToCall, boolean isPos){
-        ResponseError resp;
+        ResponseError resp = null;
         Map<String,Boolean> ret = PositionOrPlayer(arg,isPos);
         boolean exists = ret.get("exists");
         String errMessage = isPos ? "Position " +arg+ " does not exist" : "Player " +arg+ " does not exist";
-        if(!doesTeamExist(team_id)){
-            resp = new ResponseError("Team "+ String.valueOf(team_id) + " does not exist",404);
-        }else if(!exists){
-            resp = new ResponseError(errMessage,404);
-        }else{
-            resp = callMethod(team_id,arg,arg2,methodToCall);
+        try{
+            if(!doesTeamExist(team_id)){
+                resp = new ResponseError("Team "+ String.valueOf(team_id) + " does not exist",HttpStatus.BAD_REQUEST.value());
+            }else if(!exists){
+                resp = new ResponseError(errMessage,HttpStatus.BAD_REQUEST.value());
+            }else{
+                resp = callMethod(team_id,arg,arg2,methodToCall);
+            }
+        }catch (Exception e){
+            resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }finally {
+            return resp.toJson();
         }
-        return resp.toJson();
     }
 
     private ResponseError callMethod(Long team_id, String arg, Object arg2, String methodToCall){
         ResponseError resp;
         switch (methodToCall) {
             case "getAllPlayerAnswersInTeamByQuestionType":
-                resp = new ResponseError(jsonify(PAR.getAllPlayerAnswersInTeamByQuestionType(team_id,arg)),200);
+                resp = new ResponseError(jsonify(PAR.getAllPlayerAnswersInTeamByQuestionType(team_id,arg)),HttpStatus.OK.value());
                 break;
             case "getAllPlayerAnswersInTeamByPosition":
-                resp = new ResponseError(jsonify(PAR.getAllPlayerAnswersInTeamByPosition(team_id,arg)),200);
+                resp = new ResponseError(jsonify(PAR.getAllPlayerAnswersInTeamByPosition(team_id,arg)),HttpStatus.OK.value());
                 break;
             case "getAllPlayerAnswersInTeamByPositionByPlayer":
                 String player_id = (String) arg2;
                 if (doesPlayerExist(player_id))
-                    resp = new ResponseError(jsonify(PAR.getAllPlayerAnswersInTeamByPositionByPlayer(team_id,arg,player_id)),200);
+                    resp = new ResponseError(jsonify(PAR.getAllPlayerAnswersInTeamByPositionByPlayer(team_id,arg,player_id)),HttpStatus.OK.value());
                 else
-                    resp = new ResponseError("Player " + player_id + " does not exist",404);
+                    resp = new ResponseError("Player " + player_id + " does not exist",HttpStatus.BAD_REQUEST.value());
                 break;
             case "getTotalAverageAnswerSpeedForQuizCategory":
-                resp = new ResponseError(PAR.getTotalAverageAnswerSpeedForQuizCategory(team_id,arg),200);
+                resp = new ResponseError(PAR.getTotalAverageAnswerSpeedForQuizCategory(team_id,arg),HttpStatus.OK.value());
                 break;
             case "getPlayerAverageAnswerSpeed":
-                resp = new ResponseError(PAR.getPlayerAverageAnswerSpeed(team_id,arg),200);
+                resp = new ResponseError(PAR.getPlayerAverageAnswerSpeed(team_id,arg),HttpStatus.OK.value());
                 break;
             case "getCountPlayerAnswerForQuestion":
                 Long question_id = (Long) arg2;
                 if(doesQuizQuestionExists(question_id))
-                    resp = new ResponseError(PAR.getCountPlayerAnswerForQuestion(team_id,arg,(Long) arg2),200);
+                    resp = new ResponseError(PAR.getCountPlayerAnswerForQuestion(team_id,arg,(Long) arg2),HttpStatus.OK.value());
                 else
-                    resp = new ResponseError("Quiz question with id: " + question_id + " does not exist",404);
+                    resp = new ResponseError("Quiz question with id: " + question_id + " does not exist",HttpStatus.BAD_REQUEST.value());
                 break;
             case "getTotalNumberOfPlayerAnswerForPosition":
                 int count = PAR.getAllPlayerAnswersInTeamByPosition(team_id,arg).size();
-                resp = new ResponseError(count,200);
+                resp = new ResponseError(count,HttpStatus.OK.value());
                 break;
             default:
-                resp = new ResponseError("Invalid request",500);
+                resp = new ResponseError("Invalid request",HttpStatus.BAD_REQUEST.value());
         }
         return resp;
     }

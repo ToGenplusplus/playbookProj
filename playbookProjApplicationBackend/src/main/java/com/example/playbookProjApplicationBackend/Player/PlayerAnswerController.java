@@ -1,10 +1,9 @@
 package com.example.playbookProjApplicationBackend.Player;
 
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "api/v1/answers")
@@ -39,5 +38,9 @@ public class PlayerAnswerController {
     @GetMapping(path = "/position/count/{team_id}/{position_id}")
     public String getTotalNumberOfPlayerAnswerForPosition(@PathVariable("team_id")Long id,@PathVariable("position_id") String position){
        return PAS.getTotalNumberOfPlayerAnswerForPosition(id,position);
+    }
+    @PostMapping(path = "/new/{team_id}")
+    public String uploadPlayerAnswer(@PathVariable("team_id") Long id,@RequestBody Map<String, Object> data) {
+        return PAS.uploadPlayerAnswer(id, data);
     }
 }
