@@ -18,31 +18,59 @@ import org.springframework.transaction.annotation.Transactional;
 public class PlayerService {
 
     private PlayerRepository PR;
+    private TeamRepository TR;
 
     @Autowired
-    public PlayerService(PlayerRepository PR) {
+    public PlayerService(PlayerRepository PR, TeamRepository TR) {
         this.PR = PR;
+        this.TR = TR;
     }
 
     public String getAllPlayersInTeam(Long teamId){
-        return new ResponseError(jsonify(PR.getPlayersByTeamId(teamId)),200).toJson();
+        return new ResponseError(jsonify(PR.getPlayersByTeamId(teamId)),HttpStatus.OK.value()).toJson();
     }
-
     public String getAllPlayersInPosition(Long teamId, String posId){
-        return new ResponseError(jsonify(PR.getPlayersByTeamPosition(teamId, posId)),200).toJson();
+        return new ResponseError(jsonify(PR.getPlayersByTeamPosition(teamId, posId)),HttpStatus.OK.value()).toJson();
     }
-
     public String getPlayer(String player_id){
         //check if player exist, if it does return player else return exception
         String response;
         if(!(doesPlayerExist(player_id))){
-            response = new ResponseError("This player does not exists",404).toJson();
+            response = new ResponseError("This player does not exists",HttpStatus.BAD_REQUEST.value()).toJson();
             return response;
         }
 
         Player foundPlayer = PR.getOne(player_id);
-        response = new ResponseError(foundPlayer.toJSONObj(),200).toJson();
+        response = new ResponseError(foundPlayer.toJSONObj(),HttpStatus.OK.value()).toJson();
         return response;
+    }
+    public String addNewPlayer(Map<String,Object> player){
+        ResponseError resp = null;
+        //check if all required fields are present
+        if(!player.containsKey("student_number") || !player.containsKey("email") || !player.containsKey("first_name") || !player.containsKey("last_name")  || !player.containsKey("team_id")){
+            return new ResponseError("invalid request, missing fields", HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        //check if team with id exists if it does retrieve the team
+        Integer id = (Integer) player.get("team_id");
+        long team_id = id;
+        if(!TR.findById(team_id).isPresent()){
+            return new ResponseError("team with id " + player.get("team_id") + " does not exist", HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        //check if player with the same student number does not exists
+        if(doesPlayerExist((String) player.get("student_number"))){
+            return new ResponseError("player with id " + player.get("student_number") + " does not exist", HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        try{
+            Team team = TR.getOne(team_id);
+            Player player1 = new Player((String) player.get("student_number"),(String) player.get("first_name"),(String) player.get("last_name"),
+            (String) player.get("email"), player.get("jersey") == null ? null : (String) player.get("jersey"),team);
+            PR.save(player1);
+            resp = new ResponseError("Success",HttpStatus.OK.value());
+        }catch(Exception e){
+            resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.ordinal());
+        }finally {
+            return resp.toJson();
+        }
     }
     @Transactional
     public String updatePlayer(String player_id, Map<String, Object> updates){
