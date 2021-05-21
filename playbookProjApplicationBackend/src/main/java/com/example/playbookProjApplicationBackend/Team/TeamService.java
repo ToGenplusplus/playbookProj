@@ -2,6 +2,7 @@ package com.example.playbookProjApplicationBackend.Team;
 
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
 import com.example.playbookProjApplicationBackend.Organization.OrganizationRepository;
+import com.example.playbookProjApplicationBackend.Position.PositionRepository;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,13 @@ public class TeamService {
 
     private TeamRepository TR;
     private OrganizationRepository OR;
+    private PositionRepository PR;
 
     @Autowired
-    public TeamService(TeamRepository TR, OrganizationRepository OR) {
+    public TeamService(TeamRepository TR, OrganizationRepository OR, PositionRepository PR) {
         this.TR = TR;
         this.OR = OR;
+        this.PR = PR;
     }
 
     public String getTeamById(Long org_id,Long team_id){return processResponse(org_id,team_id, "getTeamById"); }
@@ -34,6 +37,22 @@ public class TeamService {
     @Transactional
     public String deactivateAllTeamQuestions(Long org_id,Long team_id){
         return processResponse(org_id,team_id,"deactivateAllTeamQuestions");
+    }
+    @Transactional
+    public String deactivateAllTeamPositionQuestions(Long org_id,Long team_id,String type){
+        ResponseError resp = null;
+        try {
+            if(!doesOrganizationExist(org_id)||!TR.findById(team_id).isPresent() || !doesPositionExist(type) ) {
+                resp = new ResponseError("invalid request", HttpStatus.BAD_REQUEST.value());
+            }else {
+                TR.deactivateAllTeamPositionQuestions(org_id, team_id, type);
+                resp = new ResponseError("Success", HttpStatus.OK.value());
+            }
+        }catch (Exception e){
+            resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }finally {
+            return resp.toJson();
+        }
     }
     //update Team
 
@@ -91,6 +110,9 @@ public class TeamService {
 
     private boolean doesOrganizationExist(Long org_id){
         return OR.findById(org_id).isPresent();
+    }
+    private boolean doesPositionExist(String pos){
+        return PR.findById(pos).isPresent();
     }
 
     private JSONObject jsonify(Collection<Team> teams){

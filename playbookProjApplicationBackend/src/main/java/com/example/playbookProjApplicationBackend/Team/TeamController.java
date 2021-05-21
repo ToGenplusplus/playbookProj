@@ -21,6 +21,10 @@ public class TeamController {
     public String deactivateAllTeamQuestions(@PathVariable("org_id")Long org_id,@PathVariable("team_id")Long team_id){
         return TS.deactivateAllTeamQuestions(org_id,team_id);
     }
+    @PutMapping(path = "/questions/deactivate/byPosition/{org_id}/{team_id}/{type}")
+    public String deactivateAllTeamPositionQuestions(@PathVariable("org_id")Long org_id,@PathVariable("team_id")Long team_id,@PathVariable("type") String type){
+        return  TS.deactivateAllTeamPositionQuestions(org_id, team_id, type);
+    }
     @DeleteMapping(path = "/questions/delete/{org_id}/{team_id}")
     public String deleteAllTeamQuestions(@PathVariable("org_id")Long org_id,@PathVariable("team_id")Long team_id){
         return TS.deleteAllTeamQuestions(org_id,team_id);
