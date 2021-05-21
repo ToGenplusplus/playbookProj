@@ -48,6 +48,15 @@ public class Organization {
         this.teams = teams;
     }
 
+    public Organization(String name, String country, String state, String organizationType, String logoImageLocation, String organizationLink) {
+        this.name = name;
+        this.country = country;
+        this.state = state;
+        this.organizationType = organizationType;
+        this.logoImageLocation = logoImageLocation;
+        this.organizationLink = organizationLink;
+    }
+
     @Override
     public String toString() {
         return "Organization{" +
