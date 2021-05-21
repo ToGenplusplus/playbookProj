@@ -9,7 +9,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "coach")
+@Table(name = "coach", uniqueConstraints = {
+        @UniqueConstraint(name = "unique_coach_email_team",columnNames = {"email","team_id"})
+})
 public class Coach {
 
     @Id

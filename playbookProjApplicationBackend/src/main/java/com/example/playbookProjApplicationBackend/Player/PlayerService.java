@@ -54,7 +54,7 @@ public class PlayerService {
         Integer id = (Integer) player.get("team_id");
         long team_id = id;
         if(!TR.findById(team_id).isPresent()){
-            return new ResponseError("team with id " + player.get("team_id") + " does not exist", HttpStatus.BAD_REQUEST.value()).toJson();
+            return new ResponseError("team with id " + team_id + " does not exist", HttpStatus.BAD_REQUEST.value()).toJson();
         }
         //check if player with the same student number does not exists
         if(doesPlayerExist((String) player.get("student_number"))){
