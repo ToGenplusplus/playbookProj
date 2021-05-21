@@ -1,14 +1,18 @@
 package com.example.playbookProjApplicationBackend.Player;
 
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
+import com.example.playbookProjApplicationBackend.Team.Team;
+import com.example.playbookProjApplicationBackend.Team.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PlayerService {
@@ -40,8 +44,29 @@ public class PlayerService {
         response = new ResponseError(foundPlayer.toJSONObj(),200).toJson();
         return response;
     }
+    @Transactional
+    public String updatePlayer(String player_id, Map<String, Object> updates){
+        ResponseError resp =null;
+        //check if player exists
+        if(!doesPlayerExist(player_id)){
+            return new ResponseError("player with id " + player_id+ " does not exists", HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        //get player object
+        Player player = PR.getOne(player_id);
+        try{
+            player.setFirstName(updates.get("first_name") == null ? player.getFirstName() : (String) updates.get("first_name"));
+            player.setLastName(updates.get("last_name") == null ? player.getLastName() : (String) updates.get("last_name"));
+            player.setEmail(updates.get("email") == null ? player.getEmail() : PR.getPlayerByEmail(player.getTeam().getId(), (String) updates.get("email") ) != null ? player.getEmail() : (String) updates.get("email"));
+            player.setJerseyNumber(updates.get("jersey") == null ? player.getJerseyNumber() : (String) updates.get("jersey"));
+            resp = new ResponseError("Success", HttpStatus.OK.value());
+        }catch (Exception e){
+            resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }finally {
+            return resp.toJson();
+        }
+    }
 
-    public JSONObject jsonify(Collection<Player> players){
+    private JSONObject jsonify(Collection<Player> players){
         JSONObject p = new JSONObject();
         JSONArray playersArray = new JSONArray();
         for (Player player : players){
@@ -53,7 +78,7 @@ public class PlayerService {
 
     }
 
-    public boolean doesPlayerExist(String player_id){
+    private boolean doesPlayerExist(String player_id){
         return PR.findById(player_id).isPresent();
     }
 

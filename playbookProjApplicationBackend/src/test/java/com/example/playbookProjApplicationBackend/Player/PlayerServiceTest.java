@@ -24,7 +24,7 @@ class PlayerServiceTest {
 
     @BeforeEach
     void setUp(){
-        underTest =new PlayerService(PR);
+
     }
 
 

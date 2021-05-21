@@ -1,18 +1,16 @@
 package com.example.playbookProjApplicationBackend.Player;
 
 import com.example.playbookProjApplicationBackend.Position.Position;
-import com.example.playbookProjApplicationBackend.Quiz.QuizQuestion;
 import com.example.playbookProjApplicationBackend.Team.Team;
 
 import javax.persistence.*;
 import java.util.HashSet;
-import java.util.NavigableMap;
 import java.util.Set;
 import org.json.simple.JSONObject;
 
 @Entity
 @Table(name="players", uniqueConstraints = {
-        @UniqueConstraint(name="player_unique_email",columnNames = {"email"})
+        @UniqueConstraint(name="player_unique_email_for_team",columnNames = {"email","team_id"})
 })
 public class Player {
 
