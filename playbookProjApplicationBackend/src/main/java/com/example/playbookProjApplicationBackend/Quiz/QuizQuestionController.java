@@ -50,17 +50,19 @@ public class QuizQuestionController {
     public String getCountAnsweredQuestionsForTeamByCategory(@PathVariable("team_id")Long id,@PathVariable("position_id") String category){
         return QQS.getCountAnsweredQuestionsForTeamByCategory(id,category);
     }
-
     @PostMapping(path = "/new")
     public String insertNewQuestion(@RequestBody Map<String,Object> newQuestion){
         return QQS.insertNewQuestion(newQuestion);
     }
 
+    @PutMapping(path = "/update/{team_id}/{question_id}")
+    public String updateQuizQuestion(@PathVariable("team_id") Long team_id,@PathVariable("question_id") Long question_id,@RequestBody Map<String,Object> updates){
+        return QQS.updateQuizQuestion(team_id,question_id,updates);
+    }
     @DeleteMapping(path = "/delete/{team_id}/{question_id}")
     public String deleteAQuizQuestion(@PathVariable("team_id")Long id, @PathVariable("question_id") Long question_id){
         return QQS.deleteAQuizQuestion(id,question_id);
     }
-
     @PutMapping(path = "/deactivate/{team_id}/{question_id}")
     public String deactivateQuizQuestion(@PathVariable("team_id")Long id, @PathVariable("question_id") Long question_id){
         return QQS.deactivateQuizQuestion(id,question_id);
