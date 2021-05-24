@@ -2,6 +2,7 @@ package com.example.playbookProjApplicationBackend.Player;
 
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
 import com.example.playbookProjApplicationBackend.Position.PositionRepository;
+import com.example.playbookProjApplicationBackend.Quiz.QuizQuestion;
 import com.example.playbookProjApplicationBackend.Quiz.QuizQuestionRepository;
 import com.example.playbookProjApplicationBackend.Team.TeamRepository;
 import org.json.simple.JSONArray;
@@ -66,13 +67,20 @@ public class PlayerAnswerService {
         String player_id = (String) data.get("player_id");
         Integer qid = (Integer) data.get("question_id");
         long question_id = qid;
-        if(!doesPlayerExist(player_id) || !doesQuizQuestionExists(question_id)){
-            return new ResponseError("invalid request,does not exist", HttpStatus.BAD_REQUEST.value()).toJson();
+        if(!doesPlayerExist(player_id)){
+            return new ResponseError("invalid request,player with id " +player_id+ " does not exist", HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        if(!doesQuizQuestionExists(question_id)){
+            return new ResponseError("invalid request,question with id " +question_id+" does not exists", HttpStatus.BAD_REQUEST.value()).toJson();
         }
         try{
-            Integer answered_time = (Integer) data.get("answered_time");
+            Player player = PR.getOne(player_id);
+            QuizQuestion question =QQR.getOne(question_id);
+            int answered_time = (int) data.get("answered_time");
+            short time = (short) answered_time;
             Boolean is_correct = (Boolean) data.get("is_correct");
-            PAR.uploadPlayerAnswer(player_id,question_id,answered_time,is_correct);
+            PlayerAnswer playerAnswer = new PlayerAnswer(player,question,is_correct,time);
+            PAR.save(playerAnswer);
             resp = new ResponseError("Success",HttpStatus.OK.value());
         }catch(Exception e){
             resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());

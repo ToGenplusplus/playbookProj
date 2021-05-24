@@ -28,9 +28,4 @@ public interface PlayerAnswerRepository extends JpaRepository<PlayerAnswer,Long>
     @Query(value="SELECT COUNT(*) FROM player_answers pa WHERE pa.player_id=:player_id AND pa.question_id = :question_id AND pa.player_id IN " +
             "(SELECT p.student_number FROM players p WHERE p.team_id = :team_id)",nativeQuery = true)
     int getCountPlayerAnswerForQuestion(@Param("team_id") Long team_id,@Param("player_id")String player,@Param("question_id")Long question_id);
-
-    @Modifying
-    @Query(value = "INSERT INTO player_answers(is_correct,answered_time,player_id,question_id) VALUES" +
-            "(:is_correct,:time,:player_id,:question_id)",nativeQuery = true)
-    int uploadPlayerAnswer(@Param("player_id")String player,@Param("question_id")Long question_id, @Param("time") Integer time,@Param("is_correct") boolean is_correct);
 }

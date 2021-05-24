@@ -3,6 +3,7 @@ package com.example.playbookProjApplicationBackend.Quiz;
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
 import com.example.playbookProjApplicationBackend.Player.PlayerRepository;
 import com.example.playbookProjApplicationBackend.Position.PositionRepository;
+import com.example.playbookProjApplicationBackend.Team.Team;
 import com.example.playbookProjApplicationBackend.Team.TeamRepository;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -66,26 +67,27 @@ public class QuizQuestionService {
         || !newQuestion.containsKey("wrong_answer1")|| !newQuestion.containsKey("image_location")|| !newQuestion.containsKey("is_active")|| !newQuestion.containsKey("team_id")) {
             return new ResponseError("invalid quiz question", HttpStatus.BAD_REQUEST.value()).toJson();
         }
-
-        String question = (String) newQuestion.get("question");
-        String type = (String) newQuestion.get("question_type");
-        String correct = (String) newQuestion.get("correct_answer");
-        String wrongone = (String) newQuestion.get("wrong_answer1");
-        Object wrongtwo=  newQuestion.get("wrong_answer2");
-        Object wrongthree = newQuestion.get("wrong_answer3");
-        String img = (String) newQuestion.get("image_location");
-        Boolean is_active = (Boolean) newQuestion.get("is_active");
         Integer id =  (Integer) newQuestion.get("team_id");
         long team_id = id;
+        if(!doesTeamExist(team_id)){
+            return new ResponseError("invalid request team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        String type = (String) newQuestion.get("question_type");
+        if(!doesPositionExist(type)){
+            return new ResponseError("invalid request question type " + type + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+        }
         try{
-            if(doesTeamExist(team_id)){
-                QR.insertNewQuizQuestion(question,type,correct,wrongone,wrongtwo,wrongthree,img,is_active,team_id);
-                resp = new ResponseError("success",HttpStatus.OK.value());
-            }
-            else{
-                resp = new ResponseError("invalid request team does not exist",HttpStatus.BAD_REQUEST.value());
-            }
-
+            Team team = TR.getOne(team_id);
+            String question = (String) newQuestion.get("question");
+            String correct = (String) newQuestion.get("correct_answer");
+            String wrongone = (String) newQuestion.get("wrong_answer1");
+            String wrongtwo= (String) newQuestion.get("wrong_answer2");
+            String wrongthree = (String)  newQuestion.get("wrong_answer3");
+            String img = (String) newQuestion.get("image_location");
+            Boolean is_active = (Boolean) newQuestion.get("is_active");
+            QuizQuestion quizquestion = new QuizQuestion(img,type,question,correct,wrongone,wrongtwo,wrongthree,is_active,team);
+            QR.save(quizquestion);
+            resp = new ResponseError("Success", HttpStatus.OK.value());
         }catch (Exception e){
             resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }finally {
@@ -114,15 +116,15 @@ public class QuizQuestionService {
             return resp.toJson();
         }
     }
-    //cascade delete not working need to fix.
     @Transactional
-    public String deleteAQuizQuestion(Long team_id, Long question_id){
+    public String deleteAQuizQuestion(Long question_id){
         ResponseError resp = null;
-        if(!doesTeamExist(team_id) || !QR.findById(question_id).isPresent()){
-            return new ResponseError("invalid request", HttpStatus.BAD_REQUEST.value()).toJson();
+        if(!QR.findById(question_id).isPresent()){
+            return new ResponseError("quiz with id " + question_id + " does not exists", HttpStatus.BAD_REQUEST.value()).toJson();
         }
         try{
-            QR.deleteAQuizQuestion(team_id,question_id);
+            QuizQuestion question = QR.getOne(question_id);
+            QR.delete(question);
             resp = new ResponseError("Success",HttpStatus.OK.value());
         }catch (Exception e){
             resp = new ResponseError(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -148,7 +150,6 @@ public class QuizQuestionService {
     }
 
 /*
-    public String deleteAQuizQuestion(Long team_id, Long question_id){}
     public String deleteAllQuestionsForPosition(Long team_id, Long position_id){}
     */
 

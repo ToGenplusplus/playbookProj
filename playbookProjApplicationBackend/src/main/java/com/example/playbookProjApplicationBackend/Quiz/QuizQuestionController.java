@@ -59,9 +59,9 @@ public class QuizQuestionController {
     public String updateQuizQuestion(@PathVariable("team_id") Long team_id,@PathVariable("question_id") Long question_id,@RequestBody Map<String,Object> updates){
         return QQS.updateQuizQuestion(team_id,question_id,updates);
     }
-    @DeleteMapping(path = "/delete/{team_id}/{question_id}")
-    public String deleteAQuizQuestion(@PathVariable("team_id")Long id, @PathVariable("question_id") Long question_id){
-        return QQS.deleteAQuizQuestion(id,question_id);
+    @DeleteMapping(path = "/delete/{question_id}")
+    public String deleteAQuizQuestion(@PathVariable("question_id") Long question_id){
+        return QQS.deleteAQuizQuestion(question_id);
     }
     @PutMapping(path = "/deactivate/{team_id}/{question_id}")
     public String deactivateQuizQuestion(@PathVariable("team_id")Long id, @PathVariable("question_id") Long question_id){
