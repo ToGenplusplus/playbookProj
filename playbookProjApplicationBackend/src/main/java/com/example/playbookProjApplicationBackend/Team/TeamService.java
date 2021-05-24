@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Collection;
 
@@ -33,6 +34,22 @@ public class TeamService {
     @Transactional
     public String deleteAllTeamQuestions(Long org_id,Long team_id){
         return processResponse(org_id,team_id,"deleteAllTeamQuestions");
+    }
+    @Transactional
+    public String deleteAllTeamPositionQuestions(Long org_id, Long team_id,String type){
+        ResponseError resp = null;
+        try {
+            if(!doesOrganizationExist(org_id)||!TR.findById(team_id).isPresent() || !doesPositionExist(type) ) {
+                resp = new ResponseError("invalid request", HttpStatus.BAD_REQUEST.value());
+            }else {
+                TR.deleteAllTeamPositionQuestions(org_id, team_id, type);
+                resp = new ResponseError("Success", HttpStatus.OK.value());
+            }
+        }catch (Exception e){
+            resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }finally {
+            return resp.toJson();
+        }
     }
     @Transactional
     public String deactivateAllTeamQuestions(Long org_id,Long team_id){
