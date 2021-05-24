@@ -41,7 +41,7 @@ public class CoachService {
         //check if coach exist, if it does return coach else return exception
         String response;
         if(!(doesCoachExist(coach_id))){
-            response = new ResponseError("This player does not exists",HttpStatus.BAD_REQUEST.value()).toJson();
+            response = new ResponseError("This coach does not exists",HttpStatus.BAD_REQUEST.value()).toJson();
             return response;
         }
 

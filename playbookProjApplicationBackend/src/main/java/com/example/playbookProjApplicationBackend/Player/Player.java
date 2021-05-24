@@ -6,6 +6,8 @@ import com.example.playbookProjApplicationBackend.Team.Team;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 @Entity
@@ -76,6 +78,11 @@ public class Player {
         player.put("email",email);
         player.put("jersey_number",jerseyNumber);
         player.put("team_id",team.getId());
+        JSONArray positionsArray = new JSONArray();
+        for(Position position : positions){
+            positionsArray.add(position.getPosition());
+        }
+        player.put("positions",positionsArray);
 
         return player;
     }

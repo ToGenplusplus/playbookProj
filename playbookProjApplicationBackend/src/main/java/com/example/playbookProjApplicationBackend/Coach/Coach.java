@@ -2,6 +2,7 @@ package com.example.playbookProjApplicationBackend.Coach;
 
 import com.example.playbookProjApplicationBackend.Position.Position;
 import com.example.playbookProjApplicationBackend.Team.Team;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import javax.persistence.*;
@@ -55,6 +56,11 @@ public class Coach {
         coach.put("last_name",lastName);
         coach.put("email",email);
         coach.put("team_id",team.getId());
+        JSONArray positionsArray = new JSONArray();
+        for(Position position : positions){
+            positionsArray.add(position.getPosition());
+        }
+        coach.put("positions",positionsArray);
 
         return coach;
     }
