@@ -1,12 +1,14 @@
 package com.example.playbookProjApplicationBackend.Player;
 
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
+import com.example.playbookProjApplicationBackend.Position.PositionRepository;
 import com.example.playbookProjApplicationBackend.Team.Team;
 import com.example.playbookProjApplicationBackend.Team.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
@@ -19,11 +21,13 @@ public class PlayerService {
 
     private PlayerRepository PR;
     private TeamRepository TR;
+    private PositionRepository PosR;
 
     @Autowired
-    public PlayerService(PlayerRepository PR, TeamRepository TR) {
+    public PlayerService(PlayerRepository PR, TeamRepository TR, PositionRepository PosR) {
         this.PR = PR;
         this.TR = TR;
+        this.PosR = PosR;
     }
 
     public String getAllPlayersInTeam(Long teamId){
@@ -44,10 +48,12 @@ public class PlayerService {
         response = new ResponseError(foundPlayer.toJSONObj(),HttpStatus.OK.value()).toJson();
         return response;
     }
+    @Transactional
     public String addNewPlayer(Map<String,Object> player){
         ResponseError resp = null;
         //check if all required fields are present
-        if(!player.containsKey("student_number") || !player.containsKey("email") || !player.containsKey("first_name") || !player.containsKey("last_name")  || !player.containsKey("team_id")){
+        if(!player.containsKey("student_number") || !player.containsKey("email") || !player.containsKey("first_name") || !player.containsKey("last_name")
+                || !player.containsKey("team_id") || !player.containsKey("positions")){
             return new ResponseError("invalid request, missing fields", HttpStatus.BAD_REQUEST.value()).toJson();
         }
         //check if team with id exists if it does retrieve the team
@@ -60,14 +66,23 @@ public class PlayerService {
         if(doesPlayerExist((String) player.get("student_number"))){
             return new ResponseError("player with id " + player.get("student_number") + " does not exist", HttpStatus.BAD_REQUEST.value()).toJson();
         }
+        ArrayList<String> playerPositions = (ArrayList<String>) player.get("positions");
+        for(String pos : playerPositions){
+            if(!PosR.existsById(pos)){
+                return new ResponseError("pos " + pos + " does not exist", HttpStatus.BAD_REQUEST.value()).toJson();
+            }
+        }
         try{
             Team team = TR.getOne(team_id);
             Player player1 = new Player((String) player.get("student_number"),(String) player.get("first_name"),(String) player.get("last_name"),
             (String) player.get("email"), player.get("jersey") == null ? null : (String) player.get("jersey"),team);
             PR.save(player1);
+            for(String pos : playerPositions){
+                PR.insertNewPlayerPosition((String) player.get("student_number"),pos);
+            }
             resp = new ResponseError("Success",HttpStatus.OK.value());
         }catch(Exception e){
-            resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.ordinal());
+            resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }finally {
             return resp.toJson();
         }

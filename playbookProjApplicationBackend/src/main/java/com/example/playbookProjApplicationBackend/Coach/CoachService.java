@@ -1,6 +1,7 @@
 package com.example.playbookProjApplicationBackend.Coach;
 
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
+import com.example.playbookProjApplicationBackend.Position.PositionRepository;
 import com.example.playbookProjApplicationBackend.Team.Team;
 import com.example.playbookProjApplicationBackend.Team.TeamRepository;
 import org.json.simple.JSONArray;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
@@ -18,11 +20,13 @@ public class CoachService {
 
     private CoachRepository CR;
     private TeamRepository TR;
+    private PositionRepository PosR;
 
     @Autowired
-    public CoachService(CoachRepository CR, TeamRepository TR) {
+    public CoachService(CoachRepository CR, TeamRepository TR, PositionRepository PosR) {
         this.CR = CR;
         this.TR = TR;
+        this.PosR = PosR;
     }
 
     public String getAllCoachesInTeam(Long teamId){
@@ -48,7 +52,7 @@ public class CoachService {
     @Transactional
     public String addNewCoach(Map<String,Object> coachObj){
         ResponseError resp=null;
-        if(!coachObj.containsKey("email") || !coachObj.containsKey("first_name") || !coachObj.containsKey("last_name") || !coachObj.containsKey("team_id")){
+        if(!coachObj.containsKey("email") || !coachObj.containsKey("first_name") || !coachObj.containsKey("last_name") || !coachObj.containsKey("team_id") || !coachObj.containsKey("positions")){
             return new ResponseError("invalid request, missing fields", HttpStatus.BAD_REQUEST.value()).toJson();
         }
         Integer id = (Integer) coachObj.get("team_id");
@@ -60,12 +64,21 @@ public class CoachService {
         if(CR.getCoachByEmail(team_id,email) != null){
             return new ResponseError("Coach with email " + email+ " already exist for this team", HttpStatus.BAD_REQUEST.value()).toJson();
         }
+        ArrayList<String> coachPositions = (ArrayList<String>) coachObj.get("positions");
+        for(String pos : coachPositions){
+            if(!PosR.existsById(pos)){
+                return new ResponseError("pos " + pos + " does not exist", HttpStatus.BAD_REQUEST.value()).toJson();
+            }
+        }
         try{
             Team team = TR.getOne(team_id);
             String first = (String) coachObj.get("first_name");
             String last = (String) coachObj.get("last_name");
             Coach coach = new Coach(first,last,email,team);
             CR.save(coach);
+            for(String pos : coachPositions){
+                CR.insertNewCoachPosition(coach.getId(),pos);
+            }
             resp = new ResponseError("Success",HttpStatus.OK.value());
         }catch (Exception e){
             resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());

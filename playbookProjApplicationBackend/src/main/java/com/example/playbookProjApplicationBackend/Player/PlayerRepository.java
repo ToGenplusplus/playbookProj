@@ -1,6 +1,7 @@
 package com.example.playbookProjApplicationBackend.Player;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -16,4 +17,7 @@ public interface PlayerRepository extends JpaRepository<Player, String> {
     List<Player> getPlayersByTeamPosition(@Param("team_id")Long team_id, @Param("position_id") String position_id);
     @Query(value="SELECT * FROM players p WHERE p.team_id = :team_id AND p.email = :email", nativeQuery = true)
     Player getPlayerByEmail(@Param("team_id") Long team_id,@Param("email")String email);
+    @Modifying
+    @Query(value = "INSERT INTO player_positions(player_id,position_id)VALUES(:player_id,:pos)",nativeQuery = true)
+    void insertNewPlayerPosition(@Param("player_id") String id, @Param("pos") String pos);
 }
