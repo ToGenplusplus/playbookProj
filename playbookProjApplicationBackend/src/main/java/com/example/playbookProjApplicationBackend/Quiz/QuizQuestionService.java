@@ -96,24 +96,32 @@ public class QuizQuestionService {
     }
     @Transactional
     public String updateQuizQuestion(Long team_id, Long question_id, Map<String,Object> updates){
-        ResponseError resp = null;
         if(!doesTeamExist(team_id) || !QR.findById(question_id).isPresent()){
             return new ResponseError("invalid request", HttpStatus.BAD_REQUEST.value()).toJson();
         }
+        QuizQuestion quiz = QR.getOne(question_id);
+        String question;
+        if(updates.containsKey("question")){
+            String q = (String) updates.get("question");
+            if(QR.getQuestionsForTeamByName(team_id,q) != null && !quiz.getQuestionText().equals(q)){
+                System.out.println(QR.getQuestionsForTeamByName(team_id,q));
+                return new ResponseError("question " + q+ " already exists", HttpStatus.BAD_REQUEST.value()).toJson();
+            }
+            question = q;
+        }else{
+            question = quiz.getQuestionText();
+        }
         try{
-            QuizQuestion quiz = QR.getOne(question_id);
-            quiz.setQuestionText(updates.get("question") == null ? quiz.getQuestionText() : (String) updates.get("question"));
-            quiz.setQuestionType(updates.get("question_type") == null ? quiz.getQuestionType() : !doesPositionExist((String) updates.get("question_type")) ? quiz.getQuestionType() : (String) updates.get("question_type")) ;
-            quiz.setCorrectAnswer(updates.get("correct_answer") == null ? quiz.getCorrectAnswer() : (String) updates.get("correct_answer"));
-            quiz.setIncorrectAnswerOne(updates.get("wrong_answer1") == null ? quiz.getIncorrectAnswerOne() : (String) updates.get("wrong_answer1"));
-            quiz.setIncorrectAnswerTwo(updates.get("wrong_answer2") == null ? quiz.getIncorrectAnswerTwo() : (String) updates.get("wrong_answer2"));
-            quiz.setIncorrectAnswerThree(updates.get("wrong_answer3") == null ? quiz.getIncorrectAnswerThree() : (String) updates.get("wrong_answer3"));
-            quiz.setImageLocation(updates.get("image_location") == null ? quiz.getImageLocation() : (String) updates.get("image_location"));
-            resp = new ResponseError("Success", HttpStatus.OK.value());
+            quiz.setQuestionText(question);
+            quiz.setQuestionType(!updates.containsKey("question_type") ? quiz.getQuestionType() : !doesPositionExist((String) updates.get("question_type")) ? quiz.getQuestionType() : (String) updates.get("question_type")) ;
+            quiz.setCorrectAnswer(updates.containsKey("correct_answer") ?  (String) updates.get("correct_answer") : quiz.getCorrectAnswer());
+            quiz.setIncorrectAnswerOne(updates.containsKey("wrong_answer1") ? (String) updates.get("wrong_answer1") : quiz.getIncorrectAnswerOne());
+            quiz.setIncorrectAnswerTwo(updates.containsKey("wrong_answer2") ? (String) updates.get("wrong_answer2") : quiz.getIncorrectAnswerTwo());
+            quiz.setIncorrectAnswerThree(updates.containsKey("wrong_answer3") ? (String) updates.get("wrong_answer3") : quiz.getIncorrectAnswerThree());
+            quiz.setImageLocation(updates.containsKey("image_location") ?  (String) updates.get("image_location") : quiz.getImageLocation());
+            return new ResponseError("Success", HttpStatus.OK.value()).toJson();
         }catch (Exception e){
-            resp = new ResponseError(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
-        }finally {
-            return resp.toJson();
+            return new ResponseError(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
     }
     @Transactional
