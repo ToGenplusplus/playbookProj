@@ -65,18 +65,20 @@ public class OrganizationService {
         String name;
         String link;
         if ( orgObj.containsKey("name")){
-            if(OR.getOrganizationByName((String) orgObj.get("name")) != null && !((String) orgObj.get("name")).equals(organization.getName())){
+            String objname = (String) orgObj.get("name");
+            if(OR.getOrganizationByName(objname) != null && !(objname).equals(organization.getName())){
                 return new ResponseError("organization with name " + orgObj.get("name")+ " already exists", HttpStatus.BAD_REQUEST.value()).toJson();
             }
-            name = (String) orgObj.get("name");
+            name = objname;
         }else{
             name = organization.getName();
         }
         if ( orgObj.containsKey("link")){
-            if(OR.getOrganizationByName((String) orgObj.get("link")) != null && !((String) orgObj.get("link")).equals(organization.getOrganizationLink())){
+            String objlink = (String) orgObj.get("link");
+            if(OR.getOrganizationByOrgLink(objlink) != null && !(objlink).equals(organization.getOrganizationLink())){
                 return new ResponseError("organization with link " + orgObj.get("link")+ " already exists", HttpStatus.BAD_REQUEST.value()).toJson();
             }
-            link = (String) orgObj.get("link");
+            link = objlink;
         }else{
             link = organization.getOrganizationLink();
         }

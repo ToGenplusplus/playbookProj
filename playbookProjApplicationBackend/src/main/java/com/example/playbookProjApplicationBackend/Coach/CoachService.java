@@ -89,23 +89,30 @@ public class CoachService {
     }
     @Transactional
     public String updateCoach(Long coach_id,Map<String,Object> coachUpdates){
-        ResponseError resp=null;
         if(!doesCoachExist(coach_id)){
             return new ResponseError("Coach with id " + coach_id+ " does not exists", HttpStatus.BAD_REQUEST.value()).toJson();
         }
+        Coach coach = CR.getOne(coach_id);
+        String email;
+        if (coachUpdates.containsKey("email")){
+            String objemail = (String) coachUpdates.get("email");
+            if(CR.getCoachByEmail(coach.getTeam().getId(),objemail) != null && !coach.getEmail().equals(objemail)){
+                return new ResponseError("coach with with email " + objemail+ " already exists", HttpStatus.BAD_REQUEST.value()).toJson();
+            }
+            email = objemail;
+        }else{
+            email = coach.getEmail();
+        }
         try{
-            Coach coach = CR.getOne(coach_id);
-            coach.setFirstName(coachUpdates.get("first_name") == null? coach.getFirstName() : (String) coachUpdates.get("first_name"));
-            coach.setLastName(coachUpdates.get("last_name") == null? coach.getLastName() : (String) coachUpdates.get("last_name"));
-            coach.setEmail(coachUpdates.get("email") == null? coach.getEmail() : CR.getCoachByEmail(coach.getTeam().getId(),(String) coachUpdates.get("email")) == null ? (String) coachUpdates.get("email"): coach.getEmail());
+            coach.setFirstName(coachUpdates.containsKey("first_name") ? (String) coachUpdates.get("first_name") : coach.getFirstName());
+            coach.setLastName(coachUpdates.containsKey("last_name") ? (String) coachUpdates.get("last_name") : coach.getLastName());
+            coach.setEmail(email);
             if(coachUpdates.get("positions") != null){
                 updateCoachPositions(coach_id,(ArrayList<String>) coachUpdates.get("positions"));
             }
-            resp = new ResponseError("Success", HttpStatus.OK.value());
+            return new ResponseError("Success", HttpStatus.OK.value()).toJson();
         }catch (Exception e){
-            resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
-        }finally {
-            return resp.toJson();
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
     }
     @Transactional

@@ -96,12 +96,22 @@ public class PlayerService {
         }
         //get player object
         Player player = PR.getOne(player_id);
+        String email;
+        if(updates.containsKey("email")){
+            String objemail = (String) updates.get("email");
+            if(PR.getPlayerByEmail(player.getTeam().getId(),objemail) != null && !player.getEmail().equals(objemail)){
+                return new ResponseError("player with with email " + objemail+ " already exists", HttpStatus.BAD_REQUEST.value()).toJson();
+            }
+            email = objemail;
+        }else{
+            email = player.getEmail();
+        }
         try{
-            player.setFirstName(updates.get("first_name") == null ? player.getFirstName() : (String) updates.get("first_name"));
-            player.setLastName(updates.get("last_name") == null ? player.getLastName() : (String) updates.get("last_name"));
-            player.setEmail(updates.get("email") == null ? player.getEmail() : PR.getPlayerByEmail(player.getTeam().getId(), (String) updates.get("email") ) != null ? player.getEmail() : (String) updates.get("email"));
-            player.setJerseyNumber(updates.get("jersey") == null ? player.getJerseyNumber() : (String) updates.get("jersey"));
-            if (updates.get("positions") != null ){
+            player.setFirstName(updates.containsKey("first_name")  ?  (String) updates.get("first_name") : player.getFirstName());
+            player.setLastName(updates.containsKey("last_name")  ?  (String) updates.get("last_name") : player.getLastName());
+            player.setEmail(email);
+            player.setJerseyNumber(updates.containsKey("jersey")  ? (String) updates.get("jersey") : player.getJerseyNumber());
+            if (updates.containsKey("positions")){
                 updatePlayerPositions(player_id,(ArrayList<String>) updates.get("positions"));
             }
             resp = new ResponseError("Success", HttpStatus.OK.value());
