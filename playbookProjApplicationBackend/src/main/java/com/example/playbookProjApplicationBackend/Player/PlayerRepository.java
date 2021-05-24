@@ -20,4 +20,7 @@ public interface PlayerRepository extends JpaRepository<Player, String> {
     @Modifying
     @Query(value = "INSERT INTO player_positions(player_id,position_id)VALUES(:player_id,:pos)",nativeQuery = true)
     void insertNewPlayerPosition(@Param("player_id") String id, @Param("pos") String pos);
+    @Modifying
+    @Query(value = "DELETE FROM player_positions WHERE player_id = :player_id",nativeQuery = true)
+    void removePlayerPosition(@Param("player_id")String player_id);
 }

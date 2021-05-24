@@ -98,6 +98,9 @@ public class CoachService {
             coach.setFirstName(coachUpdates.get("first_name") == null? coach.getFirstName() : (String) coachUpdates.get("first_name"));
             coach.setLastName(coachUpdates.get("last_name") == null? coach.getLastName() : (String) coachUpdates.get("last_name"));
             coach.setEmail(coachUpdates.get("email") == null? coach.getEmail() : CR.getCoachByEmail(coach.getTeam().getId(),(String) coachUpdates.get("email")) == null ? (String) coachUpdates.get("email"): coach.getEmail());
+            if(coachUpdates.get("positions") != null){
+                updateCoachPositions(coach_id,(ArrayList<String>) coachUpdates.get("positions"));
+            }
             resp = new ResponseError("Success", HttpStatus.OK.value());
         }catch (Exception e){
             resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -118,6 +121,17 @@ public class CoachService {
             resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }finally {
             return resp.toJson();
+        }
+    }
+    private void updateCoachPositions(Long coach_id,ArrayList<String> positions){
+        if (positions.size() == 0){
+            return;
+        }
+        CR.removeCoachPosition(coach_id);
+        for (String position: positions){
+            if(PosR.existsById(position)){
+                CR.insertNewCoachPosition(coach_id,position);
+            }
         }
     }
 

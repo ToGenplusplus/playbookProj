@@ -18,4 +18,7 @@ public interface CoachRepository extends JpaRepository <Coach, Long>{
     @Modifying
     @Query(value = "INSERT INTO coach_positions(coach_id,position_id)VALUES(:coach_id,:pos)",nativeQuery = true)
     void insertNewCoachPosition(@Param("coach_id") Long id, @Param("pos") String pos);
+    @Modifying
+    @Query(value = "DELETE FROM coach_positions WHERE coach_id = :coach_id",nativeQuery = true)
+    void removeCoachPosition(@Param("coach_id")Long coach_id);
 }

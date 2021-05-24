@@ -101,6 +101,9 @@ public class PlayerService {
             player.setLastName(updates.get("last_name") == null ? player.getLastName() : (String) updates.get("last_name"));
             player.setEmail(updates.get("email") == null ? player.getEmail() : PR.getPlayerByEmail(player.getTeam().getId(), (String) updates.get("email") ) != null ? player.getEmail() : (String) updates.get("email"));
             player.setJerseyNumber(updates.get("jersey") == null ? player.getJerseyNumber() : (String) updates.get("jersey"));
+            if (updates.get("positions") != null ){
+                updatePlayerPositions(player_id,(ArrayList<String>) updates.get("positions"));
+            }
             resp = new ResponseError("Success", HttpStatus.OK.value());
         }catch (Exception e){
             resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -121,6 +124,17 @@ public class PlayerService {
             resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }finally {
             return resp.toJson();
+        }
+    }
+    private void updatePlayerPositions(String player_id,ArrayList<String> positions){
+        if (positions.size() == 0){
+            return;
+        }
+        PR.removePlayerPosition(player_id);
+        for (String position: positions){
+            if(PosR.existsById(position)){
+                PR.insertNewPlayerPosition(player_id,position);
+            }
         }
     }
 
