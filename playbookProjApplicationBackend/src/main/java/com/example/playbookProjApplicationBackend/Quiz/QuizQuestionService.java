@@ -149,9 +149,6 @@ public class QuizQuestionService {
         }
     }
 
-/*
-    public String deleteAllQuestionsForPosition(Long team_id, Long position_id){}
-    */
 
     private String processResponse(Long team_id, String arg,String methodToCall, boolean argIsPlayer){
         ResponseError resp = null;
