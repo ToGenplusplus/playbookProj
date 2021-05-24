@@ -74,6 +74,24 @@ public class CoachService {
         }
 
     }
+    @Transactional
+    public String updateCoach(Long coach_id,Map<String,Object> coachUpdates){
+        ResponseError resp=null;
+        if(!doesCoachExist(coach_id)){
+            return new ResponseError("Coach with id " + coach_id+ " does not exists", HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        try{
+            Coach coach = CR.getOne(coach_id);
+            coach.setFirstName(coachUpdates.get("first_name") == null? coach.getFirstName() : (String) coachUpdates.get("first_name"));
+            coach.setLastName(coachUpdates.get("last_name") == null? coach.getLastName() : (String) coachUpdates.get("last_name"));
+            coach.setEmail(coachUpdates.get("email") == null? coach.getEmail() : CR.getCoachByEmail(coach.getTeam().getId(),(String) coachUpdates.get("email")) == null ? (String) coachUpdates.get("email"): coach.getEmail());
+            resp = new ResponseError("Success", HttpStatus.OK.value());
+        }catch (Exception e){
+            resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }finally {
+            return resp.toJson();
+        }
+    }
 
     public JSONObject jsonify(Collection<Coach> coaches){
         JSONObject coachObject = new JSONObject();

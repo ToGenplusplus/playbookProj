@@ -92,6 +92,28 @@ public class QuizQuestionService {
             return resp.toJson();
         }
     }
+    @Transactional
+    public String updateQuizQuestion(Long team_id, Long question_id, Map<String,Object> updates){
+        ResponseError resp = null;
+        if(!doesTeamExist(team_id) || !QR.findById(question_id).isPresent()){
+            return new ResponseError("invalid request", HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        try{
+            QuizQuestion quiz = QR.getOne(question_id);
+            quiz.setQuestionText(updates.get("question") == null ? quiz.getQuestionText() : (String) updates.get("question"));
+            quiz.setQuestionType(updates.get("question_type") == null ? quiz.getQuestionType() : !doesPositionExist((String) updates.get("question_type")) ? quiz.getQuestionType() : (String) updates.get("question_type")) ;
+            quiz.setCorrectAnswer(updates.get("correct_answer") == null ? quiz.getCorrectAnswer() : (String) updates.get("correct_answer"));
+            quiz.setIncorrectAnswerOne(updates.get("wrong_answer1") == null ? quiz.getIncorrectAnswerOne() : (String) updates.get("wrong_answer1"));
+            quiz.setIncorrectAnswerTwo(updates.get("wrong_answer2") == null ? quiz.getIncorrectAnswerTwo() : (String) updates.get("wrong_answer2"));
+            quiz.setIncorrectAnswerThree(updates.get("wrong_answer3") == null ? quiz.getIncorrectAnswerThree() : (String) updates.get("wrong_answer3"));
+            quiz.setImageLocation(updates.get("image_location") == null ? quiz.getImageLocation() : (String) updates.get("image_location"));
+            resp = new ResponseError("Success", HttpStatus.OK.value());
+        }catch (Exception e){
+            resp = new ResponseError(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }finally {
+            return resp.toJson();
+        }
+    }
     //cascade delete not working need to fix.
     @Transactional
     public String deleteAQuizQuestion(Long team_id, Long question_id){
@@ -124,28 +146,7 @@ public class QuizQuestionService {
             return resp.toJson();
         }
     }
-    @Transactional
-    public String updateQuizQuestion(Long team_id, Long question_id, Map<String,Object> updates){
-        ResponseError resp = null;
-        if(!doesTeamExist(team_id) || !QR.findById(question_id).isPresent()){
-            return new ResponseError("invalid request", HttpStatus.BAD_REQUEST.value()).toJson();
-        }
-        try{
-            QuizQuestion quiz = QR.getOne(question_id);
-            quiz.setQuestionText(updates.get("question") == null ? quiz.getQuestionText() : (String) updates.get("question"));
-            quiz.setQuestionType(updates.get("question_type") == null ? quiz.getQuestionType() : !doesPositionExist((String) updates.get("question_type")) ? quiz.getQuestionType() : (String) updates.get("question_type")) ;
-            quiz.setCorrectAnswer(updates.get("correct_answer") == null ? quiz.getCorrectAnswer() : (String) updates.get("correct_answer"));
-            quiz.setIncorrectAnswerOne(updates.get("wrong_answer1") == null ? quiz.getIncorrectAnswerOne() : (String) updates.get("wrong_answer1"));
-            quiz.setIncorrectAnswerTwo(updates.get("wrong_answer2") == null ? quiz.getIncorrectAnswerTwo() : (String) updates.get("wrong_answer2"));
-            quiz.setIncorrectAnswerThree(updates.get("wrong_answer3") == null ? quiz.getIncorrectAnswerThree() : (String) updates.get("wrong_answer3"));
-            quiz.setImageLocation(updates.get("image_location") == null ? quiz.getImageLocation() : (String) updates.get("image_location"));
-            resp = new ResponseError("Success", HttpStatus.OK.value());
-        }catch (Exception e){
-            resp = new ResponseError(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
-        }finally {
-            return resp.toJson();
-        }
-    }
+
 /*
     public String deleteAQuizQuestion(Long team_id, Long question_id){}
     public String deleteAllQuestionsForPosition(Long team_id, Long position_id){}
