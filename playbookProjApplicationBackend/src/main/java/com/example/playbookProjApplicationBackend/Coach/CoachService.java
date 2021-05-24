@@ -105,6 +105,21 @@ public class CoachService {
             return resp.toJson();
         }
     }
+    @Transactional
+    public String deleteCoach(Long coach_id){
+        ResponseError resp=null;
+        if(!doesCoachExist(coach_id)){
+            return new ResponseError("Coach with id " + coach_id+ " does not exists", HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        try{
+            CR.deleteById(coach_id);
+            resp = new ResponseError("Success", HttpStatus.OK.value());
+        }catch (Exception e){
+            resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }finally {
+            return resp.toJson();
+        }
+    }
 
     public JSONObject jsonify(Collection<Coach> coaches){
         JSONObject coachObject = new JSONObject();

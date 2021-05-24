@@ -32,5 +32,9 @@ public class CoachController {
     public String updateCoach(@PathVariable("coach_id") Long coach_id,@RequestBody Map<String,Object> coachObj){
         return CS.updateCoach(coach_id,coachObj);
     }
+    @DeleteMapping(path = "/delete/{coach_id}")
+    public String deleteCoach(@PathVariable("coach_id") Long id){
+        return CS.deleteCoach(id);
+    }
 
 }
