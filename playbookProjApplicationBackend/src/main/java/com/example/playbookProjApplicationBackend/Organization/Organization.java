@@ -104,7 +104,7 @@ public class Organization {
     }
 
     public void setCountry(String country) {
-        country = country;
+        this.country = country;
     }
 
     public String getState() {

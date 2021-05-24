@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Map;
@@ -53,6 +54,42 @@ public class OrganizationService {
             resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }finally {
             return resp.toJson();
+        }
+    }
+    @Transactional
+    public String updateOrganization(Long org_id, Map<String,Object> orgObj){
+        if(!OR.findById(org_id).isPresent()){
+            return new ResponseError("organization with id " + org_id + " does not exist", HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        Organization organization = OR.getOne(org_id);
+        String name;
+        String link;
+        if ( orgObj.containsKey("name")){
+            if(OR.getOrganizationByName((String) orgObj.get("name")) != null && !((String) orgObj.get("name")).equals(organization.getName())){
+                return new ResponseError("organization with name " + orgObj.get("name")+ " already exists", HttpStatus.BAD_REQUEST.value()).toJson();
+            }
+            name = (String) orgObj.get("name");
+        }else{
+            name = organization.getName();
+        }
+        if ( orgObj.containsKey("link")){
+            if(OR.getOrganizationByName((String) orgObj.get("link")) != null && !((String) orgObj.get("link")).equals(organization.getOrganizationLink())){
+                return new ResponseError("organization with link " + orgObj.get("link")+ " already exists", HttpStatus.BAD_REQUEST.value()).toJson();
+            }
+            link = (String) orgObj.get("link");
+        }else{
+            link = organization.getOrganizationLink();
+        }
+        try{
+           organization.setCountry(orgObj.containsKey("country") ? (String) orgObj.get("country") : organization.getCountry());
+           organization.setState(orgObj.containsKey("state") ? (String) orgObj.get("state") : organization.getState());
+           organization.setOrganizationType(orgObj.containsKey("org_type")?  (String) orgObj.get("org_type") : organization.getOrganizationType());
+           organization.setLogoImageLocation(orgObj.containsKey("img") ? (String) orgObj.get("img") : organization.getLogoImageLocation());
+           organization.setName(name);
+           organization.setOrganizationLink(link);
+           return new ResponseError("Success",HttpStatus.OK.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
     }
 
