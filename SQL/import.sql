@@ -29,6 +29,7 @@ INSERT INTO positions (position) VALUES
 ('K'),
 ('P'),
 ('ST');
+('ATH');
 ('GEN');
 
 INSERT INTO coach_positions (position_id,coach_id) VALUES 
