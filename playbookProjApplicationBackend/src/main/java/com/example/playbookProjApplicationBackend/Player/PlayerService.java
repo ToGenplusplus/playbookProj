@@ -93,6 +93,21 @@ public class PlayerService {
             return resp.toJson();
         }
     }
+    @Transactional
+    public String deletePlayer(String player_id){
+        ResponseError resp =null;
+        if(!doesPlayerExist(player_id)){
+            return new ResponseError("player with id " + player_id+ " does not exists", HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        try{
+            PR.deleteById(player_id);
+            resp = new ResponseError("Success", HttpStatus.OK.value());
+        }catch (Exception e){
+            resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }finally {
+            return resp.toJson();
+        }
+    }
 
     private JSONObject jsonify(Collection<Player> players){
         JSONObject p = new JSONObject();

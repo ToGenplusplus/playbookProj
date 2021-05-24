@@ -33,4 +33,8 @@ public class PlayerController {
     public String updatePlayer(@PathVariable("player_id") String player_id,@RequestBody Map<String, Object> updates){
         return PS.updatePlayer(player_id, updates);
     }
+    @DeleteMapping(path = "/delete/{player_id}")
+    public String deletePlayer(@PathVariable("player_id") String player_id){
+        return PS.deletePlayer(player_id);
+    }
 }
