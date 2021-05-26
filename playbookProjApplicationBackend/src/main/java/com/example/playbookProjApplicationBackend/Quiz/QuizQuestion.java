@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Entity(name = "question")
 @Table(name = "quiz_questions", uniqueConstraints = {
-        @UniqueConstraint(name = "unique_question_name_team", columnNames = {"question","team_id"})
+        @UniqueConstraint(name = "unique_question_name_quiz", columnNames = {"question","quiz_id"})
 })
 public class QuizQuestion {
 

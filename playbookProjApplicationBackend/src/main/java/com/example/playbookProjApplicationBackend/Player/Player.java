@@ -1,6 +1,7 @@
 package com.example.playbookProjApplicationBackend.Player;
 
 import com.example.playbookProjApplicationBackend.Position.Position;
+import com.example.playbookProjApplicationBackend.Quiz.Quiz;
 import com.example.playbookProjApplicationBackend.Team.Team;
 
 import javax.persistence.*;
@@ -42,6 +43,16 @@ public class Player {
                             nullable = false, updatable = false)})
     private Set<Position> positions = new HashSet<>();
 
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "player_quizzes_taken",
+            joinColumns = {
+                    @JoinColumn(name = "player_id", referencedColumnName = "student_number",
+                            nullable = false, updatable = false)},
+            inverseJoinColumns = {
+                    @JoinColumn(name = "quiz_id", referencedColumnName = "quiz_id",
+                            nullable = false, updatable = false)})
+    private Set<Quiz> quizzesTaken = new HashSet<>();
+
     @OneToMany(mappedBy = "player", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
     private Set<PlayerAnswer> answers;
@@ -79,10 +90,15 @@ public class Player {
         player.put("jersey_number",jerseyNumber);
         player.put("team_id",team.getId());
         JSONArray positionsArray = new JSONArray();
+        JSONArray quizesArray = new JSONArray();
         for(Position position : positions){
             positionsArray.add(position.getPosition());
         }
+        for(Quiz quiz: quizzesTaken){
+            quizesArray.add(quiz.getId());
+        }
         player.put("positions",positionsArray);
+        player.put("quizzes_id",quizesArray);
 
         return player;
     }

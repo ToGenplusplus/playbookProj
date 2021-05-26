@@ -3,7 +3,7 @@ package com.example.playbookProjApplicationBackend.Team;
 import com.example.playbookProjApplicationBackend.Coach.Coach;
 import com.example.playbookProjApplicationBackend.Organization.Organization;
 import com.example.playbookProjApplicationBackend.Player.Player;
-import com.example.playbookProjApplicationBackend.Quiz.QuizQuestion;
+import com.example.playbookProjApplicationBackend.Quiz.Quiz;
 import org.json.simple.JSONObject;
 
 import javax.persistence.*;
@@ -31,7 +31,7 @@ public class Team {
     private Set<Player> players;
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
-    private Set<QuizQuestion> questions;
+    private Set<Quiz> quizzes;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
@@ -74,14 +74,6 @@ public class Team {
 
     public void setPlayers(Set<Player> players) {
         this.players = players;
-    }
-
-    public Set<QuizQuestion> getQuestions() {
-        return questions;
-    }
-
-    public void setQuestions(Set<QuizQuestion> questions) {
-        this.questions = questions;
     }
 
     public Organization getOrganization() {

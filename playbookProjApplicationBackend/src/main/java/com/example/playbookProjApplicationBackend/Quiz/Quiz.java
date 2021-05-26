@@ -1,6 +1,7 @@
 package com.example.playbookProjApplicationBackend.Quiz;
 
 import com.example.playbookProjApplicationBackend.Coach.Coach;
+import com.example.playbookProjApplicationBackend.Player.Player;
 import com.example.playbookProjApplicationBackend.Position.Position;
 import com.example.playbookProjApplicationBackend.Team.Team;
 import org.json.simple.JSONArray;
@@ -8,6 +9,7 @@ import org.json.simple.JSONObject;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -18,6 +20,7 @@ public class Quiz {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "quiz_id")
     private long id;
 
     @Column(name = "name", nullable = false)
@@ -31,25 +34,27 @@ public class Quiz {
     @Column(name = "is_Activated", nullable = false)
     private boolean isActivated;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @Column(name = "position_id",nullable = false)
+    @JoinColumn(name = "position_id", nullable = false)
     private Position position;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @Column(name = "coach_id", nullable = false)
-    private Coach createdBy;
+    @JoinColumn(name = "coach_id", nullable = false)
+    private Coach coach;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @Column(name = "team_id", nullable = false)
+    @JoinColumn(name = "team_id", nullable = false)
     private Team team;
     @OneToMany(mappedBy = "quiz",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private Set<QuizQuestion> questions;
+    @ManyToMany(mappedBy = "quizzesTaken", fetch = FetchType.LAZY)
+    private Set<Player> players = new HashSet<>();
 
-    public Quiz(String name, String description, LocalDate dateCreated, LocalDate lastModified, boolean isActivated, Position position, Coach createdBy, Team team) {
+    public Quiz(String name, String description, LocalDate dateCreated, LocalDate lastModified, boolean isActivated, Position position, Coach coach, Team team) {
         this.name = name;
         this.description = description;
         this.dateCreated = dateCreated;
         this.lastModified = lastModified;
         this.isActivated = isActivated;
         this.position = position;
-        this.createdBy = createdBy;
+        this.coach = coach;
         this.team = team;
     }
 
@@ -63,7 +68,7 @@ public class Quiz {
                 ", lastModified=" + lastModified +
                 ", isActivated=" + isActivated +
                 ", position=" + position +
-                ", createdBy=" + createdBy +
+                ", createdBy=" + coach +
                 ", team=" + team +
                 '}';
     }
@@ -77,7 +82,7 @@ public class Quiz {
         quiz.put("last_modified",lastModified);
         quiz.put("is_activated",isActivated);
         quiz.put("position",position);
-        quiz.put("coach_id",createdBy.getId());
+        quiz.put("coach_id",coach.getId());
         quiz.put("team_id",team.getId());
         for (QuizQuestion question: this.questions){
             questions.add(question.toJSONObj());
@@ -138,12 +143,12 @@ public class Quiz {
         this.position = position;
     }
 
-    public Coach getCreatedBy() {
-        return createdBy;
+    public Coach getCoach() {
+        return coach;
     }
 
-    public void setCreatedBy(Coach createdBy) {
-        this.createdBy = createdBy;
+    public void setCoach(Coach coach) {
+        this.coach = coach;
     }
 
     public Team getTeam() {
@@ -152,5 +157,21 @@ public class Quiz {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public Set<QuizQuestion> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(Set<QuizQuestion> questions) {
+        this.questions = questions;
+    }
+
+    public Set<Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(Set<Player> players) {
+        this.players = players;
     }
 }

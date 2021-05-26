@@ -26,7 +26,7 @@ public class Position {
     @ManyToMany(mappedBy = "positions", fetch = FetchType.LAZY)
     private Set<Coach> coaches = new HashSet<>();
 
-    @ManyToMany(mappedBy = "positions", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "position", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Quiz> quizzes = new HashSet<>();
 
     protected Position() {

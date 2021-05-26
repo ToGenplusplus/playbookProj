@@ -1,6 +1,7 @@
 package com.example.playbookProjApplicationBackend.Coach;
 
 import com.example.playbookProjApplicationBackend.Position.Position;
+import com.example.playbookProjApplicationBackend.Quiz.Quiz;
 import com.example.playbookProjApplicationBackend.Team.Team;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -28,6 +29,9 @@ public class Coach {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
+    @OneToMany(mappedBy = "coach", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private Set<Quiz> quizzes;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = "coach_positions",
@@ -57,10 +61,15 @@ public class Coach {
         coach.put("email",email);
         coach.put("team_id",team.getId());
         JSONArray positionsArray = new JSONArray();
+        JSONArray quizesCreated = new JSONArray();
         for(Position position : positions){
             positionsArray.add(position.getPosition());
         }
+        for(Quiz quiz: quizzes){
+            quizesCreated.add(quiz.getId());
+        }
         coach.put("positions",positionsArray);
+        coach.put("quizzes_id",quizesCreated);
 
         return coach;
     }
@@ -103,6 +112,22 @@ public class Coach {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public Set<Quiz> getQuizzes() {
+        return quizzes;
+    }
+
+    public void setQuizzes(Set<Quiz> quizzes) {
+        this.quizzes = quizzes;
+    }
+
+    public Set<Position> getPositions() {
+        return positions;
+    }
+
+    public void setPositions(Set<Position> positions) {
+        this.positions = positions;
     }
 
     @Override

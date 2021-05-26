@@ -20,14 +20,14 @@ import java.util.Map;
 public class QuizQuestionService {
 
     private QuizQuestionRepository QR;
-    private TeamRepository TR;
+    private QuizRepository qR;
     private PlayerRepository PR;
     private PositionRepository PosR;
 
     @Autowired
-    public QuizQuestionService(QuizQuestionRepository QR, TeamRepository TR, PlayerRepository PR,PositionRepository PosR) {
+    public QuizQuestionService(QuizQuestionRepository QR, QuizRepository qR, PlayerRepository PR,PositionRepository PosR) {
         this.QR = QR;
-        this.TR = TR;
+        this.qR = qR;
         this.PR = PR;
         this.PosR = PosR;
     }
@@ -63,21 +63,21 @@ public class QuizQuestionService {
     @Transactional
     public String insertNewQuestion(Map<String,Object> newQuestion){
         ResponseError resp = null;
-        if(!newQuestion.containsKey("question") || !newQuestion.containsKey("question_type") ||!newQuestion.containsKey("correct_answer")
-        || !newQuestion.containsKey("wrong_answer1")|| !newQuestion.containsKey("image_location")|| !newQuestion.containsKey("is_active")|| !newQuestion.containsKey("team_id")) {
+        if(!newQuestion.containsKey("question") ||!newQuestion.containsKey("correct_answer")
+        || !newQuestion.containsKey("wrong_answer1")|| !newQuestion.containsKey("image_location")|| !newQuestion.containsKey("is_active")|| !newQuestion.containsKey("quiz_id")) {
             return new ResponseError("invalid quiz question", HttpStatus.BAD_REQUEST.value()).toJson();
         }
-        Integer id =  (Integer) newQuestion.get("team_id");
-        long team_id = id;
-        if(!doesTeamExist(team_id)){
-            return new ResponseError("invalid request team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+        Integer id =  (Integer) newQuestion.get("quiz_id");
+        long quiz_id = id;
+        if(!doesQuizExist(quiz_id)){
+            return new ResponseError("invalid request team with id " + quiz_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
         }
         String type = (String) newQuestion.get("question_type");
         if(!doesPositionExist(type)){
             return new ResponseError("invalid request question type " + type + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
         }
         try{
-            Team team = TR.getOne(team_id);
+            Quiz quiz = qR.getOne(quiz_id);
             String question = (String) newQuestion.get("question");
             String correct = (String) newQuestion.get("correct_answer");
             String wrongone = (String) newQuestion.get("wrong_answer1");
@@ -85,7 +85,7 @@ public class QuizQuestionService {
             String wrongthree = (String)  newQuestion.get("wrong_answer3");
             String img = (String) newQuestion.get("image_location");
             Boolean is_active = (Boolean) newQuestion.get("is_active");
-            QuizQuestion quizquestion = new QuizQuestion(img,type,question,correct,wrongone,wrongtwo,wrongthree,is_active,team);
+            QuizQuestion quizquestion = new QuizQuestion(img,question,correct,wrongone,wrongtwo,wrongthree,is_active,quiz);
             QR.save(quizquestion);
             resp = new ResponseError("Success", HttpStatus.OK.value());
         }catch (Exception e){
@@ -96,7 +96,7 @@ public class QuizQuestionService {
     }
     @Transactional
     public String updateQuizQuestion(Long team_id, Long question_id, Map<String,Object> updates){
-        if(!doesTeamExist(team_id) || !QR.findById(question_id).isPresent()){
+        if(!doesQuizExist(team_id) || !QR.findById(question_id).isPresent()){
             return new ResponseError("invalid request", HttpStatus.BAD_REQUEST.value()).toJson();
         }
         QuizQuestion quiz = QR.getOne(question_id);
@@ -143,7 +143,7 @@ public class QuizQuestionService {
     @Transactional
     public String deactivateQuizQuestion(Long team_id, Long question_id){
         ResponseError resp = null;
-        if(!doesTeamExist(team_id) || !QR.findById(question_id).isPresent()){
+        if(!doesQuizExist(team_id) || !QR.findById(question_id).isPresent()){
             return new ResponseError("invalid request", HttpStatus.BAD_REQUEST.value()).toJson();
         }
         try{
@@ -157,7 +157,7 @@ public class QuizQuestionService {
     }
 
 
-    private String processResponse(Long team_id, String arg,String methodToCall, boolean argIsPlayer){
+    private String processResponse(Long quiz_id, String arg,String methodToCall, boolean argIsPlayer){
         ResponseError resp = null;
         boolean exists;
         String errMessage;
@@ -170,12 +170,12 @@ public class QuizQuestionService {
             errMessage = "";
         }
         try{
-            if(!doesTeamExist(team_id)){
-                resp = new ResponseError("Team with id: " +String.valueOf(team_id) + " does not exist",HttpStatus.BAD_REQUEST.value());
+            if(!doesQuizExist(quiz_id)){
+                resp = new ResponseError("Quiz with id: " +String.valueOf(quiz_id) + " does not exist",HttpStatus.BAD_REQUEST.value());
             }else if(!exists){
                 resp = new ResponseError(errMessage,HttpStatus.BAD_REQUEST.value());
             }else{
-                resp = callMethod(team_id,arg,methodToCall);
+                resp = callMethod(quiz_id,arg,methodToCall);
             }
         }catch (Exception e){
             resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -218,8 +218,8 @@ public class QuizQuestionService {
         return resp;
     }
 
-    private boolean doesTeamExist(Long id){
-        return TR.findById(id).isPresent();
+    private boolean doesQuizExist(Long id){
+        return qR.findById(id).isPresent();
     }
 
     private boolean doesPlayerExist(String player_id){
