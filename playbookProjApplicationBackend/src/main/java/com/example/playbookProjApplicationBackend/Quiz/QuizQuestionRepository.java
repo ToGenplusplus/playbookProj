@@ -12,13 +12,8 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion,Long>
     @Query(value = "SELECT * FROM quiz_questions qq WHERE qq.team_id = :team_id", nativeQuery = true)
     List<QuizQuestion> getAllQuestionsForTeam(@Param("team_id")Long id);
 
-    @Query(value = "SELECT * FROM quiz_questions qq WHERE qq.team_id = :team_id ORDER BY random()", nativeQuery = true)
-    List<QuizQuestion> getAllQuestionsForTeamRandom(@Param("team_id")Long id);
     @Query(value = "SELECT * FROM quiz_questions qq WHERE qq.team_id = :team_id AND  qq.question = :question", nativeQuery = true)
     QuizQuestion getQuestionsForTeamByName(@Param("team_id")Long id, @Param("question")String question);
-
-    @Query(value = "SELECT * FROM quiz_questions qq WHERE qq.team_id = :team_id AND qq.question_type = :position", nativeQuery = true)
-    List<QuizQuestion> getAllQuestionsForTeamByPosition(@Param("team_id")Long id, @Param("position")String position);
 
     @Query(value = "SELECT * FROM quiz_questions qq WHERE qq.team_id = :team_id AND qq.question_type = :position ORDER BY random()", nativeQuery = true)
     List<QuizQuestion> getAllQuestionsForTeamByPositionRandom(@Param("team_id")Long id, @Param("position")String position);
@@ -28,9 +23,6 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion,Long>
 
     @Query(value = "SELECT * FROM quiz_questions qq WHERE qq.team_id = :team_id AND qq.id IN (SELECT pa.question_id FROM player_answers pa WHERE pa.player_id = :player_id)", nativeQuery = true)
     List<QuizQuestion> getAllAnsweredQuestionsForTeamByPlayer(@Param("team_id")Long id, @Param("player_id")String player_id);
-
-    @Query(value = "SELECT COUNT(*) FROM quiz_questions qq WHERE qq.team_id = :team_id AND qq.id IN (SELECT pa.question_id FROM player_answers pa) AND qq.question_type = :type", nativeQuery = true)
-    Integer getCountAnsweredQuestionsForTeamByCategory(@Param("team_id")Long id, @Param("type")String position);
 
     @Modifying
     @Query(value = "UPDATE quiz_questions SET is_active = NOT is_active WHERE id = :question_id AND team_id = :team_id", nativeQuery = true)

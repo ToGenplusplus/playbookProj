@@ -35,33 +35,24 @@ public class QuizQuestionService {
     public String getAllQuizQuestionsInDatabase(){
         return new ResponseError(jsonify(QR.findAll()),HttpStatus.OK.value()).toJson();
     }
-    public String getAllQuizQuestionsForTeam(Long team_id){
-        return processResponse(team_id,null,"getAllQuizQuestionsForTeam",false);
+    public String getAllQuizQuestionsForQuiz(Long team_id,Long quiz_id){
+        return processResponse(new Object[]{team_id,quiz_id,"getAllQuizQuestionsForQuiz"});
     }
-    public String getAllQuestionsForTeamRandom(Long team_id){
-        return processResponse(team_id,null,"getAllQuestionsForTeamRandom",false);
+    public String getAllQuestionsForQuizRandom(Long team_id,Long quiz_id){
+        return processResponse(new Object[]{team_id,quiz_id,"getAllQuestionsForQuizRandom"});
     }
-    public String getAllQuestionsForTeamByPosition(Long team_id, String position){
-        return processResponse(team_id,position,"getAllQuestionsForTeamByPosition",false);
+    public String getAllAnsweredQuestionsForQuiz(Long team_id,Long quiz_id){
+        return processResponse(new Object[]{team_id,quiz_id,"getAllAnsweredQuestionsForQuiz"});
     }
-    public String getAllQuestionsForTeamByPositionRandom(Long team_id, String position){
-        return processResponse(team_id,position,"getAllQuestionsForTeamByPositionRandom",false);
+    public String getCountAllAnsweredQuestionsForQuiz(Long team_id,Long quiz_id){
+        return processResponse(new Object[]{team_id,quiz_id,"getCountAllAnsweredQuestionsForQuiz"});
     }
-    public String getAllAnsweredQuestionsForTeam(Long team_id){
-        return processResponse(team_id,null,"getAllAnsweredQuestionsForTeam",false);
-    }
-    public String getCountAllAnsweredQuestionsForTeam(Long team_id){
-        return processResponse(team_id,null,"getCountAllAnsweredQuestionsForTeam",false);
-    }
-    public String getAllAnsweredQuestionsForTeamByPlayer(Long team_id, String player_id){
-        return processResponse(team_id,player_id,"getAllAnsweredQuestionsForTeamByPlayer",true);
-    }
-    public String getCountAnsweredQuestionsForTeamByCategory(Long team_id, String category){
-        return processResponse(team_id,category,"getCountAnsweredQuestionsForTeamByCategory",false);
+    public String getAllAnsweredQuestionsForQuizByPlayer(Long team_id,Long quiz_id, String player_id){
+        return processResponse(new Object[]{team_id,quiz_id,player_id,"getAllAnsweredQuestionsForQuizByPlayer"});
     }
 
     @Transactional
-    public String insertNewQuestion(Map<String,Object> newQuestion){
+    public String insertNewQuizQuestion(Map<String,Object> newQuestion){
         ResponseError resp = null;
         if(!newQuestion.containsKey("question") ||!newQuestion.containsKey("correct_answer")
         || !newQuestion.containsKey("wrong_answer1")|| !newQuestion.containsKey("image_location")|| !newQuestion.containsKey("is_active")|| !newQuestion.containsKey("quiz_id")) {
@@ -71,10 +62,6 @@ public class QuizQuestionService {
         long quiz_id = id;
         if(!doesQuizExist(quiz_id)){
             return new ResponseError("invalid request team with id " + quiz_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
-        }
-        String type = (String) newQuestion.get("question_type");
-        if(!doesPositionExist(type)){
-            return new ResponseError("invalid request question type " + type + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
         }
         try{
             Quiz quiz = qR.getOne(quiz_id);
@@ -157,7 +144,14 @@ public class QuizQuestionService {
     }
 
 
-    private String processResponse(Long quiz_id, String arg,String methodToCall, boolean argIsPlayer){
+    /**
+     *
+     * @param args args can either be:
+     *              [team_id,question_id,methodtocall] or [team_id,question_id,player_id,methodtocall]
+     * @return a jsonString representing response error
+     */
+    private String processResponse(Object [] args){
+        /*
         ResponseError resp = null;
         boolean exists;
         String errMessage;
@@ -182,35 +176,28 @@ public class QuizQuestionService {
         }finally {
             return resp.toJson();
         }
+        */
+         return "";
     }
 
     private ResponseError callMethod(Long team_id, String arg, String methodToCall){
         ResponseError resp;
         switch (methodToCall) {
-            case "getAllQuizQuestionsForTeam":
+            case "getAllQuizQuestionsForQuiz":
                 resp = new ResponseError(jsonify(QR.getAllQuestionsForTeam(team_id)),HttpStatus.OK.value());
                 break;
-            case "getAllQuestionsForTeamRandom":
-                resp = new ResponseError(jsonify(QR.getAllQuestionsForTeamRandom(team_id)),HttpStatus.OK.value());
-                break;
-            case "getAllQuestionsForTeamByPosition":
-                resp = new ResponseError(jsonify(QR.getAllQuestionsForTeamByPosition(team_id,arg)),HttpStatus.OK.value());
-                break;
-            case "getAllQuestionsForTeamByPositionRandom":
+            case "getAllQuestionsForQuizRandom":
                 resp = new ResponseError(jsonify(QR.getAllQuestionsForTeamByPositionRandom(team_id,arg)),HttpStatus.OK.value());
                 break;
-            case "getAllAnsweredQuestionsForTeam":
+            case "getAllAnsweredQuestionsForQuiz":
                 resp = new ResponseError(jsonify(QR.getAllAnsweredQuestionsForTeam(team_id)),HttpStatus.OK.value());
                 break;
-            case "getCountAllAnsweredQuestionsForTeam":
+            case "getCountAllAnsweredQuestionsForQuiz":
                 int count = QR.getAllAnsweredQuestionsForTeam(team_id).size();
                 resp = new ResponseError(count,HttpStatus.OK.value());
                 break;
-            case "getAllAnsweredQuestionsForTeamByPlayer":
+            case "getAllAnsweredQuestionsForQuizByPlayer":
                 resp = new ResponseError(jsonify(QR.getAllAnsweredQuestionsForTeamByPlayer(team_id,arg)),HttpStatus.OK.value());
-                break;
-            case "getCountAnsweredQuestionsForTeamByCategory":
-                resp = new ResponseError(QR.getCountAnsweredQuestionsForTeamByCategory(team_id,arg),HttpStatus.OK.value());
                 break;
             default:
                 resp = new ResponseError("Invalid request",HttpStatus.BAD_REQUEST.value());

@@ -18,41 +18,30 @@ public class QuizQuestionController {
         return QQS.getAllQuizQuestionsInDatabase();
     }
 
-    @GetMapping(path = "/all/{team_id}")
-    public String getAllQuizQuestionsForTeam(@PathVariable("team_id")Long id){
-        return QQS.getAllQuizQuestionsForTeam(id);
+    @GetMapping(path = "/all/{team_id}/{quiz_id}")
+    public String getAllQuizQuestionsForQuiz(@PathVariable("team_id")Long id, @PathVariable("quiz_id")Long quiz_id){
+        return QQS.getAllQuizQuestionsForQuiz(id,quiz_id);
     }
-    @GetMapping(path = "/all/{team_id}/rand")
-    public String getAllQuestionsForTeamRandom(@PathVariable("team_id")Long id){
-        return QQS.getAllQuestionsForTeamRandom(id);
+    @GetMapping(path = "/all/{team_id}/{quiz_id}/rand")
+    public String getAllQuestionsForQuizRandom(@PathVariable("team_id")Long id, @PathVariable("quiz_id")Long quiz_id){
+        return QQS.getAllQuestionsForQuizRandom(id,quiz_id);
     }
-    @GetMapping(path = "/all/{team_id}/{position_id}")
-    public String getAllQuestionsForTeamByPosition(@PathVariable("team_id")Long id,@PathVariable("position_id") String position) {
-        return QQS.getAllQuestionsForTeamByPosition(id, position);
+
+    @GetMapping(path = "/all/answered/{team_id}/{quiz_id}")
+    public String getAllAnsweredQuestionsForQuiz(@PathVariable("team_id")Long id,@PathVariable("quiz_id")Long quiz_id){
+        return QQS.getAllAnsweredQuestionsForQuiz(id,quiz_id);
     }
-    @GetMapping(path = "/all/{team_id}/{position_id}/rand")
-    public String getAllQuestionsForTeamByPositionRandom(@PathVariable("team_id")Long id,@PathVariable("position_id") String position){
-        return QQS.getAllQuestionsForTeamByPositionRandom(id,position);
+    @GetMapping(path = "/all/answered/count/{team_id}/{quiz_id}")
+    public String getCountAllAnsweredQuestionsForQuiz(@PathVariable("team_id")Long id, @PathVariable("quiz_id")Long quiz_id){
+        return QQS.getCountAllAnsweredQuestionsForQuiz(id,quiz_id);
     }
-    @GetMapping(path = "/all/answered/{team_id}")
-    public String getAllAnsweredQuestionsForTeam(@PathVariable("team_id")Long id){
-        return QQS.getAllAnsweredQuestionsForTeam(id);
-    }
-    @GetMapping(path = "/all/answered/count/{team_id}")
-    public String getCountAllAnsweredQuestionsForTeam(@PathVariable("team_id")Long id){
-        return QQS.getCountAllAnsweredQuestionsForTeam(id);
-    }
-    @GetMapping(path = "/all/answered/{team_id}/{player_id}")
-    public String getAllAnsweredQuestionsForTeamByPlayer(@PathVariable("team_id")Long id,@PathVariable("player_id") String player_id){
-        return QQS.getAllAnsweredQuestionsForTeamByPlayer(id,player_id);
-    }
-    @GetMapping(path = "/all/answered/count/{team_id}/{position_id}")
-    public String getCountAnsweredQuestionsForTeamByCategory(@PathVariable("team_id")Long id,@PathVariable("position_id") String category){
-        return QQS.getCountAnsweredQuestionsForTeamByCategory(id,category);
+    @GetMapping(path = "/all/answered/{team_id}/{quiz_id}/{player_id}")
+    public String getAllAnsweredQuestionsForQuizByPlayer(@PathVariable("team_id")Long id,@PathVariable("quiz_id")Long quiz_id ,@PathVariable("player_id") String player_id){
+        return QQS.getAllAnsweredQuestionsForQuizByPlayer(id,quiz_id,player_id);
     }
     @PostMapping(path = "/new")
-    public String insertNewQuestion(@RequestBody Map<String,Object> newQuestion){
-        return QQS.insertNewQuestion(newQuestion);
+    public String insertNewQuizQuestion(@RequestBody Map<String,Object> newQuestion){
+        return QQS.insertNewQuizQuestion(newQuestion);
     }
 
     @PutMapping(path = "/update/{team_id}/{question_id}")
