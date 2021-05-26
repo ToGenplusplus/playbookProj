@@ -113,7 +113,6 @@ public class QuizQuestionService {
         }
         try{
             quiz.setQuestionText(question);
-            quiz.setQuestionType(!updates.containsKey("question_type") ? quiz.getQuestionType() : !doesPositionExist((String) updates.get("question_type")) ? quiz.getQuestionType() : (String) updates.get("question_type")) ;
             quiz.setCorrectAnswer(updates.containsKey("correct_answer") ?  (String) updates.get("correct_answer") : quiz.getCorrectAnswer());
             quiz.setIncorrectAnswerOne(updates.containsKey("wrong_answer1") ? (String) updates.get("wrong_answer1") : quiz.getIncorrectAnswerOne());
             quiz.setIncorrectAnswerTwo(updates.containsKey("wrong_answer2") ? (String) updates.get("wrong_answer2") : quiz.getIncorrectAnswerTwo());

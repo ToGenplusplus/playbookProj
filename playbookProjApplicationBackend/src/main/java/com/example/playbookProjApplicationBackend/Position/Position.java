@@ -2,6 +2,7 @@ package com.example.playbookProjApplicationBackend.Position;
 
 import com.example.playbookProjApplicationBackend.Coach.Coach;
 import com.example.playbookProjApplicationBackend.Player.Player;
+import com.example.playbookProjApplicationBackend.Quiz.Quiz;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -14,16 +15,19 @@ public class Position {
     @Id
     @Column(name="position", length = 10)
     private String position;
-    @Column(name="position_description")
+    @Column(name="position_description", columnDefinition = "TEXT")
     private String positionDescription;
     @Column(name="is_coach_specific", nullable = false)
     private boolean isCoachSpecific;
-    
+
     @ManyToMany(mappedBy = "positions", fetch = FetchType.LAZY)
     private Set<Player> players = new HashSet<>();
 
     @ManyToMany(mappedBy = "positions", fetch = FetchType.LAZY)
     private Set<Coach> coaches = new HashSet<>();
+
+    @ManyToMany(mappedBy = "positions", fetch = FetchType.LAZY)
+    private Set<Quiz> quizzes = new HashSet<>();
 
     protected Position() {
     }

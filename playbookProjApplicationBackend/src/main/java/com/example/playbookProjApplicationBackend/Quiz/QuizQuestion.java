@@ -1,7 +1,6 @@
 package com.example.playbookProjApplicationBackend.Quiz;
 
 import com.example.playbookProjApplicationBackend.Player.PlayerAnswer;
-import com.example.playbookProjApplicationBackend.Team.Team;
 import org.json.simple.JSONObject;
 
 import javax.persistence.*;
@@ -18,8 +17,6 @@ public class QuizQuestion {
     private long id;
     @Column(name="image_location", nullable = false, columnDefinition="TEXT")
     private String imageLocation;
-    @Column(name="question_type", nullable = false, length = 4)
-    private String questionType;
     @Column(name="question", nullable = false, columnDefinition="TEXT")
     private String questionText;
     @Column(name="correct_answer", nullable = false, columnDefinition="TEXT")
@@ -33,8 +30,8 @@ public class QuizQuestion {
     @Column(name="is_active", nullable = false)
     private boolean isActive;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "team_id", nullable = false)
-    private Team team;
+    @JoinColumn(name = "quiz_id", nullable = false)
+    private Quiz quiz;
 
     @OneToMany(mappedBy = "question", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
@@ -44,40 +41,37 @@ public class QuizQuestion {
     protected QuizQuestion() {
     }
 
-    public QuizQuestion(String imageLocation, String questionType,String questionText,
+    public QuizQuestion(String imageLocation,String questionText,
                         String correctAnswer, String incorrectAnswerOne,
-                        String incorrectAnswerTwo, String incorrectAnswerThree,boolean isActive, Team team) {
+                        String incorrectAnswerTwo, String incorrectAnswerThree,boolean isActive,Quiz quiz) {
         this.imageLocation = imageLocation;
-        this.questionType = questionType;
         this.questionText = questionText;
         this.correctAnswer = correctAnswer;
         this.incorrectAnswerOne = incorrectAnswerOne;
         this.incorrectAnswerTwo = incorrectAnswerTwo;
         this.incorrectAnswerThree = incorrectAnswerThree;
-        this.team = team;
+        this.quiz = quiz;
         this.isActive = isActive;
     }
 
-    public QuizQuestion(String imageLocation, String questionType,String questionText,
-                        String correctAnswer, String incorrectAnswerOne,boolean isActive, Team team) {
+    public QuizQuestion(String imageLocation,String questionText,
+                        String correctAnswer, String incorrectAnswerOne,boolean isActive, Quiz quiz) {
         this.imageLocation = imageLocation;
-        this.questionType = questionType;
         this.questionText = questionText;
         this.correctAnswer = correctAnswer;
         this.incorrectAnswerOne = incorrectAnswerOne;
-        this.team = team;
+        this.quiz = quiz;
         this.isActive = isActive;
     }
 
-    public QuizQuestion(String imageLocation, String questionType,String questionText,
-                        String correctAnswer, String incorrectAnswerOne, String incorrectAnswerTwo,boolean isActive, Team team) {
+    public QuizQuestion(String imageLocation, String questionText,
+                        String correctAnswer, String incorrectAnswerOne, String incorrectAnswerTwo,boolean isActive, Quiz quiz) {
         this.imageLocation = imageLocation;
-        this.questionType = questionType;
         this.questionText = questionText;
         this.correctAnswer = correctAnswer;
         this.incorrectAnswerOne = incorrectAnswerOne;
         this.incorrectAnswerTwo = incorrectAnswerTwo;
-        this.team = team;
+        this.quiz = quiz;
         this.isActive = isActive;
     }
 
@@ -86,13 +80,12 @@ public class QuizQuestion {
         return "QuizQuestion{" +
                 "id=" + id +
                 ", imageLocation='" + imageLocation + '\'' +
-                ", questionType='" + questionType + '\'' +
                 ", questionText='" + questionText + '\'' +
                 ", correctAnswer='" + correctAnswer + '\'' +
                 ", incorrectAnswerOne='" + incorrectAnswerOne + '\'' +
                 ", incorrectAnswerTwo='" + incorrectAnswerTwo + '\'' +
                 ", incorrectAnswerThree='" + incorrectAnswerThree + '\'' +
-                ", team=" + team +
+                ", quiz=" + quiz +
                 ", answers=" + answers +
                 '}';
     }
@@ -101,12 +94,11 @@ public class QuizQuestion {
         JSONObject question= new JSONObject();
         question.put("question_id",id);
         question.put("image_location",imageLocation);
-        question.put("question_type",questionType);
         question.put("correctAnswer",correctAnswer);
         question.put("incorrect_answer_1",incorrectAnswerOne);
         question.put("incorrect_answer_2",incorrectAnswerTwo);
         question.put("incorrect_answer_3",incorrectAnswerThree);
-        question.put("team_id",team.getId());
+        question.put("quiz_id",quiz.getId());
         question.put("is_active",isActive);
 
         return question;
@@ -126,14 +118,6 @@ public class QuizQuestion {
 
     public void setImageLocation(String imageLocation) {
         this.imageLocation = imageLocation;
-    }
-
-    public String getQuestionType() {
-        return questionType;
-    }
-
-    public void setQuestionType(String questionType) {
-        this.questionType = questionType;
     }
 
     public String getQuestionText() {
@@ -184,11 +168,11 @@ public class QuizQuestion {
         isActive = active;
     }
 
-    public Team getTeam() {
-        return team;
+    public Quiz getQuiz() {
+        return quiz;
     }
 
-    public void setTeam(Team team) {
-        this.team = team;
+    public void setQuiz(Quiz quiz) {
+        this.quiz = quiz;
     }
 }
