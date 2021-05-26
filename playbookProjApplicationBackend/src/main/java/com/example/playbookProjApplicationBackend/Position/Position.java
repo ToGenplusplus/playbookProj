@@ -12,9 +12,13 @@ import java.util.Set;
 public class Position {
 
     @Id
-    @Column(name="position", length = 3)
+    @Column(name="position", length = 10)
     private String position;
-
+    @Column(name="position_description")
+    private String positionDescription;
+    @Column(name="is_coach_specific", nullable = false)
+    private boolean isCoachSpecific;
+    
     @ManyToMany(mappedBy = "positions", fetch = FetchType.LAZY)
     private Set<Player> players = new HashSet<>();
 
@@ -24,14 +28,18 @@ public class Position {
     protected Position() {
     }
 
-    public Position(String position) {
+    public Position(String position,String positionDescription, boolean isCoachSpecific) {
         this.position = position;
+        this.positionDescription = positionDescription;
+        this.isCoachSpecific = isCoachSpecific;
     }
 
     @Override
     public String toString() {
         return "Position{" +
                 "position='" + position + '\'' +
+                ", isCoachSpecific=" + isCoachSpecific +
+                ", positionDescription=" + positionDescription +
                 '}';
     }
 
@@ -41,5 +49,21 @@ public class Position {
 
     public void setPosition(String position) {
         this.position = position;
+    }
+
+    public boolean isCoachSpecific() {
+        return isCoachSpecific;
+    }
+
+    public void setCoachSpecific(boolean coachSpecific) {
+        isCoachSpecific = coachSpecific;
+    }
+
+    public String getPositionDescription() {
+        return positionDescription;
+    }
+
+    public void setPositionDescription(String positionDescription) {
+        this.positionDescription = positionDescription;
     }
 }
