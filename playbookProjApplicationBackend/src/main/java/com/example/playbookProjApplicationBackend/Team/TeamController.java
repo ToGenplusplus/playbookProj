@@ -14,6 +14,8 @@ public class TeamController {
     public String getAllQuizzesInTeam(@PathVariable("team_id")Long team_id){return TS.getAllQuizzesInTeam(team_id); }
     @GetMapping(path = "/all/quiz/{team_id}/{position_id}")
     public String getAllQuizzesForATeamPosition(@PathVariable("team_id")Long team_id, @PathVariable("position_id") String position_id){return TS.getAllQuizzesForATeamPosition(team_id, position_id); }
+    @GetMapping(path = "/all/quiz/{team_id}/{player_id}")
+    public String getAllQuizzesForATeamsPlayer(Long team_id, String player_id){return TS.getAllQuizzesForATeamsPlayer(team_id,player_id); }
     @GetMapping(path = "/all/{org_id}")
     public String getTeamsInOrganization(@PathVariable("org_id")Long org_id){return TS.getTeamsInOrganization(org_id); }
     @GetMapping(path = "/byId/{org_id}/{team_id}")

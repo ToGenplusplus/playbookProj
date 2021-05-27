@@ -19,8 +19,9 @@ public class QuizService {
     protected QuizService(QuizRepository QR) {
         this.QR = QR;
     }
-
-    //implement retreival of a specific quiz
+    public String getQuiz(Long quiz_id){
+        return "";
+    }
     public String getAllQuizQuestionsForQuiz( @PathVariable("quiz_id")Long quiz_id){
         return processResponse(new Object[]{quiz_id,"getAllQuizQuestionsForQuiz"});
     }

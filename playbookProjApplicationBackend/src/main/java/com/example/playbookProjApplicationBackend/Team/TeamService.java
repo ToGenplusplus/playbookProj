@@ -2,6 +2,7 @@ package com.example.playbookProjApplicationBackend.Team;
 
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
 import com.example.playbookProjApplicationBackend.Organization.OrganizationRepository;
+import com.example.playbookProjApplicationBackend.Player.Player;
 import com.example.playbookProjApplicationBackend.Position.PositionRepository;
 import com.example.playbookProjApplicationBackend.Quiz.Quiz;
 import org.json.simple.JSONArray;
@@ -47,6 +48,17 @@ public class TeamService {
             Collection<Quiz> positionQuizzes = TR.getOne(team_id).getQuizzes();
             positionQuizzes.removeIf(quiz -> !quiz.getPosition().getPosition().equals(position_id));
             return new ResponseError(jsonifyQuizzes(positionQuizzes),HttpStatus.OK.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
+    public String getAllQuizzesForATeamsPlayer(Long team_id, String player_id){
+        if(!TR.findById(team_id).isPresent()){
+            return new ResponseError("invalid request, make sure team and position exists",HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        try {
+            Team team = TR.getOne(team_id);
+            Player player = team.getPlayers().
         }catch (Exception e){
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
