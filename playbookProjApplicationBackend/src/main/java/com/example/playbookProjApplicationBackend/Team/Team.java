@@ -84,6 +84,10 @@ public class Team {
         this.organization = organization;
     }
 
+    public Set<Quiz> getQuizzes() {
+        return quizzes;
+    }
+
     @Override
     public String toString() {
         return "Team{" +

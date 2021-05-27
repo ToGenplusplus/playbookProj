@@ -13,6 +13,8 @@ public class QuizController {
 
     private QuizService QS;
 
+    //get a single quiz
+    //get all quizzes player has partaking in
     @GetMapping(path = "/all/{quiz_id}")
     public String getAllQuizQuestionsForQuiz( @PathVariable("quiz_id")Long quiz_id){
         return QS.getAllQuizQuestionsForQuiz(quiz_id);
@@ -21,7 +23,6 @@ public class QuizController {
     public String getAllQuestionsForQuizRandom( @PathVariable("quiz_id")Long quiz_id){
         return QS.getAllQuestionsForQuizRandom(quiz_id);
     }
-
     @GetMapping(path = "/all/answered/{quiz_id}")
     public String getAllAnsweredQuestionsForQuiz(@PathVariable("quiz_id")Long quiz_id){
         return QS.getAllAnsweredQuestionsForQuiz(quiz_id);
@@ -34,4 +35,8 @@ public class QuizController {
     public String getAllAnsweredQuestionsForQuizByPlayer(@PathVariable("quiz_id")Long quiz_id ,@PathVariable("player_id") String player_id){
         return QS.getAllAnsweredQuestionsForQuizByPlayer(quiz_id,player_id);
     }
+    //insert new quiz
+    //update quiz
+    //deactivate all quizquestions for a quiz
+    //delete all quiz questions for a quiz
 }
