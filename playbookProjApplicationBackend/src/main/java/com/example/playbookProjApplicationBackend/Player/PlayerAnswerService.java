@@ -35,15 +35,6 @@ public class PlayerAnswerService {
         this.QQR = QQR;
     }
 
-    public String getAllPlayerAnswersInTeamByQuestionType(Long id, String type){
-        return processResponse(id,type,null,"getAllPlayerAnswersInTeamByQuestionType",true);
-    }
-    public String getAllPlayerAnswersInTeamByPosition(Long id, String position){
-        return processResponse(id,position,null,"getAllPlayerAnswersInTeamByPosition",true);
-    }
-    public String getAllPlayerAnswersInTeamByPositionByPlayer(Long id, String position, String player_id){
-        return processResponse(id,position,player_id,"getAllPlayerAnswersInTeamByPositionByPlayer",true);
-    }
     public String getTotalAverageAnswerSpeedForQuizCategory(Long id, String type){
         return processResponse(id,type,null,"getTotalAverageAnswerSpeedForQuizCategory",true);
     }
@@ -52,9 +43,6 @@ public class PlayerAnswerService {
     }
     public String getCountPlayerAnswerForQuestion(Long id, String player_id,Long question_id){
         return processResponse(id,player_id,question_id,"getCountPlayerAnswerForQuestion",false);
-    }
-    public String getTotalNumberOfPlayerAnswerForPosition(Long id, String position){
-        return processResponse(id,position,null,"getTotalNumberOfPlayerAnswerForPosition",true);
     }
 
     @Transactional
@@ -113,19 +101,6 @@ public class PlayerAnswerService {
     private ResponseError callMethod(Long team_id, String arg, Object arg2, String methodToCall){
         ResponseError resp;
         switch (methodToCall) {
-            case "getAllPlayerAnswersInTeamByQuestionType":
-                resp = new ResponseError(jsonify(PAR.getAllPlayerAnswersInTeamByQuestionType(team_id,arg)),HttpStatus.OK.value());
-                break;
-            case "getAllPlayerAnswersInTeamByPosition":
-                resp = new ResponseError(jsonify(PAR.getAllPlayerAnswersInTeamByPosition(team_id,arg)),HttpStatus.OK.value());
-                break;
-            case "getAllPlayerAnswersInTeamByPositionByPlayer":
-                String player_id = (String) arg2;
-                if (doesPlayerExist(player_id))
-                    resp = new ResponseError(jsonify(PAR.getAllPlayerAnswersInTeamByPositionByPlayer(team_id,arg,player_id)),HttpStatus.OK.value());
-                else
-                    resp = new ResponseError("Player " + player_id + " does not exist",HttpStatus.BAD_REQUEST.value());
-                break;
             case "getTotalAverageAnswerSpeedForQuizCategory":
                 resp = new ResponseError(PAR.getTotalAverageAnswerSpeedForQuizCategory(team_id,arg),HttpStatus.OK.value());
                 break;
@@ -138,10 +113,6 @@ public class PlayerAnswerService {
                     resp = new ResponseError(PAR.getCountPlayerAnswerForQuestion(team_id,arg,(Long) arg2),HttpStatus.OK.value());
                 else
                     resp = new ResponseError("Quiz question with id: " + question_id + " does not exist",HttpStatus.BAD_REQUEST.value());
-                break;
-            case "getTotalNumberOfPlayerAnswerForPosition":
-                int count = PAR.getAllPlayerAnswersInTeamByPosition(team_id,arg).size();
-                resp = new ResponseError(count,HttpStatus.OK.value());
                 break;
             default:
                 resp = new ResponseError("Invalid request",HttpStatus.BAD_REQUEST.value());

@@ -11,7 +11,7 @@ import java.util.Map;
 public class CoachController {
 
     private CoachService CS;
-    
+
     @GetMapping(path = "/coach/{id}")
     public String getCoach(@PathVariable("id")Long coach_id){
         return CS.getCoach(coach_id);

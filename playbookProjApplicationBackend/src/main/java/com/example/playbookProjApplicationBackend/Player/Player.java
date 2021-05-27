@@ -156,4 +156,8 @@ public class Player {
     public void setQuizzesTaken(Set<PlayerQuiz> quizzesTaken) {
         this.quizzesTaken = quizzesTaken;
     }
+
+    public Set<PlayerAnswer> getAnswers() {
+        return answers;
+    }
 }
