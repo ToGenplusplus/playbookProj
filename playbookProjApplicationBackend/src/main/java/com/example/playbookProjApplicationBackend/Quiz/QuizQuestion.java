@@ -175,4 +175,8 @@ public class QuizQuestion {
     public void setQuiz(Quiz quiz) {
         this.quiz = quiz;
     }
+
+    public Set<PlayerAnswer> getAnswers() {
+        return answers;
+    }
 }

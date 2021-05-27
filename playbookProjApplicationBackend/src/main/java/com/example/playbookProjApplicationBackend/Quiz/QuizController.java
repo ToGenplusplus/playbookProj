@@ -13,23 +13,15 @@ public class QuizController {
 
     private QuizService QS;
 
-    //get a single quiz
-    //get all quizzes player has partaking in
+    @GetMapping(path = "/{quiz_id}")
+    public String getQuiz( @PathVariable("quiz_id") Long quiz_id){return QS.getQuiz(quiz_id);}
     @GetMapping(path = "/all/{quiz_id}")
     public String getAllQuizQuestionsForQuiz( @PathVariable("quiz_id")Long quiz_id){
         return QS.getAllQuizQuestionsForQuiz(quiz_id);
     }
-    @GetMapping(path = "/all/{quiz_id}/rand")
-    public String getAllQuestionsForQuizRandom( @PathVariable("quiz_id")Long quiz_id){
-        return QS.getAllQuestionsForQuizRandom(quiz_id);
-    }
     @GetMapping(path = "/all/answered/{quiz_id}")
     public String getAllAnsweredQuestionsForQuiz(@PathVariable("quiz_id")Long quiz_id){
         return QS.getAllAnsweredQuestionsForQuiz(quiz_id);
-    }
-    @GetMapping(path = "/all/answered/count/{quiz_id}")
-    public String getCountAllAnsweredQuestionsForQuiz( @PathVariable("quiz_id")Long quiz_id){
-        return QS.getCountAllAnsweredQuestionsForQuiz(quiz_id);
     }
     @GetMapping(path = "/all/answered/{quiz_id}/{player_id}")
     public String getAllAnsweredQuestionsForQuizByPlayer(@PathVariable("quiz_id")Long quiz_id ,@PathVariable("player_id") String player_id){

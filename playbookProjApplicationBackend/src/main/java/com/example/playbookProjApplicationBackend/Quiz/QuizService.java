@@ -1,14 +1,15 @@
 package com.example.playbookProjApplicationBackend.Quiz;
 
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
+import com.example.playbookProjApplicationBackend.Player.Player;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Collection;
+import java.util.Set;
 
 @Service
 public class QuizService {
@@ -20,69 +21,40 @@ public class QuizService {
         this.QR = QR;
     }
     public String getQuiz(Long quiz_id){
-        return "";
-    }
-    public String getAllQuizQuestionsForQuiz( @PathVariable("quiz_id")Long quiz_id){
-        return processResponse(new Object[]{quiz_id,"getAllQuizQuestionsForQuiz"});
-    }
-    public String getAllQuestionsForQuizRandom( @PathVariable("quiz_id")Long quiz_id){
-        return processResponse(new Object[]{quiz_id,"getAllQuestionsForQuizRandom"});
-    }
-    public String getAllAnsweredQuestionsForQuiz(@PathVariable("quiz_id")Long quiz_id){
-        return processResponse(new Object[]{quiz_id,"getAllAnsweredQuestionsForQuiz"});
-    }
-    public String getCountAllAnsweredQuestionsForQuiz( @PathVariable("quiz_id")Long quiz_id){
-        return processResponse(new Object[]{quiz_id,"getCountAllAnsweredQuestionsForQuiz"});
-    }
-    public String getAllAnsweredQuestionsForQuizByPlayer(@PathVariable("quiz_id")Long quiz_id ,@PathVariable("player_id") String player_id){
-        return processResponse(new Object[]{quiz_id,player_id ,"getAllAnsweredQuestionsForQuizByPlayer"});
-    }
-
-    private String processResponse(Object [] args){
-        int len = args.length;
-        if(len != 2 && len != 3){
-            return new ResponseError("invalid number of arguments", HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
-        }
-        if(!doesQuizExist((Long) args[0])){
-            return new ResponseError("quiz with id " + args[0] + " does not exits",HttpStatus.BAD_REQUEST.value()).toJson();
-        }
         try{
-            if(len == 2){
-                return callMethod( (Long) args[0],null,(String) args[1]).toJson();
-            }else{
-                return callMethod((Long) args[0],(String) args[1],(String) args[2]).toJson();
-            }
+            return new ResponseError(QR.getOne(quiz_id).toJSONObj(),HttpStatus.OK.value()).toJson();
         }catch (Exception e){
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
     }
-    private ResponseError callMethod(Long quiz_id, String player_id, String methodToCall){
-        ResponseError resp;
-        switch (methodToCall) {
-            case "getAllQuizQuestionsForQuiz":
-                resp = new ResponseError(jsonify(QR.getAllQuizQuestionsForQuiz(quiz_id)),HttpStatus.OK.value());
-                break;
-            case "getAllQuestionsForQuizRandom":
-                resp = new ResponseError(jsonify(QR.getAllQuestionsForQuizRandom(quiz_id)),HttpStatus.OK.value());
-                break;
-            case "getAllAnsweredQuestionsForQuiz":
-                resp = new ResponseError(jsonify(QR.getAllAnsweredQuestionsForQuiz(quiz_id)),HttpStatus.OK.value());
-                break;
-            case "getCountAllAnsweredQuestionsForQuiz":
-                int count = QR.getAllAnsweredQuestionsForQuiz(quiz_id).size();
-                resp = new ResponseError(count,HttpStatus.OK.value());
-                break;
-            case "getAllAnsweredQuestionsForQuizByPlayer":
-                resp = new ResponseError(jsonify(QR.getAllAnsweredQuestionsForQuizByPlayer(quiz_id,player_id)),HttpStatus.OK.value());
-                break;
-            default:
-                resp = new ResponseError("Invalid request",HttpStatus.BAD_REQUEST.value());
+    public String getAllQuizQuestionsForQuiz(Long quiz_id){
+        try{
+            Quiz quiz = QR.getOne(quiz_id);
+            return new ResponseError(jsonify(quiz.getQuestions()),HttpStatus.OK.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
-        return resp;
     }
-
-    private boolean doesQuizExist(Long id){
-        return QR.findById(id).isPresent();
+    public String getAllAnsweredQuestionsForQuiz(Long quiz_id){
+        try{
+            Quiz quiz = QR.getOne(quiz_id);
+            Set<QuizQuestion> questions= quiz.getQuestions();
+            questions.removeIf(quizQuestion -> quizQuestion.getAnswers().isEmpty());
+            return new ResponseError(jsonify(questions),HttpStatus.OK.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
+    //need to figure out how to implement
+    public String getAllAnsweredQuestionsForQuizByPlayer(Long quiz_id ,String player_id){
+        try{
+            Quiz quiz = QR.getOne(quiz_id);
+            Set<QuizQuestion> questions= quiz.getQuestions();
+            questions.removeIf(quizQuestion -> quizQuestion.getAnswers().isEmpty());
+            return new ResponseError(jsonify(QR.getAllAnsweredQuestionsForQuizByPlayer(quiz_id,player_id)),HttpStatus.OK.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
     }
 
     private JSONObject jsonify(Collection<QuizQuestion> questions){
