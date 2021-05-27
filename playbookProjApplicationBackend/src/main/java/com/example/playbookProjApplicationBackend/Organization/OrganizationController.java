@@ -24,6 +24,12 @@ public class OrganizationController {
     public String getOrganizationByName(@PathVariable("org_name") String name){
         return OS.getOrganizationByName(name);
     }
+    @GetMapping(path = "/team/all/{org_id}")
+    public String getTeamsInOrganization(@PathVariable("org_id")Long org_id){return OS.getTeamsInOrganization(org_id); }
+    @GetMapping(path = "/team/byId/{org_id}/{team_id}")
+    public String getTeamById(@PathVariable("org_id")Long org_id,@PathVariable("team_id")Long team_id){return OS.getTeamById(org_id,team_id);}
+    @GetMapping(path = "/team/byName/{org_id}/{team_name}")
+    public String getTeamByName(@PathVariable("org_id")Long org_id,@PathVariable("team_name")String team_name){return OS.getTeamByName(org_id,team_name); }
     @PostMapping (path = "/new")
     public String uploadNewOrganization(@RequestBody Map<String,Object> orgObj){
         return OS.uploadNewOrganization(orgObj);

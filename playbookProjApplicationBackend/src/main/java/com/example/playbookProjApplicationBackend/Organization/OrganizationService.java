@@ -1,6 +1,7 @@
 package com.example.playbookProjApplicationBackend.Organization;
 
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
+import com.example.playbookProjApplicationBackend.Team.Team;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,41 @@ public class OrganizationService {
     }
     public String getOrganizationByName(String name){
         return callMethod(name,"getOrganizationByName");
+    }
+    public String getTeamsInOrganization(Long org_id){
+        try{
+            Organization organization = OR.getOne(org_id);
+            return new ResponseError(jsonifyTeams(organization.getTeams()),HttpStatus.OK.value()).toJson();
+
+        }catch (Exception e){
+           return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
+    public String getTeamById(Long org_id, Long team_id){
+        try{
+            Organization organization = OR.getOne(org_id);
+            for (Team team : organization.getTeams()){
+                if(team.getId() == team_id){
+                    return new ResponseError(team.toJSONObj(),HttpStatus.OK.value()).toJson();
+                }
+            }
+            return new ResponseError("team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
+    public String getTeamByName(Long org_id, String team_name){
+        try{
+            Organization organization = OR.getOne(org_id);
+            for (Team team : organization.getTeams()){
+                if(team.getName().equals(team_name)){
+                    return new ResponseError(team.toJSONObj(),HttpStatus.OK.value()).toJson();
+                }
+            }
+            return new ResponseError("team with name " + team_name + " does not exist",HttpStatus.OK.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
     }
     public String uploadNewOrganization(Map<String,Object> orgObj){
         ResponseError resp = null;
@@ -126,5 +162,16 @@ public class OrganizationService {
 
         orgObj.put("organizations",orgsArray);
         return orgObj;
+    }
+
+    private JSONObject jsonifyTeams(Collection<Team> teams){
+        JSONObject teamObj  = new JSONObject();
+        JSONArray teamArray = new JSONArray();
+        for (Team team: teams){
+            teamArray.add(team.toJSONObj());
+        }
+
+        teamObj.put("teams",teamArray);
+        return teamObj;
     }
 }
