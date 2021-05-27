@@ -3,6 +3,8 @@ package com.example.playbookProjApplicationBackend.Team;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping(path = "api/v1/team")
 @AllArgsConstructor
@@ -33,4 +35,8 @@ public class TeamController {
     public String getAllQuizzesForATeamPosition(@PathVariable("team_id")Long team_id, @PathVariable("position_id") String position_id){return TS.getAllQuizzesForATeamPosition(team_id, position_id); }
     @GetMapping(path = "/all/quiz/player/{team_id}/{player_id}")
     public String getAllQuizzesForATeamsPlayer(@PathVariable("team_id") Long team_id,@PathVariable("player_id") String player_id){return TS.getAllQuizzesForATeamsPlayer(team_id,player_id); }
+    @PostMapping(path = "/player/new")
+    public String addNewPlayer(@RequestBody Map<String,Object> newPlayer){
+        return TS.addNewPlayer(newPlayer);
+    }
 }

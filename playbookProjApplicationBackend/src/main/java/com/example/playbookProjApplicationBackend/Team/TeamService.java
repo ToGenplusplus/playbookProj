@@ -13,9 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class TeamService {
@@ -133,6 +131,30 @@ public class TeamService {
             Set<Quiz> quizzes = new HashSet<>();
             quizzesTaken.forEach(playerQuiz -> {quizzes.add(playerQuiz.getQuiz());});
             return new ResponseError(jsonifyQuizzes(quizzes),HttpStatus.OK.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
+    @Transactional
+    public String addNewPlayer(Map<String,Object> newPlayer){
+        if(!newPlayer.containsKey("player_id") || !newPlayer.containsKey("email") || !newPlayer.containsKey("first_name") || !newPlayer.containsKey("last_name")
+                || !newPlayer.containsKey("team_id") || !newPlayer.containsKey("positions")){
+            return new ResponseError("invalid request, missing fields", HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        try{
+            long team_id = (Integer) newPlayer.get("team_id");
+            Team team = TR.getOne(team_id);
+            Set<Player> players = team.getPlayers();
+            Player player = new Player((String) newPlayer.get("player_id"),(String) newPlayer.get("first_name"),(String) newPlayer.get("last_name"),
+                    (String) newPlayer.get("email"),(String) newPlayer.get("jersey"),team);
+            players.add(player);
+            team.setPlayers(players);
+            //need a way to add players positions
+            Set<Position> newPlayerPositions = player.getPositions();
+            for(String position : (ArrayList<String>) newPlayer.get("positions")){
+                newPlayerPositions.add(new Position(position,null,false));
+            }
+            return new ResponseError(player.toJSONObj(),HttpStatus.OK.value()).toJson();
         }catch (Exception e){
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
