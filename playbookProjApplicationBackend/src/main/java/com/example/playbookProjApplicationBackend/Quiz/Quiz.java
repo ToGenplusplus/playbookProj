@@ -1,7 +1,7 @@
 package com.example.playbookProjApplicationBackend.Quiz;
 
 import com.example.playbookProjApplicationBackend.Coach.Coach;
-import com.example.playbookProjApplicationBackend.Player.Player;
+import com.example.playbookProjApplicationBackend.PlayerQuiz.PlayerQuiz;
 import com.example.playbookProjApplicationBackend.Position.Position;
 import com.example.playbookProjApplicationBackend.Team.Team;
 import org.json.simple.JSONArray;
@@ -44,8 +44,8 @@ public class Quiz {
     private Team team;
     @OneToMany(mappedBy = "quiz",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private Set<QuizQuestion> questions;
-    @ManyToMany(mappedBy = "quizzesTaken", fetch = FetchType.LAZY)
-    private Set<Player> players = new HashSet<>();
+    @OneToMany(mappedBy = "quiz", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<PlayerQuiz> players = new HashSet<>();
 
     public Quiz(String name, String description, LocalDate dateCreated, LocalDate lastModified, boolean isActivated, Position position, Coach coach, Team team) {
         this.name = name;
@@ -167,11 +167,11 @@ public class Quiz {
         this.questions = questions;
     }
 
-    public Set<Player> getPlayers() {
+    public Set<PlayerQuiz> getPlayers() {
         return players;
     }
 
-    public void setPlayers(Set<Player> players) {
+    public void setPlayers(Set<PlayerQuiz> players) {
         this.players = players;
     }
 }

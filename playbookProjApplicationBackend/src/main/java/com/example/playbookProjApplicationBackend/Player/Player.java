@@ -1,7 +1,7 @@
 package com.example.playbookProjApplicationBackend.Player;
 
+import com.example.playbookProjApplicationBackend.PlayerQuiz.PlayerQuiz;
 import com.example.playbookProjApplicationBackend.Position.Position;
-import com.example.playbookProjApplicationBackend.Quiz.Quiz;
 import com.example.playbookProjApplicationBackend.Team.Team;
 
 import javax.persistence.*;
@@ -18,8 +18,8 @@ import org.json.simple.JSONObject;
 public class Player {
 
     @Id
-    @Column(name = "student_number")
-    private String studentNumber;
+    @Column(name = "player_id")
+    private String playerId;
     @Column(nullable = false, name = "first_name")
     private String firstName;
     @Column(nullable = false, name = "last_name")
@@ -36,22 +36,15 @@ public class Player {
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = "player_positions",
             joinColumns = {
-                    @JoinColumn(name = "player_id", referencedColumnName = "student_number",
+                    @JoinColumn(name = "player_id", referencedColumnName = "player_id",
                             nullable = false, updatable = false)},
             inverseJoinColumns = {
                     @JoinColumn(name = "position_id", referencedColumnName = "position",
                             nullable = false, updatable = false)})
     private Set<Position> positions = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinTable(name = "player_quizzes_taken",
-            joinColumns = {
-                    @JoinColumn(name = "player_id", referencedColumnName = "student_number",
-                            nullable = false, updatable = false)},
-            inverseJoinColumns = {
-                    @JoinColumn(name = "quiz_id", referencedColumnName = "quiz_id",
-                            nullable = false, updatable = false)})
-    private Set<Quiz> quizzesTaken = new HashSet<>();
+    @OneToMany(mappedBy = "player",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<PlayerQuiz> quizzesTaken = new HashSet<>();
 
     @OneToMany(mappedBy = "player", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
@@ -60,8 +53,8 @@ public class Player {
     protected Player() {
     }
 
-    public Player(String studentNumber, String firstName, String lastName, String email, String jerseyNumber, Team team) {
-        this.studentNumber = studentNumber;
+    public Player(String playerId, String firstName, String lastName, String email, String jerseyNumber, Team team) {
+        this.playerId = playerId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -72,7 +65,7 @@ public class Player {
     @Override
     public String toString() {
         return "Player{" +
-                "studentNumber='" + studentNumber + '\'' +
+                "playerId='" + playerId + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
@@ -83,7 +76,7 @@ public class Player {
 
     public JSONObject toJSONObj(){
         JSONObject player= new JSONObject();
-        player.put("player_id",studentNumber);
+        player.put("player_id",playerId);
         player.put("first_name",firstName);
         player.put("last_name",lastName);
         player.put("email",email);
@@ -94,8 +87,8 @@ public class Player {
         for(Position position : positions){
             positionsArray.add(position.getPosition());
         }
-        for(Quiz quiz: quizzesTaken){
-            quizesArray.add(quiz.getId());
+        for(PlayerQuiz quiz: quizzesTaken){
+            quizesArray.add(quiz.getQuiz().getId());
         }
         player.put("positions",positionsArray);
         player.put("quizzes_id",quizesArray);
@@ -105,11 +98,11 @@ public class Player {
 
 
     public String getStudentNumber() {
-        return studentNumber;
+        return playerId;
     }
 
-    public void setStudentNumber(String studentNumber) {
-        this.studentNumber = studentNumber;
+    public void setStudentNumber(String playerId) {
+        this.playerId = playerId;
     }
 
     public String getFirstName() {
@@ -150,5 +143,17 @@ public class Player {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public Set<Position> getPositions() {
+        return positions;
+    }
+
+    public Set<PlayerQuiz> getQuizzesTaken() {
+        return quizzesTaken;
+    }
+
+    public void setQuizzesTaken(Set<PlayerQuiz> quizzesTaken) {
+        this.quizzesTaken = quizzesTaken;
     }
 }
