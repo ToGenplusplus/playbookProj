@@ -1,5 +1,6 @@
 package com.example.playbookProjApplicationBackend.Team;
 
+import com.example.playbookProjApplicationBackend.Coach.Coach;
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
 import com.example.playbookProjApplicationBackend.Player.Player;
 import com.example.playbookProjApplicationBackend.PlayerQuiz.PlayerQuiz;
@@ -24,6 +25,47 @@ public class TeamService {
     public TeamService(TeamRepository TR) {
         this.TR = TR;
     }
+
+    public String getAllCoachesInTeam(Long team_id){
+        if(!TR.findById(team_id).isPresent()){
+            return new ResponseError("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        try {
+            Team team = TR.getOne(team_id);
+            return new ResponseError(jsonifyCoaches(team.getCoaches()),HttpStatus.OK.value()).toJson();
+
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
+    //need to figure out how to implement
+    public String getCoachesByPosition(Long team_id, String position_id){return "";}
+    public String getAllPlayersInTeam(Long team_id){
+        if(!TR.findById(team_id).isPresent()){
+            return new ResponseError("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        try {
+            Team team = TR.getOne(team_id);
+            return new ResponseError(jsonifyPlayers(team.getPlayers()),HttpStatus.OK.value()).toJson();
+
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
+    //need to figure out implementation
+    public String getAllPlayersInATeamsPosition(Long team_id,String position){
+        if(!TR.findById(team_id).isPresent()){
+            return new ResponseError("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        try {
+            Team team = TR.getOne(team_id);
+            return new ResponseError(jsonifyPlayers(team.getPlayers()),HttpStatus.OK.value()).toJson();
+
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
+
 
     public String getAllQuizzesInTeam(Long team_id){
         if(!TR.findById(team_id).isPresent()){
@@ -74,15 +116,26 @@ public class TeamService {
     //delete Team
     //update Team
 
-    private JSONObject jsonify(Collection<Team> teams){
-        JSONObject teamObj  = new JSONObject();
-        JSONArray teamsArray = new JSONArray();
-        for (Team team: teams){
-            teamsArray.add(team.toJSONObj());
+    private JSONObject jsonifyCoaches(Collection<Coach> coaches){
+        JSONObject coachObject = new JSONObject();
+        JSONArray coachesArray = new JSONArray();
+        for (Coach coach : coaches){
+            coachesArray.add(coach.toJSONObj());
         }
 
-        teamObj.put("teams",teamsArray);
-        return teamObj;
+        coachObject.put("coaches",coachesArray);
+        return coachObject;
+
+    }
+    private JSONObject jsonifyPlayers(Collection<Player> players){
+        JSONObject playerObj  = new JSONObject();
+        JSONArray playersArray = new JSONArray();
+        for (Player player: players){
+            playersArray.add(player.toJSONObj());
+        }
+
+        playerObj.put("players",playersArray);
+        return playerObj;
     }
     private JSONObject jsonifyQuizzes(Collection<Quiz> quizzes){
         JSONObject quizObj  = new JSONObject();

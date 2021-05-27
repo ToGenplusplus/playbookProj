@@ -29,16 +29,8 @@ public class CoachService {
         this.PosR = PosR;
     }
 
-    public String getAllCoachesInTeam(Long teamId){
-        return new ResponseError(jsonify(CR.getCoachesByTeamId(teamId)),HttpStatus.OK.value()).toJson();
-    }
-
-    public String getCoachesByPosition(Long teamId, String posId){
-        return new ResponseError(jsonify(CR.getCoachesByCoachPosition(teamId, posId)),HttpStatus.OK.value()).toJson();
-    }
 
     public String getCoach(Long coach_id){
-        //check if coach exist, if it does return coach else return exception
         String response;
         if(!(doesCoachExist(coach_id))){
             response = new ResponseError("This coach does not exists",HttpStatus.BAD_REQUEST.value()).toJson();

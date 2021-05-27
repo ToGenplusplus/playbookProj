@@ -30,12 +30,6 @@ public class PlayerService {
         this.PosR = PosR;
     }
 
-    public String getAllPlayersInTeam(Long teamId){
-        return new ResponseError(jsonify(PR.getPlayersByTeamId(teamId)),HttpStatus.OK.value()).toJson();
-    }
-    public String getAllPlayersInPosition(Long teamId, String posId){
-        return new ResponseError(jsonify(PR.getPlayersByTeamPosition(teamId, posId)),HttpStatus.OK.value()).toJson();
-    }
     public String getPlayer(String player_id){
         //check if player exist, if it does return player else return exception
         String response;
