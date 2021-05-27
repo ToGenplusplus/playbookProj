@@ -4,6 +4,7 @@ import com.example.playbookProjApplicationBackend.Coach.Coach;
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
 import com.example.playbookProjApplicationBackend.Player.Player;
 import com.example.playbookProjApplicationBackend.PlayerQuiz.PlayerQuiz;
+import com.example.playbookProjApplicationBackend.Position.Position;
 import com.example.playbookProjApplicationBackend.Quiz.Quiz;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -38,8 +39,25 @@ public class TeamService {
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
     }
-    //need to figure out how to implement
-    public String getCoachesByPosition(Long team_id, String position_id){return "";}
+    public String getCoachesByPosition(Long team_id, String position_id){
+        if(!TR.findById(team_id).isPresent()){
+            return new ResponseError("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        try {
+            Team team = TR.getOne(team_id);
+            Set<Coach> coaches = team.getCoaches();
+            Set<Coach> coachesCoachingPosition = new HashSet<>();
+            for(Coach coach: coaches){
+                coach.getPositions().forEach(position -> {if(position.getPosition().equals(position_id)){
+                    coachesCoachingPosition.add(coach);
+                }
+                });
+            }
+            return new ResponseError(jsonifyCoaches(coachesCoachingPosition),HttpStatus.OK.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
     public String getAllPlayersInTeam(Long team_id){
         if(!TR.findById(team_id).isPresent()){
             return new ResponseError("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
@@ -52,15 +70,21 @@ public class TeamService {
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
     }
-    //need to figure out implementation
-    public String getAllPlayersInATeamsPosition(Long team_id,String position){
+    public String getAllPlayersInATeamsPosition(Long team_id,String position_id){
         if(!TR.findById(team_id).isPresent()){
             return new ResponseError("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
         }
         try {
             Team team = TR.getOne(team_id);
-            return new ResponseError(jsonifyPlayers(team.getPlayers()),HttpStatus.OK.value()).toJson();
-
+            Set<Player> players = team.getPlayers();
+            Set<Player> playersInPosition = new HashSet<>();
+            for(Player player: players){
+                player.getPositions().forEach(position -> {if(position.getPosition().equals(position_id)){
+                    playersInPosition.add(player);
+                }
+                });
+            }
+            return new ResponseError(jsonifyPlayers(playersInPosition),HttpStatus.OK.value()).toJson();
         }catch (Exception e){
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }

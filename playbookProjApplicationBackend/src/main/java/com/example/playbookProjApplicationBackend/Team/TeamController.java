@@ -10,12 +10,12 @@ public class TeamController {
 
     private TeamService TS;
 
-    @GetMapping(path = "{id}")
-    public String getAllCoachesInTeam(@PathVariable("id")Long team_id) {
+    @GetMapping(path = "/coach/all/{team_id}")
+    public String getAllCoachesInTeam(@PathVariable("team_id")Long team_id) {
         return TS.getAllCoachesInTeam(team_id);
     }
-    @GetMapping(path = "/{id}/{position}")
-    public String getCoachesByPosition(@PathVariable("id")Long team_id, @PathVariable("position")String position_id) {
+    @GetMapping(path = "/coach/all/positions/{team_id}/{position_id}")
+    public String getCoachesByPosition(@PathVariable("team_id")Long team_id, @PathVariable("position_id")String position_id) {
         return TS.getCoachesByPosition(team_id,position_id);
     }
     @GetMapping(path = "/player/all/{team_id}")
@@ -24,7 +24,7 @@ public class TeamController {
     }
 
     @GetMapping(path = "/player/all/positions/{team_id}/{position_id}")
-    public String getAllPlayersInAPosition(@PathVariable("team_id")Long team_id, @PathVariable("position_id")String position_id) {
+    public String getAllPlayersInATeamsPosition(@PathVariable("team_id")Long team_id, @PathVariable("position_id")String position_id) {
         return TS.getAllPlayersInATeamsPosition(team_id,position_id);
     }
     @GetMapping(path = "/all/quiz/{team_id}")
