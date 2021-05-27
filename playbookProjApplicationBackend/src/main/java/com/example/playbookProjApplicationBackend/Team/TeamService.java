@@ -28,7 +28,7 @@ public class TeamService {
     }
 
     public String getAllQuizzesInTeam(Long team_id){
-        if(TR.findById(team_id).isPresent()){
+        if(!TR.findById(team_id).isPresent()){
             return new ResponseError("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
         }
         try {
@@ -40,7 +40,7 @@ public class TeamService {
         }
     }
     public String getAllQuizzesForATeamPosition(Long team_id, String position_id){
-        if(TR.findById(team_id).isPresent() || !doesPositionExist(position_id)){
+        if(!TR.findById(team_id).isPresent() || !doesPositionExist(position_id)){
             return new ResponseError("invalid request, make sure team and position exists",HttpStatus.BAD_REQUEST.value()).toJson();
         }
         try {

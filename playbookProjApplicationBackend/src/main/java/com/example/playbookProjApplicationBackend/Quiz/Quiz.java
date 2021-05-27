@@ -47,6 +47,9 @@ public class Quiz {
     @OneToMany(mappedBy = "quiz", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<PlayerQuiz> players = new HashSet<>();
 
+    protected Quiz() {
+    }
+
     public Quiz(String name, String description, LocalDate dateCreated, LocalDate lastModified, boolean isActivated, Position position, Coach coach, Team team) {
         this.name = name;
         this.description = description;
@@ -81,7 +84,7 @@ public class Quiz {
         quiz.put("date_created",dateCreated);
         quiz.put("last_modified",lastModified);
         quiz.put("is_activated",isActivated);
-        quiz.put("position",position);
+        quiz.put("position",position.getPosition());
         quiz.put("coach_id",coach.getId());
         quiz.put("team_id",team.getId());
         for (QuizQuestion question: this.questions){
