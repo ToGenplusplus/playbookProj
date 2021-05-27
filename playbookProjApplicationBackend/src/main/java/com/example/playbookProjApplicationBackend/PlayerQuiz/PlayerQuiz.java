@@ -50,7 +50,7 @@ public class PlayerQuiz {
         playerQuiz.put("id",id);
         playerQuiz.put("number_attempts",numberOfAttempts);
         playerQuiz.put("time_last_attempt",timeOfLastAttempt);
-        playerQuiz.put("player_id",player.getStudentNumber());
+        playerQuiz.put("player_id",player.getPlayerId());
         playerQuiz.put("quiz_id",this.quiz.getId());
 
         return playerQuiz;

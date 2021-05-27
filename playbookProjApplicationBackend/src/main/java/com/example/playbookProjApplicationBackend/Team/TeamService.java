@@ -3,6 +3,7 @@ package com.example.playbookProjApplicationBackend.Team;
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
 import com.example.playbookProjApplicationBackend.Organization.OrganizationRepository;
 import com.example.playbookProjApplicationBackend.Player.Player;
+import com.example.playbookProjApplicationBackend.PlayerQuiz.PlayerQuiz;
 import com.example.playbookProjApplicationBackend.Position.PositionRepository;
 import com.example.playbookProjApplicationBackend.Quiz.Quiz;
 import org.json.simple.JSONArray;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Set;
 
 @Service
 public class TeamService {
@@ -58,7 +60,14 @@ public class TeamService {
         }
         try {
             Team team = TR.getOne(team_id);
-            Player player = team.getPlayers().
+            Set<PlayerQuiz> quizzesTaken = null;
+            for(Player player : team.getPlayers()){
+                if(player.getPlayerId().equals(player_id)){
+                    
+                }
+            }
+            //each player in a team has quizzes taken
+            //each quizzes taken has a quiz
         }catch (Exception e){
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }

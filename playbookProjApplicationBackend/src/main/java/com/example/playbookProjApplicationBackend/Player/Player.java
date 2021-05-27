@@ -97,11 +97,11 @@ public class Player {
     }
 
 
-    public String getStudentNumber() {
+    public String getPlayerId() {
         return playerId;
     }
 
-    public void setStudentNumber(String playerId) {
+    public void setPlayerId(String playerId) {
         this.playerId = playerId;
     }
 

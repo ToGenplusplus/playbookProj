@@ -50,7 +50,7 @@ public class PlayerAnswer {
     public JSONObject toJSONObj(){
         JSONObject playerAnswer= new JSONObject();
         playerAnswer.put("id",id);
-        playerAnswer.put("player_id",player.getStudentNumber());
+        playerAnswer.put("player_id",player.getPlayerId());
         playerAnswer.put("question_id",question.getId());
         playerAnswer.put("is_correct",correctAnswerSelected);
         playerAnswer.put("question_answered_time",timeToAnswerQuestion);
