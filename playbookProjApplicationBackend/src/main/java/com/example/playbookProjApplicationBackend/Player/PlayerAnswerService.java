@@ -35,14 +35,8 @@ public class PlayerAnswerService {
         this.QQR = QQR;
     }
 
-    public String getTotalAverageAnswerSpeedForQuizCategory(Long id, String type){
-        return processResponse(id,type,null,"getTotalAverageAnswerSpeedForQuizCategory",true);
-    }
     public String getPlayerAverageAnswerSpeed(Long id, String player_id){
         return processResponse(id,player_id,null,"getPlayerAverageAnswerSpeed",false);
-    }
-    public String getCountPlayerAnswerForQuestion(Long id, String player_id,Long question_id){
-        return processResponse(id,player_id,question_id,"getCountPlayerAnswerForQuestion",false);
     }
 
     @Transactional
@@ -101,18 +95,8 @@ public class PlayerAnswerService {
     private ResponseError callMethod(Long team_id, String arg, Object arg2, String methodToCall){
         ResponseError resp;
         switch (methodToCall) {
-            case "getTotalAverageAnswerSpeedForQuizCategory":
-                resp = new ResponseError(PAR.getTotalAverageAnswerSpeedForQuizCategory(team_id,arg),HttpStatus.OK.value());
-                break;
             case "getPlayerAverageAnswerSpeed":
                 resp = new ResponseError(PAR.getPlayerAverageAnswerSpeed(team_id,arg),HttpStatus.OK.value());
-                break;
-            case "getCountPlayerAnswerForQuestion":
-                Long question_id = (Long) arg2;
-                if(doesQuizQuestionExists(question_id))
-                    resp = new ResponseError(PAR.getCountPlayerAnswerForQuestion(team_id,arg,(Long) arg2),HttpStatus.OK.value());
-                else
-                    resp = new ResponseError("Quiz question with id: " + question_id + " does not exist",HttpStatus.BAD_REQUEST.value());
                 break;
             default:
                 resp = new ResponseError("Invalid request",HttpStatus.BAD_REQUEST.value());

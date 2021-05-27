@@ -3,6 +3,7 @@ package com.example.playbookProjApplicationBackend.Quiz;
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
 import com.example.playbookProjApplicationBackend.Player.Player;
 import com.example.playbookProjApplicationBackend.Player.PlayerAnswer;
+import com.example.playbookProjApplicationBackend.PlayerQuiz.PlayerQuiz;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,6 +109,20 @@ public class QuizService {
 
             }
             return new ResponseError(jsonifyPlayerAnswer(answers),HttpStatus.OK.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
+    public String countQuizPlayerAttempts(Long quiz_id,String player_id){
+        try{
+            Quiz quiz = QR.getOne(quiz_id);
+            Set<PlayerQuiz> playerQuizs =  quiz.getPlayers();
+            final int[] attempts = {0};
+            playerQuizs.forEach(playerQuiz -> {if (playerQuiz.getQuiz().getId() == quiz_id && playerQuiz.getPlayer().getPlayerId().equals(player_id)){
+                attempts[0] = playerQuiz.getNumberOfAttempts();
+            }
+            });
+            return new ResponseError(attempts[0],HttpStatus.OK.value()).toJson();
         }catch (Exception e){
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }

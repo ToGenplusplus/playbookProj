@@ -33,6 +33,8 @@ public class QuizController {
     public String getAllPlayerAnswersForQuizQuestion(@PathVariable("quiz_id")Long quiz_id ,@PathVariable("question_id") Long question_id){return QS.getAllPlayerAnswersForQuizQuestion(quiz_id, question_id);}
     @GetMapping(path = "/all/player-answers/{quiz_id}/player/{player_id}")
     public String getAllPlayerAnswersForQuizForPlayer(@PathVariable("quiz_id")Long quiz_id ,@PathVariable("player_id") String player_id){return QS.getAllPlayerAnswersForQuizForPlayer(quiz_id, player_id);}
+    @GetMapping(path = "/attempt/{quiz_id}/player/{player_id}")
+    public String countQuizPlayerAttempts(@PathVariable("quiz_id")Long quiz_id ,@PathVariable("player_id") String player_id){return QS.countQuizPlayerAttempts(quiz_id, player_id);}
     //insert new quiz
     //update quiz
     //deactivate all quizquestions for a quiz
