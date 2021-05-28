@@ -21,11 +21,11 @@ public class PlayerController {
     public String addNewPlayerAnswer(@RequestBody Map<String, Object> data){
         return PS.addNewPlayerAnswer(data);
     }
-    @PutMapping(path = "/update/{player_id}" )
+    @PutMapping(path = "/player/update/{player_id}" )
     public String updatePlayer(@PathVariable("player_id") String player_id,@RequestBody Map<String, Object> updates){
         return PS.updatePlayer(player_id, updates);
     }
-    @DeleteMapping(path = "/delete/{player_id}")
+    @DeleteMapping(path = "/player/delete/{player_id}")
     public String deletePlayer(@PathVariable("player_id") String player_id){
         return PS.deletePlayer(player_id);
     }

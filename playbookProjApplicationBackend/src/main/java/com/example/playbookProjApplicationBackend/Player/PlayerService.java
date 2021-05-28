@@ -2,6 +2,7 @@ package com.example.playbookProjApplicationBackend.Player;
 
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
 import com.example.playbookProjApplicationBackend.PlayerQuiz.PlayerQuiz;
+import com.example.playbookProjApplicationBackend.Position.Position;
 import com.example.playbookProjApplicationBackend.Position.PositionRepository;
 import com.example.playbookProjApplicationBackend.Quiz.QuizQuestion;
 import com.example.playbookProjApplicationBackend.Team.Team;
@@ -72,37 +73,29 @@ public class PlayerService {
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
     }
+    @Transactional
     public String updatePlayer(String player_id, Map<String, Object> updates){
-        ResponseError resp =null;
-        //check if player exists
-        if(!doesPlayerExist(player_id)){
-            return new ResponseError("player with id " + player_id+ " does not exists", HttpStatus.BAD_REQUEST.value()).toJson();
-        }
-        //get player object
-        Player player = PR.getOne(player_id);
-        String email;
-        if(updates.containsKey("email")){
-            String objemail = (String) updates.get("email");
-            if(PR.getPlayerByEmail(player.getTeam().getId(),objemail) != null && !player.getEmail().equals(objemail)){
-                return new ResponseError("player with with email " + objemail+ " already exists", HttpStatus.BAD_REQUEST.value()).toJson();
-            }
-            email = objemail;
-        }else{
-            email = player.getEmail();
-        }
         try{
+        //get player object
+            Player player = PR.getOne(player_id);
+            Team playersTeam = player.getTeam();
+            if(updates.containsKey("email")){
+                for(Player players : playersTeam.getPlayers()){
+                    if (!players.getPlayerId().equals(player_id) && players.getEmail().equals((String) updates.get("email"))){
+                        return new ResponseError("player with with email " + players.getEmail() + " already exists", HttpStatus.BAD_REQUEST.value()).toJson();
+                    }
+                }
+            }
             player.setFirstName(updates.containsKey("first_name")  ?  (String) updates.get("first_name") : player.getFirstName());
             player.setLastName(updates.containsKey("last_name")  ?  (String) updates.get("last_name") : player.getLastName());
-            player.setEmail(email);
+            player.setEmail(updates.containsKey("email") ? (String) updates.get("email") : player.getEmail());
             player.setJerseyNumber(updates.containsKey("jersey")  ? (String) updates.get("jersey") : player.getJerseyNumber());
             if (updates.containsKey("positions")){
-                updatePlayerPositions(player_id,(ArrayList<String>) updates.get("positions"));
+                updatePlayerPositions( player,playersTeam,(ArrayList<String>) updates.get("positions"));
             }
-            resp = new ResponseError("Success", HttpStatus.OK.value());
+            return new ResponseError("Success", HttpStatus.OK.value()).toJson();
         }catch (Exception e){
-            resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
-        }finally {
-            return resp.toJson();
+            return  new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
     }
     @Transactional
@@ -120,16 +113,16 @@ public class PlayerService {
             return resp.toJson();
         }
     }
-    private void updatePlayerPositions(String player_id,ArrayList<String> positions){
-        if (positions.size() == 0){
-            return;
-        }
-        PR.removePlayerPosition(player_id);
-        for (String position: positions){
-            if(PosR.existsById(position)){
-                PR.insertNewPlayerPosition(player_id,position);
+    private void updatePlayerPositions(Player player, Team playersTeam, ArrayList<String> positions){
+        Set<Position> playersPositions = player.getPositions();
+        playersPositions.clear();
+        for (Position position : playersTeam.getPositions()){
+            positions.forEach(pos -> {if(position.getPosition().equals(pos)){
+                playersPositions.add(position);
             }
+            });
         }
+        player.setPositions(playersPositions);
     }
 
     private JSONObject jsonify(Collection<Player> players){
