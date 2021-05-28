@@ -22,13 +22,11 @@ public class PlayerService {
 
     private PlayerRepository PR;
     private TeamRepository TR;
-    private PositionRepository PosR;
 
     @Autowired
-    public PlayerService(PlayerRepository PR, TeamRepository TR, PositionRepository PosR) {
+    public PlayerService(PlayerRepository PR, TeamRepository TR) {
         this.PR = PR;
         this.TR = TR;
-        this.PosR = PosR;
     }
 
     public String getPlayer(String player_id){

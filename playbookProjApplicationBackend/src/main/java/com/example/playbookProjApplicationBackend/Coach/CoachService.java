@@ -1,6 +1,8 @@
 package com.example.playbookProjApplicationBackend.Coach;
 
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
+import com.example.playbookProjApplicationBackend.Player.Player;
+import com.example.playbookProjApplicationBackend.Position.Position;
 import com.example.playbookProjApplicationBackend.Position.PositionRepository;
 import com.example.playbookProjApplicationBackend.Team.Team;
 import com.example.playbookProjApplicationBackend.Team.TeamRepository;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class CoachService {
@@ -43,26 +46,21 @@ public class CoachService {
     }
     @Transactional
     public String updateCoach(Long coach_id,Map<String,Object> coachUpdates){
-        if(!doesCoachExist(coach_id)){
-            return new ResponseError("Coach with id " + coach_id+ " does not exists", HttpStatus.BAD_REQUEST.value()).toJson();
-        }
-        Coach coach = CR.getOne(coach_id);
-        String email;
-        if (coachUpdates.containsKey("email")){
-            String objemail = (String) coachUpdates.get("email");
-            if(CR.getCoachByEmail(coach.getTeam().getId(),objemail) != null && !coach.getEmail().equals(objemail)){
-                return new ResponseError("coach with with email " + objemail+ " already exists", HttpStatus.BAD_REQUEST.value()).toJson();
-            }
-            email = objemail;
-        }else{
-            email = coach.getEmail();
-        }
         try{
+            Coach coach = CR.getOne(coach_id);
+            Team coachesTeam = coach.getTeam();
+            if (coachUpdates.containsKey("email")) {
+                for(Coach coaches: coachesTeam.getCoaches()){
+                    if (coaches.getId() != coach_id  && coaches.getEmail().equals((String) coachUpdates.get("email"))){
+                        return new ResponseError("caoch with with email " + coaches.getEmail() + " already exists", HttpStatus.BAD_REQUEST.value()).toJson();
+                    }
+                }
+            }
             coach.setFirstName(coachUpdates.containsKey("first_name") ? (String) coachUpdates.get("first_name") : coach.getFirstName());
             coach.setLastName(coachUpdates.containsKey("last_name") ? (String) coachUpdates.get("last_name") : coach.getLastName());
-            coach.setEmail(email);
-            if(coachUpdates.get("positions") != null){
-                updateCoachPositions(coach_id,(ArrayList<String>) coachUpdates.get("positions"));
+            coach.setEmail(coachUpdates.containsKey("email") ? (String) coachUpdates.get("email") : coach.getLastName());
+            if(coachUpdates.containsKey("positions")){
+                updateCoachPositions(coach, coachesTeam,(ArrayList<String>) coachUpdates.get("positions"));
             }
             return new ResponseError("Success", HttpStatus.OK.value()).toJson();
         }catch (Exception e){
@@ -84,16 +82,16 @@ public class CoachService {
             return resp.toJson();
         }
     }
-    private void updateCoachPositions(Long coach_id,ArrayList<String> positions){
-        if (positions.size() == 0){
-            return;
-        }
-        CR.removeCoachPosition(coach_id);
-        for (String position: positions){
-            if(PosR.existsById(position)){
-                CR.insertNewCoachPosition(coach_id,position);
+    private void updateCoachPositions(Coach coach, Team coachesTeam,ArrayList<String> positions){
+        Set<Position> coachesPositions = coach.getPositions();
+        coachesPositions.clear();
+        for (Position position : coachesTeam.getPositions()){
+            positions.forEach(pos -> {if(position.getPosition().equals(pos)){
+                coachesPositions.add(position);
             }
+            });
         }
+        coach.setPositions(coachesPositions);
     }
 
     public JSONObject jsonify(Collection<Coach> coaches){
