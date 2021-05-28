@@ -161,6 +161,10 @@ public class Player {
         return answers;
     }
 
+    public void setAnswers(Set<PlayerAnswer> answers) {
+        this.answers = answers;
+    }
+
     public void setPositions(Set<Position> positions) {
         this.positions = positions;
     }

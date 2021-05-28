@@ -39,37 +39,6 @@ public class PlayerAnswerService {
         return processResponse(id,player_id,null,"getPlayerAverageAnswerSpeed",false);
     }
 
-    @Transactional
-    public String uploadPlayerAnswer(Long id, Map<String,Object> data){
-        ResponseError resp = null;
-        if(!doesTeamExist(id) || !data.containsKey("player_id")|| !data.containsKey("question_id")|| !data.containsKey("is_correct")
-                || !data.containsKey("answered_time")){
-            return new ResponseError("invalid request missing fields", HttpStatus.BAD_REQUEST.value()).toJson();
-        }
-        String player_id = (String) data.get("player_id");
-        Integer qid = (Integer) data.get("question_id");
-        long question_id = qid;
-        if(!doesPlayerExist(player_id)){
-            return new ResponseError("invalid request,player with id " +player_id+ " does not exist", HttpStatus.BAD_REQUEST.value()).toJson();
-        }
-        if(!doesQuizQuestionExists(question_id)){
-            return new ResponseError("invalid request,question with id " +question_id+" does not exists", HttpStatus.BAD_REQUEST.value()).toJson();
-        }
-        try{
-            Player player = PR.getOne(player_id);
-            QuizQuestion question =QQR.getOne(question_id);
-            int answered_time = (int) data.get("answered_time");
-            short time = (short) answered_time;
-            Boolean is_correct = (Boolean) data.get("is_correct");
-            PlayerAnswer playerAnswer = new PlayerAnswer(player,question,is_correct,time);
-            PAR.save(playerAnswer);
-            resp = new ResponseError("Success",HttpStatus.OK.value());
-        }catch(Exception e){
-            resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
-        }finally {
-            return  resp.toJson();
-        }
-    }
 
 
     private String processResponse(Long team_id, String arg,Object arg2, String methodToCall, boolean isPos){
@@ -107,9 +76,6 @@ public class PlayerAnswerService {
 
     private boolean doesTeamExist(Long id){
         return TR.findById(id).isPresent();
-    }
-    private boolean doesQuizQuestionExists(Long id){
-        return QQR.findById(id).isPresent();
     }
     private boolean doesPlayerExist(String player_id){
         return PR.findById(player_id).isPresent();

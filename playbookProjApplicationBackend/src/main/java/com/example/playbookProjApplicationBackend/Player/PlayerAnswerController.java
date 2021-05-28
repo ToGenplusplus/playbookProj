@@ -15,8 +15,4 @@ public class PlayerAnswerController {
     public String getPlayerAverageAnswerSpeed(@PathVariable("team_id")Long id,@PathVariable("player_id") String player_id){
         return PAS.getPlayerAverageAnswerSpeed(id,player_id);
     }
-    @PostMapping(path = "/new/{team_id}")
-    public String uploadPlayerAnswer(@PathVariable("team_id") Long id,@RequestBody Map<String, Object> data) {
-        return PAS.uploadPlayerAnswer(id, data);
-    }
 }

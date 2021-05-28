@@ -1,16 +1,16 @@
 package com.example.playbookProjApplicationBackend.Player;
 
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
+import com.example.playbookProjApplicationBackend.PlayerQuiz.PlayerQuiz;
 import com.example.playbookProjApplicationBackend.Position.PositionRepository;
+import com.example.playbookProjApplicationBackend.Quiz.QuizQuestion;
 import com.example.playbookProjApplicationBackend.Team.Team;
 import com.example.playbookProjApplicationBackend.Team.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
@@ -43,6 +43,35 @@ public class PlayerService {
         return response;
     }
     @Transactional
+    public String addNewPlayerAnswer(Map<String,Object> data) {
+        if(!data.containsKey("player_id")|| !data.containsKey("question_id")|| !data.containsKey("is_correct")
+                || !data.containsKey("answered_time")){
+            return new ResponseError("invalid request missing fields", HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        try{
+            String playerId = (String) data.get("player_id");
+            long questionId = (Integer) data.get("question_id");
+            int time = (int) data.get("answered_time");
+            Player player = PR.getOne(playerId);
+            Set<PlayerAnswer> answers = player.getAnswers();
+            Set<PlayerQuiz> quizzesTaken = player.getQuizzesTaken();
+            QuizQuestion [] question  = {null};
+            for (PlayerQuiz playerQuiz: quizzesTaken){
+                playerQuiz.getQuiz().getQuestions().forEach(quizQuestion -> {if(quizQuestion.getId() == questionId){
+                    question[0] = quizQuestion;
+                }
+                });
+            }
+            if(question[0] == null){
+                return new ResponseError("invalid request question does not exist", HttpStatus.BAD_REQUEST.value()).toJson();
+            }
+            answers.add(new PlayerAnswer(player,question[0],(Boolean) data.get("is_correct"),(short) time));
+            player.setAnswers(answers);
+            return new ResponseError("success",HttpStatus.OK.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
     public String updatePlayer(String player_id, Map<String, Object> updates){
         ResponseError resp =null;
         //check if player exists

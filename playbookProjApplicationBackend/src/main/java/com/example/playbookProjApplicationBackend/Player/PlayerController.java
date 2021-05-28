@@ -17,6 +17,10 @@ public class PlayerController {
     public String getPlayer(@PathVariable("player_id")String player_id){
         return PS.getPlayer(player_id);
     }
+    @PostMapping(path = "/player-answer/new")
+    public String addNewPlayerAnswer(@RequestBody Map<String, Object> data){
+        return PS.addNewPlayerAnswer(data);
+    }
     @PutMapping(path = "/update/{player_id}" )
     public String updatePlayer(@PathVariable("player_id") String player_id,@RequestBody Map<String, Object> updates){
         return PS.updatePlayer(player_id, updates);
