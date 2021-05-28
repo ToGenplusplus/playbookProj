@@ -50,9 +50,9 @@ public class QuizController {
     public String updateQuizAttemtp(@PathVariable("quiz_id") Long quiz_id,@PathVariable("player_id") String player_id){
         return QS.updateQuizAttempt(quiz_id, player_id);
     }
+    @DeleteMapping(path = "/delete/{quiz_id}")
+    public String deleteQuiz(@PathVariable("quiz_id") Long quiz_id){
+        return QS.deleteQuiz(quiz_id);
+    }
 
-
-    //update quiz
-    //deactivate all quizquestions for a quiz
-    //delete all quiz questions for a quiz
 }
