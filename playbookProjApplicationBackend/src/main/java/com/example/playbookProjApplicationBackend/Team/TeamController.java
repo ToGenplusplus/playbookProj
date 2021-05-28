@@ -47,4 +47,6 @@ public class TeamController {
     public String addNewQuiz(@RequestBody Map<String,Object> newQuiz){
         return TS.addNewQuiz(newQuiz);
     }
+    @PutMapping(path = "/update/{team_id}")
+    public String updateTeam(@PathVariable("team_id") Long team_id,@RequestBody Map<String,Object> teamInfo){return TS.updateTeam(team_id,teamInfo);}
 }

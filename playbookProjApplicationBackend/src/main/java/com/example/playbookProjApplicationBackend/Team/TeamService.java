@@ -2,11 +2,11 @@ package com.example.playbookProjApplicationBackend.Team;
 
 import com.example.playbookProjApplicationBackend.Coach.Coach;
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
+import com.example.playbookProjApplicationBackend.Organization.Organization;
 import com.example.playbookProjApplicationBackend.Player.Player;
 import com.example.playbookProjApplicationBackend.PlayerQuiz.PlayerQuiz;
 import com.example.playbookProjApplicationBackend.Position.Position;
 import com.example.playbookProjApplicationBackend.Quiz.Quiz;
-import org.hibernate.type.LocalDateType;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +26,24 @@ public class TeamService {
     public TeamService(TeamRepository TR) {
         this.TR = TR;
     }
+    @Transactional
+    public String updateTeam(Long team_id, Map<String,Object> teamInfo){
+        try{
+            Team team = TR.getOne(team_id);
+            Organization organization = team.getOrganization();
+            if(teamInfo.containsKey("name")){
+                for(Team team1 : organization.getTeams()){
+                    if(team1.getId() != team.getId() && team1.getName().equals((String) teamInfo.get("name"))){
+                        return new ResponseError("team name " + team1.getName() + " already exists for organization ", HttpStatus.BAD_REQUEST.value()).toJson();
+                    }
+                }
+            }
+            team.setName(teamInfo.containsKey("name") ? (String) teamInfo.get("name") : team.getName());
+            return new ResponseError(team.toJSONObj(),HttpStatus.OK.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
     //---------------------COACHES-------------------------------------------
     public String getAllCoachesInTeam(Long team_id){
         if(!TR.findById(team_id).isPresent()){
@@ -34,7 +52,6 @@ public class TeamService {
         try {
             Team team = TR.getOne(team_id);
             return new ResponseError(jsonifyCoaches(team.getCoaches()),HttpStatus.OK.value()).toJson();
-
         }catch (Exception e){
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }

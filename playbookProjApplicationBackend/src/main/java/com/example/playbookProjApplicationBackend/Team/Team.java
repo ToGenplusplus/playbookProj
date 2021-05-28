@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Entity
 @Table(name="team", uniqueConstraints = {
-    @UniqueConstraint(name="unique_team_name",columnNames ={"name"})
+    @UniqueConstraint(name="unique_team_name_organization",columnNames ={"name","organization_id"})
 })
 public class Team {
 
