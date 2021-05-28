@@ -218,6 +218,31 @@ public class QuizService {
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
     }
+    @Transactional
+    public String updateQuizAttempt(Long quiz_id, String player_id){
+        try{
+            Quiz quiz= QR.getOne(quiz_id);
+            Team team= quiz.getTeam();
+            Player player = null;
+            for (Player player1 : team.getPlayers()){
+                if(player1.getPlayerId().equals(player_id)){
+                    player = player1;
+                }
+            }
+            if(player == null){
+                return new ResponseError("invalid request player with id " + player_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+            }
+            Set<PlayerQuiz> taken = player.getQuizzesTaken();
+            for(PlayerQuiz playerQuiz : taken){
+                if (playerQuiz.getQuiz().getId() == quiz_id && playerQuiz.getPlayer().getPlayerId().equals(player_id)){
+                    playerQuiz.setNumberOfAttempts(playerQuiz.getNumberOfAttempts() + 1);
+                }
+            }
+            return new ResponseError("Success",HttpStatus.OK.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
 
     private JSONObject jsonifyPlayerAnswer(Collection<PlayerAnswer> answers){
         JSONObject answerObject = new JSONObject();

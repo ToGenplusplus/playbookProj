@@ -46,6 +46,11 @@ public class QuizController {
     public String updateQuiz(@PathVariable("quiz_id") Long quiz_id,@RequestBody Map<String,Object> quizUpdate){
         return QS.updateQuiz(quiz_id, quizUpdate);
     }
+    @PutMapping(path = "/quiz-attempt/update/{quiz_id}/{player_id}")
+    public String updateQuizAttemtp(@PathVariable("quiz_id") Long quiz_id,@PathVariable("player_id") String player_id){
+        return QS.updateQuizAttempt(quiz_id, player_id);
+    }
+
 
     //update quiz
     //deactivate all quizquestions for a quiz
