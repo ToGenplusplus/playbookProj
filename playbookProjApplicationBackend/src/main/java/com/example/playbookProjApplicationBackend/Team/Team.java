@@ -3,10 +3,12 @@ package com.example.playbookProjApplicationBackend.Team;
 import com.example.playbookProjApplicationBackend.Coach.Coach;
 import com.example.playbookProjApplicationBackend.Organization.Organization;
 import com.example.playbookProjApplicationBackend.Player.Player;
+import com.example.playbookProjApplicationBackend.Position.Position;
 import com.example.playbookProjApplicationBackend.Quiz.Quiz;
 import org.json.simple.JSONObject;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -17,6 +19,7 @@ public class Team {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Column(name = "team_id")
     private Long id;
 
     @Column(nullable = false, name = "name")
@@ -35,6 +38,15 @@ public class Team {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "team_positions",
+            joinColumns = {
+                    @JoinColumn(name = "team_id", referencedColumnName = "team_id",
+                            nullable = false, updatable = false)},
+            inverseJoinColumns = {
+                    @JoinColumn(name = "position_id", referencedColumnName = "position",
+                            nullable = false, updatable = false)})
+    private Set<Position> positions = new HashSet<>();
 
     protected Team() {
     }

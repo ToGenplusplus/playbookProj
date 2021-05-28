@@ -1,18 +1,6 @@
 INSERT INTO organizations (name,country,state,organization_type,organization_link,logo_image_location) VALUES
 ('University of Western Ontario','Canada','Ontario','College','www.uwo.ca','some.image.location.inS3');
 
-INSERT INTO team (organization_id,name) VALUES 
-(1,'Mens Football'),
-(1,'Mens Soccer'),
-(1,'Mens Basketball');
-
-INSERT INTO coach (email,first_name,last_name,team_id) VALUES 
-('Quisque.tincidunt.pede@sagittis.edu','Colby','Moses',1),
-('urna.suscipit.nonummy@sitametorci.com','Caldwell','Valenzuela',1),
-('mus@Donecsollicitudin.co.uk','Kenneth','Hudson',1),
-('risus.Quisque@magnaUttincidunt.ca','Luke','Farmer',1),
-('magna.Phasellus@risusDonecnibh.co.uk','Keane','Curtis',1);
-
 INSERT INTO positions (position,is_coach_specific) VALUES 
 ('HC','1'),
 ('AHC','1'),
@@ -34,6 +22,41 @@ INSERT INTO positions (position,is_coach_specific) VALUES
 ('ST','0'),
 ('ATH','0'),
 ('GEN','0');
+
+INSERT INTO team (organization_id,name) VALUES 
+(1,'Mens Football'),
+(1,'Mens Soccer'),
+(1,'Mens Basketball');
+
+INSERT INTO team_positions(position_id,team_id) VALUES
+('HC',1),
+('AHC',1),
+('OC',1),
+('AOC',1),
+('DC',1),
+('ADC',1),
+('OL',1),
+('QB',1),
+('RB',1),
+('FB',1),
+('REC',1),
+('TE',1),
+('DL',1),
+('LB',1),
+('DB',1),
+('K',1),
+('P',1),
+('ST',1),
+('ATH',1),
+('GEN',1);
+
+INSERT INTO coach (email,first_name,last_name,team_id) VALUES 
+('Quisque.tincidunt.pede@sagittis.edu','Colby','Moses',1),
+('urna.suscipit.nonummy@sitametorci.com','Caldwell','Valenzuela',1),
+('mus@Donecsollicitudin.co.uk','Kenneth','Hudson',1),
+('risus.Quisque@magnaUttincidunt.ca','Luke','Farmer',1),
+('magna.Phasellus@risusDonecnibh.co.uk','Keane','Curtis',1);
+
 
 INSERT INTO coach_positions (position_id,coach_id) VALUES 
 ('ST',1),

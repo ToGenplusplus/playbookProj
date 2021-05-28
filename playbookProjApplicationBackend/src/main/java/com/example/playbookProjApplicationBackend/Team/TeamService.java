@@ -87,8 +87,6 @@ public class TeamService {
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
     }
-
-
     public String getAllQuizzesInTeam(Long team_id){
         if(!TR.findById(team_id).isPresent()){
             return new ResponseError("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();

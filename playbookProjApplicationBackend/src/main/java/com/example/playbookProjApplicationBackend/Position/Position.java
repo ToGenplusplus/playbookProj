@@ -3,6 +3,7 @@ package com.example.playbookProjApplicationBackend.Position;
 import com.example.playbookProjApplicationBackend.Coach.Coach;
 import com.example.playbookProjApplicationBackend.Player.Player;
 import com.example.playbookProjApplicationBackend.Quiz.Quiz;
+import com.example.playbookProjApplicationBackend.Team.Team;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -25,6 +26,9 @@ public class Position {
 
     @ManyToMany(mappedBy = "positions", fetch = FetchType.LAZY)
     private Set<Coach> coaches = new HashSet<>();
+
+    @ManyToMany(mappedBy = "positions", fetch = FetchType.LAZY)
+    private Set<Team> teams = new HashSet<>();
 
     @OneToMany(mappedBy = "position", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Quiz> quizzes = new HashSet<>();
@@ -69,5 +73,37 @@ public class Position {
 
     public void setPositionDescription(String positionDescription) {
         this.positionDescription = positionDescription;
+    }
+
+    public Set<Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(Set<Player> players) {
+        this.players = players;
+    }
+
+    public Set<Coach> getCoaches() {
+        return coaches;
+    }
+
+    public void setCoaches(Set<Coach> coaches) {
+        this.coaches = coaches;
+    }
+
+    public Set<Team> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(Set<Team> teams) {
+        this.teams = teams;
+    }
+
+    public Set<Quiz> getQuizzes() {
+        return quizzes;
+    }
+
+    public void setQuizzes(Set<Quiz> quizzes) {
+        this.quizzes = quizzes;
     }
 }

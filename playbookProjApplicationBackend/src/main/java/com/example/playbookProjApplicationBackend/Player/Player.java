@@ -160,4 +160,8 @@ public class Player {
     public Set<PlayerAnswer> getAnswers() {
         return answers;
     }
+
+    public void setPositions(Set<Position> positions) {
+        this.positions = positions;
+    }
 }
