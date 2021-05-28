@@ -17,10 +17,6 @@ public class QuizQuestionController {
         return QQS.getAllQuizQuestionsInDatabase();
     }
 
-    @PostMapping(path = "/new")
-    public String insertNewQuizQuestion(@RequestBody Map<String,Object> newQuestion){
-        return QQS.insertNewQuizQuestion(newQuestion);
-    }
     @PutMapping(path = "/update/{quiz_id}/{question_id}")
     public String updateQuizQuestion(@PathVariable("quiz_id")Long quiz_id, @PathVariable("question_id") Long question_id,@RequestBody Map<String,Object> updates){
         return QQS.updateQuizQuestion(quiz_id, question_id,updates);

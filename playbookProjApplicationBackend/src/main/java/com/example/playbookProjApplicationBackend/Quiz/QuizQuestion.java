@@ -15,7 +15,7 @@ public class QuizQuestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(name="image_location", nullable = false, columnDefinition="TEXT")
+    @Column(name="image_location",columnDefinition="TEXT")
     private String imageLocation;
     @Column(name="question", nullable = false, columnDefinition="TEXT")
     private String questionText;

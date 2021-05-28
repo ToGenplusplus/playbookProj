@@ -9,9 +9,11 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -38,6 +40,37 @@ public class QuizService {
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
     }
+    @Transactional
+    public String addNewQuizQuestion(Map<String,Object> newQuestion){
+        if(!newQuestion.containsKey("question") ||!newQuestion.containsKey("correct_answer")
+                || !newQuestion.containsKey("wrong_answer1")|| !newQuestion.containsKey("is_active")|| !newQuestion.containsKey("quiz_id")) {
+            return new ResponseError("invalid quiz question", HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        long quiz_id = (Integer) newQuestion.get("quiz_id");
+        try{
+            Quiz quiz = QR.getOne(quiz_id);
+            Set<QuizQuestion> quizQuestions = quiz.getQuestions();
+            String question = (String) newQuestion.get("question");
+            for(QuizQuestion question1 :quizQuestions){
+                if (question1.getQuestionText().equals(question)){
+                    return new ResponseError("invalid request, quiz with question "+ question1.getQuestionText() + " already exists",HttpStatus.OK.value()).toJson();
+                }
+            }
+            String correct = (String) newQuestion.get("correct_answer");
+            String wrongone = (String) newQuestion.get("wrong_answer1");
+            String wrongtwo= (String) newQuestion.get("wrong_answer2");
+            String wrongthree = (String)  newQuestion.get("wrong_answer3");
+            String img = (String) newQuestion.get("img");
+            Boolean is_active = (Boolean) newQuestion.get("is_active");
+            QuizQuestion quizquestion = new QuizQuestion(img,question,correct,wrongone,wrongtwo,wrongthree,is_active,quiz);
+            quizQuestions.add(quizquestion);
+            quiz.setQuestions(quizQuestions);
+            return new ResponseError("Success", HttpStatus.OK.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
+
     public String getAllAnsweredQuestionsForQuiz(Long quiz_id){
         try{
             Quiz quiz = QR.getOne(quiz_id);

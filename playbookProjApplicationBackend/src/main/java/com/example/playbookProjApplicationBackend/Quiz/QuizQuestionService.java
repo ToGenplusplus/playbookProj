@@ -36,32 +36,6 @@ public class QuizQuestionService {
     }
 
     @Transactional
-    public String insertNewQuizQuestion(Map<String,Object> newQuestion){
-        if(!newQuestion.containsKey("question") ||!newQuestion.containsKey("correct_answer")
-        || !newQuestion.containsKey("wrong_answer1")|| !newQuestion.containsKey("image_location")|| !newQuestion.containsKey("is_active")|| !newQuestion.containsKey("quiz_id")) {
-            return new ResponseError("invalid quiz question", HttpStatus.BAD_REQUEST.value()).toJson();
-        }
-        long quiz_id = (Integer) newQuestion.get("quiz_id");
-        if(!doesQuizExist(quiz_id)){
-            return new ResponseError("invalid request team with id " + quiz_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
-        }
-        try{
-            Quiz quiz = qR.getOne(quiz_id);
-            String question = (String) newQuestion.get("question");
-            String correct = (String) newQuestion.get("correct_answer");
-            String wrongone = (String) newQuestion.get("wrong_answer1");
-            String wrongtwo= (String) newQuestion.get("wrong_answer2");
-            String wrongthree = (String)  newQuestion.get("wrong_answer3");
-            String img = (String) newQuestion.get("image_location");
-            Boolean is_active = (Boolean) newQuestion.get("is_active");
-            QuizQuestion quizquestion = new QuizQuestion(img,question,correct,wrongone,wrongtwo,wrongthree,is_active,quiz);
-            QR.save(quizquestion);
-            return new ResponseError("Success", HttpStatus.OK.value()).toJson();
-        }catch (Exception e){
-           return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
-        }
-    }
-    @Transactional
     public String updateQuizQuestion(Long quiz_id, Long question_id, Map<String,Object> updates){
         if(!doesQuizExist(quiz_id) || !QR.findById(question_id).isPresent()){
             return new ResponseError("invalid request", HttpStatus.BAD_REQUEST.value()).toJson();

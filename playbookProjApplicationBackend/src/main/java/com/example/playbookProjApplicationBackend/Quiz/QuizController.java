@@ -1,10 +1,9 @@
 package com.example.playbookProjApplicationBackend.Quiz;
 
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "api/v1/quiz")
@@ -35,7 +34,10 @@ public class QuizController {
     public String getAllPlayerAnswersForQuizForPlayer(@PathVariable("quiz_id")Long quiz_id ,@PathVariable("player_id") String player_id){return QS.getAllPlayerAnswersForQuizForPlayer(quiz_id, player_id);}
     @GetMapping(path = "/attempt/{quiz_id}/player/{player_id}")
     public String countQuizPlayerAttempts(@PathVariable("quiz_id")Long quiz_id ,@PathVariable("player_id") String player_id){return QS.countQuizPlayerAttempts(quiz_id, player_id);}
-    //insert new quiz
+    @PostMapping(path = "/quiz-question/new")
+    public String addNewQuizQuestion(@RequestBody Map<String,Object> newQuestion){
+        return QS.addNewQuizQuestion(newQuestion);
+    }
     //update quiz
     //deactivate all quizquestions for a quiz
     //delete all quiz questions for a quiz
