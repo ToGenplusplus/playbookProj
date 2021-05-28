@@ -100,6 +100,10 @@ public class Team {
         return quizzes;
     }
 
+    public void setQuizzes(Set<Quiz> quizzes) {
+        this.quizzes = quizzes;
+    }
+
     public Set<Position> getPositions() {
         return positions;
     }
