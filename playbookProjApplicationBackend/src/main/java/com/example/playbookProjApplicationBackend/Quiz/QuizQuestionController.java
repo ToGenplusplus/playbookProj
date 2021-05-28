@@ -17,9 +17,9 @@ public class QuizQuestionController {
         return QQS.getAllQuizQuestionsInDatabase();
     }
 
-    @PutMapping(path = "/update/{quiz_id}/{question_id}")
-    public String updateQuizQuestion(@PathVariable("quiz_id")Long quiz_id, @PathVariable("question_id") Long question_id,@RequestBody Map<String,Object> updates){
-        return QQS.updateQuizQuestion(quiz_id, question_id,updates);
+    @PutMapping(path = "/update/{question_id}")
+    public String updateQuizQuestion(@PathVariable("question_id") Long question_id,@RequestBody Map<String,Object> updates){
+        return QQS.updateQuizQuestion(question_id,updates);
     }
     /*
     @PutMapping(path = "/deactivate/{quiz_id}/{question_id}")

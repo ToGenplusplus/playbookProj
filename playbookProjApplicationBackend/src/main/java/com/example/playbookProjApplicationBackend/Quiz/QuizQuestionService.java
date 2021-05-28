@@ -34,20 +34,22 @@ public class QuizQuestionService {
     public String getAllQuizQuestionsInDatabase(){
         return new ResponseError(jsonify(QR.findAll()),HttpStatus.OK.value()).toJson();
     }
-
     @Transactional
-    public String updateQuizQuestion(Long quiz_id, Long question_id, Map<String,Object> updates){
-        if(!doesQuizExist(quiz_id) || !QR.findById(question_id).isPresent()){
-            return new ResponseError("invalid request", HttpStatus.BAD_REQUEST.value()).toJson();
-        }
-        QuizQuestion quiz = QR.getOne(question_id);
+    public String updateQuizQuestion(Long question_id, Map<String,Object> updates){
         try{
-            quiz.setQuestionText(updates.containsKey("question") ? (String) updates.get("question") : quiz.getQuestionText() );
-            quiz.setCorrectAnswer(updates.containsKey("correct_answer") ?  (String) updates.get("correct_answer") : quiz.getCorrectAnswer());
-            quiz.setIncorrectAnswerOne(updates.containsKey("wrong_answer1") ? (String) updates.get("wrong_answer1") : quiz.getIncorrectAnswerOne());
-            quiz.setIncorrectAnswerTwo(updates.containsKey("wrong_answer2") ? (String) updates.get("wrong_answer2") : quiz.getIncorrectAnswerTwo());
-            quiz.setIncorrectAnswerThree(updates.containsKey("wrong_answer3") ? (String) updates.get("wrong_answer3") : quiz.getIncorrectAnswerThree());
-            quiz.setImageLocation(updates.containsKey("image_location") ?  (String) updates.get("image_location") : quiz.getImageLocation());
+            QuizQuestion quizQuestion = QR.getOne(question_id);
+            Quiz quiz = quizQuestion.getQuiz();
+            for(QuizQuestion question: quiz.getQuestions()){
+                if (question.getId() != quizQuestion.getId() && question.getQuestionText().equals((String) updates.get("question"))){
+                    return new ResponseError("Quiz question already exists", HttpStatus.BAD_REQUEST.value()).toJson();
+                }
+            }
+            quizQuestion.setQuestionText(updates.containsKey("question") ? (String) updates.get("question") : quizQuestion.getQuestionText() );
+            quizQuestion.setCorrectAnswer(updates.containsKey("correct_answer") ?  (String) updates.get("correct_answer") : quizQuestion.getCorrectAnswer());
+            quizQuestion.setIncorrectAnswerOne(updates.containsKey("wrong_answer1") ? (String) updates.get("wrong_answer1") : quizQuestion.getIncorrectAnswerOne());
+            quizQuestion.setIncorrectAnswerTwo(updates.containsKey("wrong_answer2") ? (String) updates.get("wrong_answer2") : quizQuestion.getIncorrectAnswerTwo());
+            quizQuestion.setIncorrectAnswerThree(updates.containsKey("wrong_answer3") ? (String) updates.get("wrong_answer3") : quizQuestion.getIncorrectAnswerThree());
+            quizQuestion.setImageLocation(updates.containsKey("img") ?  (String) updates.get("img") : quizQuestion.getImageLocation());
             return new ResponseError("Success", HttpStatus.OK.value()).toJson();
         }catch (Exception e){
             return new ResponseError(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
