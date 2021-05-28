@@ -43,7 +43,7 @@ public class Quiz {
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
     @OneToMany(mappedBy = "quiz",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    private Set<QuizQuestion> questions;
+    private Set<QuizQuestion> questions = new HashSet<>();
     @OneToMany(mappedBy = "quiz", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<PlayerQuiz> players = new HashSet<>();
 

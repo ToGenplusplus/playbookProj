@@ -16,10 +16,6 @@ public class CoachController {
     public String getCoach(@PathVariable("id")Long coach_id){
         return CS.getCoach(coach_id);
     }
-    @PostMapping(path = "/new")
-    public String addNewCoach(@RequestBody Map<String,Object> coachObj){
-        return CS.addNewCoach(coachObj);
-    }
     @PutMapping(path = "/update/{coach_id}")
     public String updateCoach(@PathVariable("coach_id") Long coach_id,@RequestBody Map<String,Object> coachObj){
         return CS.updateCoach(coach_id,coachObj);

@@ -100,6 +100,14 @@ public class Team {
         return quizzes;
     }
 
+    public Set<Position> getPositions() {
+        return positions;
+    }
+
+    public void setPositions(Set<Position> positions) {
+        this.positions = positions;
+    }
+
     @Override
     public String toString() {
         return "Team{" +

@@ -42,44 +42,6 @@ public class CoachService {
         return response;
     }
     @Transactional
-    public String addNewCoach(Map<String,Object> coachObj){
-        ResponseError resp=null;
-        if(!coachObj.containsKey("email") || !coachObj.containsKey("first_name") || !coachObj.containsKey("last_name") || !coachObj.containsKey("team_id") || !coachObj.containsKey("positions")){
-            return new ResponseError("invalid request, missing fields", HttpStatus.BAD_REQUEST.value()).toJson();
-        }
-        Integer id = (Integer) coachObj.get("team_id");
-        long team_id = id;
-        if(!TR.findById(team_id).isPresent()){
-            return new ResponseError("team with id " + team_id+ " does not exist", HttpStatus.BAD_REQUEST.value()).toJson();
-        }
-        String email = (String) coachObj.get("email");
-        if(CR.getCoachByEmail(team_id,email) != null){
-            return new ResponseError("Coach with email " + email+ " already exist for this team", HttpStatus.BAD_REQUEST.value()).toJson();
-        }
-        ArrayList<String> coachPositions = (ArrayList<String>) coachObj.get("positions");
-        for(String pos : coachPositions){
-            if(!PosR.existsById(pos)){
-                return new ResponseError("pos " + pos + " does not exist", HttpStatus.BAD_REQUEST.value()).toJson();
-            }
-        }
-        try{
-            Team team = TR.getOne(team_id);
-            String first = (String) coachObj.get("first_name");
-            String last = (String) coachObj.get("last_name");
-            Coach coach = new Coach(first,last,email,team);
-            CR.save(coach);
-            for(String pos : coachPositions){
-                CR.insertNewCoachPosition(coach.getId(),pos);
-            }
-            resp = new ResponseError("Success",HttpStatus.OK.value());
-        }catch (Exception e){
-            resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
-        }finally {
-            return resp.toJson();
-        }
-
-    }
-    @Transactional
     public String updateCoach(Long coach_id,Map<String,Object> coachUpdates){
         if(!doesCoachExist(coach_id)){
             return new ResponseError("Coach with id " + coach_id+ " does not exists", HttpStatus.BAD_REQUEST.value()).toJson();

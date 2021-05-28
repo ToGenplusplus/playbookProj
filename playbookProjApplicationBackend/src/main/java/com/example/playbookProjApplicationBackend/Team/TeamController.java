@@ -39,4 +39,8 @@ public class TeamController {
     public String addNewPlayer(@RequestBody Map<String,Object> newPlayer){
         return TS.addNewPlayer(newPlayer);
     }
+    @PostMapping(path = "/coach/new")
+    public String addNewCoach(@RequestBody Map<String,Object> newCoach){
+        return TS.addNewCoach(newCoach);
+    }
 }

@@ -31,7 +31,7 @@ public class Coach {
     private Team team;
     @OneToMany(mappedBy = "coach", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
-    private Set<Quiz> quizzes;
+    private Set<Quiz> quizzes = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = "coach_positions",

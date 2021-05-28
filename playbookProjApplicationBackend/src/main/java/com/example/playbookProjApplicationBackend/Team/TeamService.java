@@ -143,16 +143,56 @@ public class TeamService {
             long team_id = (Integer) newPlayer.get("team_id");
             Team team = TR.getOne(team_id);
             Set<Player> players = team.getPlayers();
+            for(Player player : players){
+                if (player.getEmail().equals((String) newPlayer.get("email")) || player.getPlayerId().equals((String) newPlayer.get("player_id"))){
+                    return new ResponseError("invalid request duplicate player found", HttpStatus.BAD_REQUEST.value()).toJson();
+                }
+            }
+            Set<Position> teamsPositions = team .getPositions();
             Player player = new Player((String) newPlayer.get("player_id"),(String) newPlayer.get("first_name"),(String) newPlayer.get("last_name"),
                     (String) newPlayer.get("email"),(String) newPlayer.get("jersey"),team);
             players.add(player);
             team.setPlayers(players);
-            //need a way to add players positions
-            Set<Position> newPlayerPositions = player.getPositions();
-            for(String position : (ArrayList<String>) newPlayer.get("positions")){
-                newPlayerPositions.add(new Position(position,null,false));
+            for (String pos : (ArrayList<String>) newPlayer.get("positions")){
+                teamsPositions.forEach(position -> {if (position.getPosition().equals(pos)){
+                    player.getPositions().add(position);
+                }
+                });
             }
+            player.setPositions(player.getPositions());
             return new ResponseError(player.toJSONObj(),HttpStatus.OK.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
+    @Transactional
+    public String addNewCoach(Map<String,Object> newCoach){
+        if(!newCoach.containsKey("email") || !newCoach.containsKey("first_name") || !newCoach.containsKey("last_name")
+                || !newCoach.containsKey("team_id") || !newCoach.containsKey("positions")){
+            return new ResponseError("invalid request, missing fields", HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        try{
+            long team_id = (Integer) newCoach.get("team_id");
+            Team team = TR.getOne(team_id);
+            Set<Coach> coaches = team.getCoaches();
+            for(Coach coach: coaches){
+                if (coach.getEmail().equals((String) newCoach.get("email"))){
+                    return new ResponseError("invalid request coach email"+ coach.getEmail() + " already exists", HttpStatus.BAD_REQUEST.value()).toJson();
+                }
+            }
+            Set<Position> teamsPositions = team.getPositions();
+            Coach coach = new Coach((String) newCoach.get("first_name"),(String) newCoach.get("last_name"),
+                    (String) newCoach.get("email"),team);
+            coaches.add(coach);
+            team.setCoaches(coaches);
+            for (String pos : (ArrayList<String>) newCoach.get("positions")){
+                teamsPositions.forEach(position -> {if (position.getPosition().equals(pos)){
+                    coach.getPositions().add(position);
+                }
+                });
+            }
+            coach.setPositions(coach.getPositions());
+            return new ResponseError(coach.toJSONObj(),HttpStatus.OK.value()).toJson();
         }catch (Exception e){
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
