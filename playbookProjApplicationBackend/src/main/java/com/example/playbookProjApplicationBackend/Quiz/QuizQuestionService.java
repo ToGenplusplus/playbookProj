@@ -1,7 +1,6 @@
 package com.example.playbookProjApplicationBackend.Quiz;
 
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
-import com.example.playbookProjApplicationBackend.Position.PositionRepository;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +16,10 @@ import java.util.Map;
 public class QuizQuestionService {
 
     private QuizQuestionRepository QR;
-    private QuizRepository qR;
-    private PositionRepository PosR;
 
     @Autowired
-    public QuizQuestionService(QuizQuestionRepository QR, QuizRepository qR, PositionRepository PosR) {
+    public QuizQuestionService(QuizQuestionRepository QR) {
         this.QR = QR;
-        this.qR = qR;
-        this.PosR = PosR;
     }
 
     public String getAllQuizQuestionsInDatabase(){
@@ -53,10 +48,7 @@ public class QuizQuestionService {
         }
     }
     @Transactional
-    public String deleteAQuizQuestion(Long quiz_id, Long question_id){
-        if(!doesQuizExist(quiz_id) || !QR.findById(question_id).isPresent()){
-            return new ResponseError("invalid request", HttpStatus.BAD_REQUEST.value()).toJson();
-        }
+    public String deleteAQuizQuestion(Long question_id){
         try{
             QuizQuestion question = QR.getOne(question_id);
             QR.delete(question);
@@ -64,23 +56,6 @@ public class QuizQuestionService {
         }catch (Exception e){
             return new ResponseError(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
-    }
-
-    @Transactional
-    public String deactivateQuizQuestion(Long quiz_id, Long question_id){
-        if(!doesQuizExist(quiz_id) || !QR.findById(question_id).isPresent()){
-            return new ResponseError("invalid request", HttpStatus.BAD_REQUEST.value()).toJson();
-        }
-        try{
-            QR.deactivateQuizQuestion(quiz_id,question_id);
-            return new  ResponseError("Success",HttpStatus.OK.value()).toJson();
-        }catch (Exception e){
-            return new ResponseError(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
-        }
-    }
-
-    private boolean doesQuizExist(Long id){
-        return qR.findById(id).isPresent();
     }
 
     private JSONObject jsonify(Collection<QuizQuestion> questions){
