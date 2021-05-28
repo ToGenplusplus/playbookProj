@@ -34,6 +34,10 @@ public class OrganizationController {
     public String uploadNewOrganization(@RequestBody Map<String,Object> orgObj){
         return OS.uploadNewOrganization(orgObj);
     }
+    @PostMapping (path = "/team/new")
+    public String uploadNewTeam(@RequestBody Map<String,Object> team){
+        return OS.addNewTeam(team);
+    }
     @PutMapping(path = "/update/{org_id}")
     public String updateOrganization(@PathVariable("org_id") Long org_id,@RequestBody Map<String,Object> orgObj){
         return OS.updateOrganization(org_id, orgObj);

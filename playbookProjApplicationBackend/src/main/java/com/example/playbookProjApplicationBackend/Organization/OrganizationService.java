@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 
 @Service
@@ -22,7 +23,7 @@ public class OrganizationService {
     public OrganizationService(OrganizationRepository OR) {
         this.OR = OR;
     }
-
+//------------------------------------Organization-----------------------
     public String getAllOrganizations(){
         return callMethod(null,"getAllOrganizations");
     }
@@ -31,41 +32,6 @@ public class OrganizationService {
     }
     public String getOrganizationByName(String name){
         return callMethod(name,"getOrganizationByName");
-    }
-    public String getTeamsInOrganization(Long org_id){
-        try{
-            Organization organization = OR.getOne(org_id);
-            return new ResponseError(jsonifyTeams(organization.getTeams()),HttpStatus.OK.value()).toJson();
-
-        }catch (Exception e){
-           return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
-        }
-    }
-    public String getTeamById(Long org_id, Long team_id){
-        try{
-            Organization organization = OR.getOne(org_id);
-            for (Team team : organization.getTeams()){
-                if(team.getId() == team_id){
-                    return new ResponseError(team.toJSONObj(),HttpStatus.OK.value()).toJson();
-                }
-            }
-            return new ResponseError("team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
-        }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
-        }
-    }
-    public String getTeamByName(Long org_id, String team_name){
-        try{
-            Organization organization = OR.getOne(org_id);
-            for (Team team : organization.getTeams()){
-                if(team.getName().equals(team_name)){
-                    return new ResponseError(team.toJSONObj(),HttpStatus.OK.value()).toJson();
-                }
-            }
-            return new ResponseError("team with name " + team_name + " does not exist",HttpStatus.OK.value()).toJson();
-        }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
-        }
     }
     public String uploadNewOrganization(Map<String,Object> orgObj){
         ResponseError resp = null;
@@ -119,13 +85,70 @@ public class OrganizationService {
             link = organization.getOrganizationLink();
         }
         try{
-           organization.setCountry(orgObj.containsKey("country") ? (String) orgObj.get("country") : organization.getCountry());
-           organization.setState(orgObj.containsKey("state") ? (String) orgObj.get("state") : organization.getState());
-           organization.setOrganizationType(orgObj.containsKey("org_type")?  (String) orgObj.get("org_type") : organization.getOrganizationType());
-           organization.setLogoImageLocation(orgObj.containsKey("img") ? (String) orgObj.get("img") : organization.getLogoImageLocation());
-           organization.setName(name);
-           organization.setOrganizationLink(link);
-           return new ResponseError("Success",HttpStatus.OK.value()).toJson();
+            organization.setCountry(orgObj.containsKey("country") ? (String) orgObj.get("country") : organization.getCountry());
+            organization.setState(orgObj.containsKey("state") ? (String) orgObj.get("state") : organization.getState());
+            organization.setOrganizationType(orgObj.containsKey("org_type")?  (String) orgObj.get("org_type") : organization.getOrganizationType());
+            organization.setLogoImageLocation(orgObj.containsKey("img") ? (String) orgObj.get("img") : organization.getLogoImageLocation());
+            organization.setName(name);
+            organization.setOrganizationLink(link);
+            return new ResponseError("Success",HttpStatus.OK.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
+    //--------------------------------------Teams------------------------
+    public String getTeamsInOrganization(Long org_id){
+        try{
+            Organization organization = OR.getOne(org_id);
+            return new ResponseError(jsonifyTeams(organization.getTeams()),HttpStatus.OK.value()).toJson();
+
+        }catch (Exception e){
+           return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
+    public String getTeamById(Long org_id, Long team_id){
+        try{
+            Organization organization = OR.getOne(org_id);
+            for (Team team : organization.getTeams()){
+                if(team.getId() == team_id){
+                    return new ResponseError(team.toJSONObj(),HttpStatus.OK.value()).toJson();
+                }
+            }
+            return new ResponseError("team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
+    public String getTeamByName(Long org_id, String team_name){
+        try{
+            Organization organization = OR.getOne(org_id);
+            for (Team team : organization.getTeams()){
+                if(team.getName().equals(team_name)){
+                    return new ResponseError(team.toJSONObj(),HttpStatus.OK.value()).toJson();
+                }
+            }
+            return new ResponseError("team with name " + team_name + " does not exist",HttpStatus.OK.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
+    @Transactional
+    public String addNewTeam(Map<String,Object> newTeam){
+        if(!newTeam.containsKey("org_id") || !newTeam.containsKey("name")){
+            return new ResponseError("invalid request, missing fields", HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        try{
+            Organization organization = OR.getOne((Long) newTeam.get("org_id"));
+            Set<Team> orgTeams = organization.getTeams();
+            for(Team team: orgTeams){
+                if(team.getName().equals((String) newTeam.get("name"))){
+                    return new ResponseError("Team with name " + team.getName() +  " already exixts for this organiation",HttpStatus.BAD_REQUEST.value()).toJson();
+                }
+            }
+            Team team = new Team((String) newTeam.get("name"),organization);
+            orgTeams.add(team);
+            organization.setTeams(orgTeams);
+            return new ResponseError(team.toJSONObj(),HttpStatus.OK.value()).toJson();
         }catch (Exception e){
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
