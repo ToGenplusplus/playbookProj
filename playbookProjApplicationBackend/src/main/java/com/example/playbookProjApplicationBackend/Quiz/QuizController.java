@@ -38,6 +38,11 @@ public class QuizController {
     public String addNewQuizQuestion(@RequestBody Map<String,Object> newQuestion){
         return QS.addNewQuizQuestion(newQuestion);
     }
+    @PutMapping(path = "/update/{quiz_id}")
+    public String updateQuiz(@PathVariable("quiz_id") Long quiz_id,@RequestBody Map<String,Object> quizUpdate){
+        return QS.updateQuiz(quiz_id, quizUpdate);
+    }
+
     //update quiz
     //deactivate all quizquestions for a quiz
     //delete all quiz questions for a quiz

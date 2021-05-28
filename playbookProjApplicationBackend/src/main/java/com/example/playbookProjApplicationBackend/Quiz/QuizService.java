@@ -1,9 +1,10 @@
 package com.example.playbookProjApplicationBackend.Quiz;
 
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
-import com.example.playbookProjApplicationBackend.Player.Player;
 import com.example.playbookProjApplicationBackend.Player.PlayerAnswer;
 import com.example.playbookProjApplicationBackend.PlayerQuiz.PlayerQuiz;
+import com.example.playbookProjApplicationBackend.Position.Position;
+import com.example.playbookProjApplicationBackend.Team.Team;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,33 @@ public class QuizService {
     public String getQuiz(Long quiz_id){
         try{
             return new ResponseError(QR.getOne(quiz_id).toJSONObj(),HttpStatus.OK.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
+    @Transactional
+    public String updateQuiz(Long quiz_id,Map<String,Object> quizUpdate){
+        //change name,description,and position
+        try{
+            Quiz quiz = QR.getOne(quiz_id);
+            Team team = quiz.getTeam();
+            Set<Position> teamPositions = team.getPositions();
+            if(quizUpdate.containsKey("name")){
+                for (Quiz quiz1 : team.getQuizzes()){
+                    if (quiz1.getId() != quiz.getId() && quiz1.getName().equals((String) quizUpdate.get("name"))){
+                        return new ResponseError("Team already has quiz with with name " + quiz1.getName() + " already exists", HttpStatus.BAD_REQUEST.value()).toJson();
+                    }
+                }
+            }
+            quiz.setName(quizUpdate.containsKey("name") ? (String) quizUpdate.get("name"): quiz.getName());
+            quiz.setDescription(quizUpdate.containsKey("description") ? (String) quizUpdate.get("description"): quiz.getDescription());
+            for (Position position : teamPositions){
+                if(position.getPosition().equals((String) quizUpdate.get("position"))){
+                    quiz.setPosition(position);
+                    break;
+                }
+            }
+            return new ResponseError(quiz.toJSONObj(),HttpStatus.OK.value()).toJson();
         }catch (Exception e){
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }

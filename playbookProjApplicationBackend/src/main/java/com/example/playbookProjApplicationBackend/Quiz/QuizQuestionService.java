@@ -1,10 +1,7 @@
 package com.example.playbookProjApplicationBackend.Quiz;
 
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
-import com.example.playbookProjApplicationBackend.Player.PlayerRepository;
 import com.example.playbookProjApplicationBackend.Position.PositionRepository;
-import com.example.playbookProjApplicationBackend.Team.Team;
-import com.example.playbookProjApplicationBackend.Team.TeamRepository;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -50,6 +46,7 @@ public class QuizQuestionService {
             quizQuestion.setIncorrectAnswerTwo(updates.containsKey("wrong_answer2") ? (String) updates.get("wrong_answer2") : quizQuestion.getIncorrectAnswerTwo());
             quizQuestion.setIncorrectAnswerThree(updates.containsKey("wrong_answer3") ? (String) updates.get("wrong_answer3") : quizQuestion.getIncorrectAnswerThree());
             quizQuestion.setImageLocation(updates.containsKey("img") ?  (String) updates.get("img") : quizQuestion.getImageLocation());
+            quiz.setLastModified(LocalDate.now());
             return new ResponseError("Success", HttpStatus.OK.value()).toJson();
         }catch (Exception e){
             return new ResponseError(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
