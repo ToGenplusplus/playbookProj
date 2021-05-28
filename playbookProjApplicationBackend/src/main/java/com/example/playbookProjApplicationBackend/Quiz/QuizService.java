@@ -1,6 +1,7 @@
 package com.example.playbookProjApplicationBackend.Quiz;
 
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
+import com.example.playbookProjApplicationBackend.Player.Player;
 import com.example.playbookProjApplicationBackend.Player.PlayerAnswer;
 import com.example.playbookProjApplicationBackend.PlayerQuiz.PlayerQuiz;
 import com.example.playbookProjApplicationBackend.Position.Position;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -184,6 +186,34 @@ public class QuizService {
             }
             });
             return new ResponseError(attempts[0],HttpStatus.OK.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
+    @Transactional
+    public String newQuizAttempt(Map<String,Object> attemptData){
+        if(!attemptData.containsKey("player_id") || !attemptData.containsKey("quiz_id")){
+            return new ResponseError("invalid request missing fields",HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        try{
+            long quiz_id = (Integer) attemptData.get("quiz_id");
+            Quiz quiz= QR.getOne(quiz_id);
+            Team team= quiz.getTeam();
+            Player player = null;
+            for (Player player1 : team.getPlayers()){
+                if(player1.getPlayerId().equals((String) attemptData.get("player_id"))){
+                    player = player1;
+                }
+            }
+            if(player == null){
+                return new ResponseError("invalid request player with id " + attemptData.get("player_id") + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+            }
+            PlayerQuiz playerQuiz = new PlayerQuiz(1, LocalDate.now(),player,quiz);
+            player.getQuizzesTaken().add(playerQuiz);
+            player.setQuizzesTaken(player.getQuizzesTaken());
+            quiz.getPlayers().add(playerQuiz);
+            quiz.setPlayers(quiz.getPlayers());
+            return new ResponseError(playerQuiz.toJSONObj(),HttpStatus.OK.value()).toJson();
         }catch (Exception e){
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }

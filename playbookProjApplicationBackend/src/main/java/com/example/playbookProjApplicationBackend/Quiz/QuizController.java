@@ -38,6 +38,10 @@ public class QuizController {
     public String addNewQuizQuestion(@RequestBody Map<String,Object> newQuestion){
         return QS.addNewQuizQuestion(newQuestion);
     }
+    @PostMapping(path = "/quiz-attempt/new")
+    public String addNewQuizAttempt(@RequestBody Map<String,Object> attempt){
+        return QS.newQuizAttempt(attempt);
+    }
     @PutMapping(path = "/update/{quiz_id}")
     public String updateQuiz(@PathVariable("quiz_id") Long quiz_id,@RequestBody Map<String,Object> quizUpdate){
         return QS.updateQuiz(quiz_id, quizUpdate);
