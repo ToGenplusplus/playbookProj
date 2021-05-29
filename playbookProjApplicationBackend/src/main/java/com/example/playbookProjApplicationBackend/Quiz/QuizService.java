@@ -1,5 +1,6 @@
 package com.example.playbookProjApplicationBackend.Quiz;
 
+import com.example.playbookProjApplicationBackend.Coach.Coach;
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
 import com.example.playbookProjApplicationBackend.Player.Player;
 import com.example.playbookProjApplicationBackend.Player.PlayerAnswer;
@@ -248,7 +249,6 @@ public class QuizService {
     public String deleteQuiz(Long quiz_id){
         try{
             Quiz quiz = QR.getOne(quiz_id);
-            QR.delete(quiz);
             return new ResponseError(quiz.getId(),HttpStatus.OK.value()).toJson();
         }catch (Exception e){
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
