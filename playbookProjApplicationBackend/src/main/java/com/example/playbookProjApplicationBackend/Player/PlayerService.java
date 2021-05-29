@@ -3,7 +3,6 @@ package com.example.playbookProjApplicationBackend.Player;
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
 import com.example.playbookProjApplicationBackend.PlayerQuiz.PlayerQuiz;
 import com.example.playbookProjApplicationBackend.Position.Position;
-import com.example.playbookProjApplicationBackend.Position.PositionRepository;
 import com.example.playbookProjApplicationBackend.Quiz.QuizQuestion;
 import com.example.playbookProjApplicationBackend.Team.Team;
 import com.example.playbookProjApplicationBackend.Team.TeamRepository;
@@ -97,18 +96,14 @@ public class PlayerService {
         }
     }
     @Transactional
+    //not working transaction silent rollback
     public String deletePlayer(String player_id){
-        ResponseError resp =null;
-        if(!doesPlayerExist(player_id)){
-            return new ResponseError("player with id " + player_id+ " does not exists", HttpStatus.BAD_REQUEST.value()).toJson();
-        }
         try{
-            PR.deleteById(player_id);
-            resp = new ResponseError("Success", HttpStatus.OK.value());
+            Player player = PR.getOne(player_id);
+            PR.delete(player);
+            return new ResponseError("Success", HttpStatus.OK.value()).toJson();
         }catch (Exception e){
-            resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
-        }finally {
-            return resp.toJson();
+            return  new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
     }
     private void updatePlayerPositions(Player player, Team playersTeam, ArrayList<String> positions){
