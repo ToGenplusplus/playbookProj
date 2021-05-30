@@ -17,7 +17,7 @@ public class PlayerQuiz {
     private Integer numberOfAttempts;
     @Column(name = "last_attempt_date", nullable = false)
     private LocalDate timeOfLastAttempt;
-    @ManyToOne(cascade = CascadeType.ALL, fetch =  FetchType.LAZY)
+    @ManyToOne(fetch =  FetchType.LAZY)
     @JoinColumn(name = "player_id", nullable = false)
     private Player player;
     @ManyToOne(cascade = CascadeType.ALL, fetch =  FetchType.LAZY)

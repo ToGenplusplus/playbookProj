@@ -5,27 +5,22 @@ import com.example.playbookProjApplicationBackend.PlayerQuiz.PlayerQuiz;
 import com.example.playbookProjApplicationBackend.Position.Position;
 import com.example.playbookProjApplicationBackend.Quiz.QuizQuestion;
 import com.example.playbookProjApplicationBackend.Team.Team;
-import com.example.playbookProjApplicationBackend.Team.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import org.json.simple.JSONObject;
-import org.json.simple.JSONArray;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PlayerService {
 
     private PlayerRepository PR;
-    private TeamRepository TR;
 
     @Autowired
-    public PlayerService(PlayerRepository PR, TeamRepository TR) {
+    public PlayerService(PlayerRepository PR) {
         this.PR = PR;
-        this.TR = TR;
     }
 
     public String getPlayer(String player_id){
@@ -96,11 +91,13 @@ public class PlayerService {
         }
     }
     @Transactional
-    //not working transaction silent rollback
     public String deletePlayer(String player_id){
         try{
+            if(!(doesPlayerExist(player_id))){
+                return new ResponseError("This player does not exists",HttpStatus.BAD_REQUEST.value()).toJson();
+            }
             Player player = PR.getOne(player_id);
-            PR.delete(player);
+            PR.deletePlayer(player.getPlayerId());
             return new ResponseError("Success", HttpStatus.OK.value()).toJson();
         }catch (Exception e){
             return  new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
@@ -116,18 +113,6 @@ public class PlayerService {
             });
         }
         player.setPositions(playersPositions);
-    }
-
-    private JSONObject jsonify(Collection<Player> players){
-        JSONObject p = new JSONObject();
-        JSONArray playersArray = new JSONArray();
-        for (Player player : players){
-            playersArray.add(player.toJSONObj());
-        }
-
-        p.put("players",playersArray);
-        return p;
-
     }
 
     private boolean doesPlayerExist(String player_id){
