@@ -1,6 +1,5 @@
 package com.example.playbookProjApplicationBackend.Quiz;
 
-import com.example.playbookProjApplicationBackend.Coach.Coach;
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
 import com.example.playbookProjApplicationBackend.Player.Player;
 import com.example.playbookProjApplicationBackend.Player.PlayerAnswer;
@@ -248,7 +247,11 @@ public class QuizService {
     //error need to fix
     public String deleteQuiz(Long quiz_id){
         try{
+            if(!QR.findById(quiz_id).isPresent()){
+                return new ResponseError("invalid request quiz with id " + quiz_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+            }
             Quiz quiz = QR.getOne(quiz_id);
+            QR.deleteQuiz(quiz.getId());
             return new ResponseError(quiz.getId(),HttpStatus.OK.value()).toJson();
         }catch (Exception e){
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
