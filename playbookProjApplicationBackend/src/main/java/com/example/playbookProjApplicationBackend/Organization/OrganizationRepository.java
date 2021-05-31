@@ -1,11 +1,9 @@
 package com.example.playbookProjApplicationBackend.Organization;
 
-import com.example.playbookProjApplicationBackend.Team.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 
 public interface OrganizationRepository extends JpaRepository<Organization,Long> {
     @Query(value = "SELECT * FROM organizations o WHERE o.name = :org_name", nativeQuery = true)
