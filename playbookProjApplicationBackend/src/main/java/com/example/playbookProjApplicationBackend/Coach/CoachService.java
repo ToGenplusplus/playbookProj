@@ -2,18 +2,13 @@ package com.example.playbookProjApplicationBackend.Coach;
 
 import com.example.playbookProjApplicationBackend.Error.ResponseError;
 import com.example.playbookProjApplicationBackend.Position.Position;
-import com.example.playbookProjApplicationBackend.Position.PositionRepository;
 import com.example.playbookProjApplicationBackend.Team.Team;
-import com.example.playbookProjApplicationBackend.Team.TeamRepository;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,14 +16,10 @@ import java.util.Set;
 public class CoachService {
 
     private CoachRepository CR;
-    private TeamRepository TR;
-    private PositionRepository PosR;
 
     @Autowired
-    public CoachService(CoachRepository CR, TeamRepository TR, PositionRepository PosR) {
+    public CoachService(CoachRepository CR) {
         this.CR = CR;
-        this.TR = TR;
-        this.PosR = PosR;
     }
 
 
@@ -61,24 +52,22 @@ public class CoachService {
             if(coachUpdates.containsKey("positions")){
                 updateCoachPositions(coach, coachesTeam,(ArrayList<String>) coachUpdates.get("positions"));
             }
-            return new ResponseError("Success", HttpStatus.OK.value()).toJson();
+            return new ResponseError(coach.toJSONObj(), HttpStatus.OK.value()).toJson();
         }catch (Exception e){
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
     }
     @Transactional
     public String deleteCoach(Long coach_id){
-        ResponseError resp=null;
         if(!doesCoachExist(coach_id)){
             return new ResponseError("Coach with id " + coach_id+ " does not exists", HttpStatus.BAD_REQUEST.value()).toJson();
         }
         try{
-            CR.deleteById(coach_id);
-            resp = new ResponseError("Success", HttpStatus.OK.value());
+            Coach coach = CR.getOne(coach_id);
+            CR.removeCoach(coach.getId());
+            return new ResponseError(coach.getId(), HttpStatus.OK.value()).toJson();
         }catch (Exception e){
-            resp = new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
-        }finally {
-            return resp.toJson();
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
     }
     private void updateCoachPositions(Coach coach, Team coachesTeam,ArrayList<String> positions){
@@ -93,17 +82,6 @@ public class CoachService {
         coach.setPositions(coachesPositions);
     }
 
-    public JSONObject jsonify(Collection<Coach> coaches){
-        JSONObject coachObject = new JSONObject();
-        JSONArray coachesArray = new JSONArray();
-        for (Coach coach : coaches){
-            coachesArray.add(coach.toJSONObj());
-        }
-
-        coachObject.put("coaches",coachesArray);
-        return coachObject;
-
-    }
 
     public boolean doesCoachExist(Long coach_id){
         return CR.findById(coach_id).isPresent();
