@@ -50,6 +50,10 @@ public class QuizController {
     public String updateQuizAttemtp(@PathVariable("quiz_id") Long quiz_id,@PathVariable("player_id") String player_id){
         return QS.updateQuizAttempt(quiz_id, player_id);
     }
+    @PutMapping(path = "/activation/toggle/{quiz_id}")
+    public String toggleQuizActivation(@PathVariable("quiz_id") Long quiz_id){
+        return QS.toggleQuizActivation(quiz_id);
+    }
     @DeleteMapping(path = "/delete/{quiz_id}")
     public String deleteQuiz(@PathVariable("quiz_id") Long quiz_id){
         return QS.deleteQuiz(quiz_id);
