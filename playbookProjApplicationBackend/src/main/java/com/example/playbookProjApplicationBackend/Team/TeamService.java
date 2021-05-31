@@ -258,8 +258,20 @@ public class TeamService {
             return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
         }
     }
-    //delete Team
-    //update Team
+    @Transactional
+    public String deleteAllQuizzesForTeam(Long team_id){
+        if(!TR.findById(team_id).isPresent()){
+            return new ResponseError("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+        }
+        try{
+            Team team = TR.getOne(team_id);
+            TR.deleteAllQuizzesForTeam(team.getId());
+            return new ResponseError(jsonifyQuizzes(team.getQuizzes()),HttpStatus.OK.value()).toJson();
+        }catch (Exception e){
+            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+        }
+    }
+
 
     private JSONObject jsonifyCoaches(Collection<Coach> coaches){
         JSONObject coachObject = new JSONObject();

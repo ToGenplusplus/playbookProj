@@ -49,4 +49,8 @@ public class TeamController {
     }
     @PutMapping(path = "/update/{team_id}")
     public String updateTeam(@PathVariable("team_id") Long team_id,@RequestBody Map<String,Object> teamInfo){return TS.updateTeam(team_id,teamInfo);}
+    @DeleteMapping(path = "/all/quiz/delete/{team_id}")
+    public String deleteAllQuizzesForTeam(@PathVariable("team_id") Long team_id){
+        return TS.deleteAllQuizzesForTeam(team_id);
+    }
 }
