@@ -17,29 +17,28 @@ import org.springframework.transaction.annotation.Transactional;
 public class PlayerService {
 
     private PlayerRepository PR;
+    private ResponseError responseError;
 
     @Autowired
-    public PlayerService(PlayerRepository PR) {
+    public PlayerService(PlayerRepository PR, ResponseError responseError) {
         this.PR = PR;
+        this.responseError = responseError;
     }
 
     public String getPlayer(String player_id){
         //check if player exist, if it does return player else return exception
-        String response;
         if(!(doesPlayerExist(player_id))){
-            response = new ResponseError("This player does not exists",HttpStatus.BAD_REQUEST.value()).toJson();
-            return response;
-        }
+            return sendResponse("This player does not exists",HttpStatus.BAD_REQUEST.value());
 
+        }
         Player foundPlayer = PR.getOne(player_id);
-        response = new ResponseError(foundPlayer.toJSONObj(),HttpStatus.OK.value()).toJson();
-        return response;
+        return sendResponse(foundPlayer.toJSONObj(),HttpStatus.OK.value());
     }
     @Transactional
     public String addNewPlayerAnswer(Map<String,Object> data) {
         if(!data.containsKey("player_id")|| !data.containsKey("question_id")|| !data.containsKey("is_correct")
                 || !data.containsKey("answered_time")){
-            return new ResponseError("invalid request missing fields", HttpStatus.BAD_REQUEST.value()).toJson();
+            return sendResponse("invalid request missing fields", HttpStatus.BAD_REQUEST.value());
         }
         try{
             String playerId = (String) data.get("player_id");
@@ -56,13 +55,13 @@ public class PlayerService {
                 });
             }
             if(question[0] == null){
-                return new ResponseError("invalid request question does not exist", HttpStatus.BAD_REQUEST.value()).toJson();
+                return sendResponse("invalid request question does not exist", HttpStatus.BAD_REQUEST.value());
             }
             answers.add(new PlayerAnswer(player,question[0],(Boolean) data.get("is_correct"),(short) time));
             player.setAnswers(answers);
-            return new ResponseError("success",HttpStatus.OK.value()).toJson();
+            return sendResponse("success",HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     @Transactional
@@ -74,7 +73,7 @@ public class PlayerService {
             if(updates.containsKey("email")){
                 for(Player players : playersTeam.getPlayers()){
                     if (!players.getPlayerId().equals(player_id) && players.getEmail().equals((String) updates.get("email"))){
-                        return new ResponseError("player with with email " + players.getEmail() + " already exists", HttpStatus.BAD_REQUEST.value()).toJson();
+                        return sendResponse("player with with email " + players.getEmail() + " already exists", HttpStatus.BAD_REQUEST.value());
                     }
                 }
             }
@@ -85,22 +84,22 @@ public class PlayerService {
             if (updates.containsKey("positions")){
                 updatePlayerPositions( player,playersTeam,(ArrayList<String>) updates.get("positions"));
             }
-            return new ResponseError("Success", HttpStatus.OK.value()).toJson();
+            return sendResponse("Success", HttpStatus.OK.value());
         }catch (Exception e){
-            return  new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     @Transactional
     public String deletePlayer(String player_id){
         try{
             if(!(doesPlayerExist(player_id))){
-                return new ResponseError("This player does not exists",HttpStatus.BAD_REQUEST.value()).toJson();
+                return sendResponse("This player does not exists",HttpStatus.BAD_REQUEST.value());
             }
             Player player = PR.getOne(player_id);
             PR.deletePlayer(player.getPlayerId());
-            return new ResponseError("Success", HttpStatus.OK.value()).toJson();
+            return sendResponse("Success", HttpStatus.OK.value());
         }catch (Exception e){
-            return  new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     private void updatePlayerPositions(Player player, Team playersTeam, ArrayList<String> positions){
@@ -120,6 +119,10 @@ public class PlayerService {
     }
 
 
-
+    private String sendResponse(Object Message, int errorCode){
+        responseError.setMessage(Message);
+        responseError.setErrorCode(errorCode);
+        return responseError.toJson();
+    }
 
 }
