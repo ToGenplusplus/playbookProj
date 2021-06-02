@@ -16,22 +16,24 @@ import java.util.Set;
 public class CoachService {
 
     private CoachRepository CR;
+    private ResponseError responseError;
 
     @Autowired
-    public CoachService(CoachRepository CR) {
+    public CoachService(CoachRepository CR, ResponseError responseError) {
         this.CR = CR;
+        this.responseError = responseError;
     }
 
 
     public String getCoach(Long coach_id){
         String response;
         if(!(doesCoachExist(coach_id))){
-            response = new ResponseError("This coach does not exists",HttpStatus.BAD_REQUEST.value()).toJson();
+            response = sendResponse("This coach does not exists",HttpStatus.BAD_REQUEST.value());
             return response;
         }
 
        Coach foundCoach = CR.getOne(coach_id);
-        response = new ResponseError(foundCoach.toJSONObj(),HttpStatus.OK.value()).toJson();
+        response = sendResponse(foundCoach.toJSONObj(),HttpStatus.OK.value());
         return response;
     }
     @Transactional
@@ -42,7 +44,7 @@ public class CoachService {
             if (coachUpdates.containsKey("email")) {
                 for(Coach coaches: coachesTeam.getCoaches()){
                     if (coaches.getId() != coach_id  && coaches.getEmail().equals((String) coachUpdates.get("email"))){
-                        return new ResponseError("caoch with with email " + coaches.getEmail() + " already exists", HttpStatus.BAD_REQUEST.value()).toJson();
+                        return sendResponse("caoch with with email " + coaches.getEmail() + " already exists", HttpStatus.BAD_REQUEST.value());
                     }
                 }
             }
@@ -52,22 +54,22 @@ public class CoachService {
             if(coachUpdates.containsKey("positions")){
                 updateCoachPositions(coach, coachesTeam,(ArrayList<String>) coachUpdates.get("positions"));
             }
-            return new ResponseError(coach.toJSONObj(), HttpStatus.OK.value()).toJson();
+            return sendResponse(coach.toJSONObj(), HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     @Transactional
     public String deleteCoach(Long coach_id){
         if(!doesCoachExist(coach_id)){
-            return new ResponseError("Coach with id " + coach_id+ " does not exists", HttpStatus.BAD_REQUEST.value()).toJson();
+            return sendResponse("Coach with id " + coach_id+ " does not exists", HttpStatus.BAD_REQUEST.value());
         }
         try{
             Coach coach = CR.getOne(coach_id);
             CR.removeCoach(coach.getId());
-            return new ResponseError(coach.getId(), HttpStatus.OK.value()).toJson();
+            return sendResponse(coach.getId(), HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     private void updateCoachPositions(Coach coach, Team coachesTeam,ArrayList<String> positions){
@@ -85,5 +87,11 @@ public class CoachService {
 
     public boolean doesCoachExist(Long coach_id){
         return CR.findById(coach_id).isPresent();
+    }
+
+    private String sendResponse(Object Message, int errorCode){
+        responseError.setMessage(Message);
+        responseError.setErrorCode(errorCode);
+        return responseError.toJson();
     }
 }
