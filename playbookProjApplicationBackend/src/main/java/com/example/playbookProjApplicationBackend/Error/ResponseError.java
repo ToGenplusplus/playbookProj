@@ -10,6 +10,9 @@ public class ResponseError{
     private Object message;
     private int errorCode;
 
+    public ResponseError() {
+    }
+
     public ResponseError(Object message, int errorCode) {
         this.message = message;
         this.errorCode = errorCode;

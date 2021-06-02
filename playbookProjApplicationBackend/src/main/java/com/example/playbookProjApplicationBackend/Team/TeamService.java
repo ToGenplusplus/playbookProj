@@ -21,10 +21,12 @@ import java.util.*;
 public class TeamService {
 
     private TeamRepository TR;
+    private ResponseError responseError;
 
     @Autowired
-    public TeamService(TeamRepository TR) {
+    public TeamService(TeamRepository TR, ResponseError responseError) {
         this.TR = TR;
+        this.responseError = responseError;
     }
     @Transactional
     public String updateTeam(Long team_id, Map<String,Object> teamInfo){
@@ -34,31 +36,31 @@ public class TeamService {
             if(teamInfo.containsKey("name")){
                 for(Team team1 : organization.getTeams()){
                     if(team1.getId() != team.getId() && team1.getName().equals((String) teamInfo.get("name"))){
-                        return new ResponseError("team name " + team1.getName() + " already exists for organization ", HttpStatus.BAD_REQUEST.value()).toJson();
+                        return sendResponse("team name " + team1.getName() + " already exists for organization ", HttpStatus.BAD_REQUEST.value());
                     }
                 }
             }
             team.setName(teamInfo.containsKey("name") ? (String) teamInfo.get("name") : team.getName());
-            return new ResponseError(team.toJSONObj(),HttpStatus.OK.value()).toJson();
+            return sendResponse(team.toJSONObj(),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     //---------------------COACHES-------------------------------------------
     public String getAllCoachesInTeam(Long team_id){
         if(!TR.findById(team_id).isPresent()){
-            return new ResponseError("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+            return sendResponse("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value());
         }
         try {
             Team team = TR.getOne(team_id);
-            return new ResponseError(jsonifyCoaches(team.getCoaches()),HttpStatus.OK.value()).toJson();
+            return sendResponse(jsonifyCoaches(team.getCoaches()),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     public String getCoachesByPosition(Long team_id, String position_id){
         if(!TR.findById(team_id).isPresent()){
-            return new ResponseError("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+            return sendResponse("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value());
         }
         try {
             Team team = TR.getOne(team_id);
@@ -70,16 +72,16 @@ public class TeamService {
                 }
                 });
             }
-            return new ResponseError(jsonifyCoaches(coachesCoachingPosition),HttpStatus.OK.value()).toJson();
+            return sendResponse(jsonifyCoaches(coachesCoachingPosition),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     @Transactional
     public String addNewCoach(Map<String,Object> newCoach){
         if(!newCoach.containsKey("email") || !newCoach.containsKey("first_name") || !newCoach.containsKey("last_name")
                 || !newCoach.containsKey("team_id") || !newCoach.containsKey("positions")){
-            return new ResponseError("invalid request, missing fields", HttpStatus.BAD_REQUEST.value()).toJson();
+            return sendResponse("invalid request, missing fields", HttpStatus.BAD_REQUEST.value());
         }
         try{
             long team_id = (Integer) newCoach.get("team_id");
@@ -87,7 +89,7 @@ public class TeamService {
             Set<Coach> coaches = team.getCoaches();
             for(Coach coach: coaches){
                 if (coach.getEmail().equals((String) newCoach.get("email"))){
-                    return new ResponseError("invalid request coach email"+ coach.getEmail() + " already exists", HttpStatus.BAD_REQUEST.value()).toJson();
+                    return sendResponse("invalid request coach email"+ coach.getEmail() + " already exists", HttpStatus.BAD_REQUEST.value());
                 }
             }
             Set<Position> teamsPositions = team.getPositions();
@@ -102,27 +104,27 @@ public class TeamService {
                 });
             }
             coach.setPositions(coach.getPositions());
-            return new ResponseError(coach.toJSONObj(),HttpStatus.OK.value()).toJson();
+            return sendResponse(coach.toJSONObj(),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     //---------------------PLAYERS------------------------------------
     public String getAllPlayersInTeam(Long team_id){
         if(!TR.findById(team_id).isPresent()){
-            return new ResponseError("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+            return sendResponse("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value());
         }
         try {
             Team team = TR.getOne(team_id);
-            return new ResponseError(jsonifyPlayers(team.getPlayers()),HttpStatus.OK.value()).toJson();
+            return sendResponse(jsonifyPlayers(team.getPlayers()),HttpStatus.OK.value());
 
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     public String getAllPlayersInATeamsPosition(Long team_id,String position_id){
         if(!TR.findById(team_id).isPresent()){
-            return new ResponseError("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+            return sendResponse("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value());
         }
         try {
             Team team = TR.getOne(team_id);
@@ -134,16 +136,16 @@ public class TeamService {
                 }
                 });
             }
-            return new ResponseError(jsonifyPlayers(playersInPosition),HttpStatus.OK.value()).toJson();
+            return sendResponse(jsonifyPlayers(playersInPosition),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     @Transactional
     public String addNewPlayer(Map<String,Object> newPlayer){
         if(!newPlayer.containsKey("player_id") || !newPlayer.containsKey("email") || !newPlayer.containsKey("first_name") || !newPlayer.containsKey("last_name")
                 || !newPlayer.containsKey("team_id") || !newPlayer.containsKey("positions")){
-            return new ResponseError("invalid request, missing fields", HttpStatus.BAD_REQUEST.value()).toJson();
+            return sendResponse("invalid request, missing fields", HttpStatus.BAD_REQUEST.value());
         }
         try{
             long team_id = (Integer) newPlayer.get("team_id");
@@ -151,7 +153,7 @@ public class TeamService {
             Set<Player> players = team.getPlayers();
             for(Player player : players){
                 if (player.getEmail().equals((String) newPlayer.get("email")) || player.getPlayerId().equals((String) newPlayer.get("player_id"))){
-                    return new ResponseError("invalid request duplicate player found", HttpStatus.BAD_REQUEST.value()).toJson();
+                    return sendResponse("invalid request duplicate player found", HttpStatus.BAD_REQUEST.value());
                 }
             }
             Set<Position> teamsPositions = team .getPositions();
@@ -166,39 +168,39 @@ public class TeamService {
                 });
             }
             player.setPositions(player.getPositions());
-            return new ResponseError(player.toJSONObj(),HttpStatus.OK.value()).toJson();
+            return sendResponse(player.toJSONObj(),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     //--------------------------------QUIZZES---------------------------------------
     public String getAllQuizzesInTeam(Long team_id){
         if(!TR.findById(team_id).isPresent()){
-            return new ResponseError("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+            return sendResponse("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value());
         }
         try {
             Team team = TR.getOne(team_id);
-            return new ResponseError(jsonifyQuizzes(team.getQuizzes()),HttpStatus.OK.value()).toJson();
+            return sendResponse(jsonifyQuizzes(team.getQuizzes()),HttpStatus.OK.value());
 
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     public String getAllQuizzesForATeamPosition(Long team_id, String position_id){
         if(!TR.findById(team_id).isPresent()){
-            return new ResponseError("invalid request, make sure team and position exists",HttpStatus.BAD_REQUEST.value()).toJson();
+            return sendResponse("invalid request, make sure team and position exists",HttpStatus.BAD_REQUEST.value());
         }
         try {
             Collection<Quiz> positionQuizzes = TR.getOne(team_id).getQuizzes();
             positionQuizzes.removeIf(quiz -> !quiz.getPosition().getPosition().equals(position_id));
-            return new ResponseError(jsonifyQuizzes(positionQuizzes),HttpStatus.OK.value()).toJson();
+            return sendResponse(jsonifyQuizzes(positionQuizzes),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     public String getAllQuizzesForATeamsPlayer(Long team_id, String player_id){
         if(!TR.findById(team_id).isPresent()){
-            return new ResponseError("invalid request, make sure team and position exists",HttpStatus.BAD_REQUEST.value()).toJson();
+            return sendResponse("invalid request, make sure team and position exists",HttpStatus.BAD_REQUEST.value());
         }
         Team team = TR.getOne(team_id);
         Set<PlayerQuiz> quizzesTaken = null;
@@ -208,21 +210,21 @@ public class TeamService {
             }
         }
         if(quizzesTaken == null){
-            return new ResponseError("invalid request player with id "+player_id+ " does not exists",HttpStatus.BAD_REQUEST.value()).toJson();
+            return sendResponse("invalid request player with id "+player_id+ " does not exists",HttpStatus.BAD_REQUEST.value());
         }
         try {
             Set<Quiz> quizzes = new HashSet<>();
             quizzesTaken.forEach(playerQuiz -> {quizzes.add(playerQuiz.getQuiz());});
-            return new ResponseError(jsonifyQuizzes(quizzes),HttpStatus.OK.value()).toJson();
+            return sendResponse(jsonifyQuizzes(quizzes),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     @Transactional
     public String addNewQuiz(Map<String,Object> newQuiz){
         if(!newQuiz.containsKey("name") || !newQuiz.containsKey("coach_id")
                 || !newQuiz.containsKey("team_id") || !newQuiz.containsKey("position_id")|| !newQuiz.containsKey("description")|| !newQuiz.containsKey("is_activated")){
-            return new ResponseError("invalid request, missing fields", HttpStatus.BAD_REQUEST.value()).toJson();
+            return sendResponse("invalid request, missing fields", HttpStatus.BAD_REQUEST.value());
         }
         try{
             long team_id = (Integer) newQuiz.get("team_id");
@@ -243,32 +245,32 @@ public class TeamService {
             }
             for(Quiz quiz : team.getQuizzes()){
                 if (quiz.getName().equals((String) newQuiz.get(("name")))){
-                    return new ResponseError("invalid request quiz with name " + quiz.getName() + " already exists",HttpStatus.BAD_REQUEST.value()).toJson();
+                    return sendResponse("invalid request quiz with name " + quiz.getName() + " already exists",HttpStatus.BAD_REQUEST.value());
                 }
             }
             if(coach == null || position == null){
-                return new ResponseError("invalid request",HttpStatus.BAD_REQUEST.value()).toJson();
+                return sendResponse("invalid request",HttpStatus.BAD_REQUEST.value());
             }
             Quiz quiz = new Quiz((String) newQuiz.get(("name")),(String) newQuiz.get(("description")),LocalDate.now(),
                     LocalDate.now(),(Boolean) newQuiz.get("is_activated"),position,coach,team);
             team.getQuizzes().add(quiz);
             team.setQuizzes(team.getQuizzes());
-            return new ResponseError(quiz.toJSONObj(),HttpStatus.OK.value()).toJson();
+            return sendResponse(quiz.toJSONObj(),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     @Transactional
     public String deleteAllQuizzesForTeam(Long team_id){
         if(!TR.findById(team_id).isPresent()){
-            return new ResponseError("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+            return sendResponse("Team with id " + team_id + " does not exist",HttpStatus.BAD_REQUEST.value());
         }
         try{
             Team team = TR.getOne(team_id);
             TR.deleteAllQuizzesForTeam(team.getId());
-            return new ResponseError(jsonifyQuizzes(team.getQuizzes()),HttpStatus.OK.value()).toJson();
+            return sendResponse(jsonifyQuizzes(team.getQuizzes()),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
@@ -303,5 +305,11 @@ public class TeamService {
 
         quizObj.put("quizzes",quizArray);
         return quizObj;
+    }
+
+    private String sendResponse(Object Message, int errorCode){
+        responseError.setMessage(Message);
+        responseError.setErrorCode(errorCode);
+        return responseError.toJson();
     }
 }
