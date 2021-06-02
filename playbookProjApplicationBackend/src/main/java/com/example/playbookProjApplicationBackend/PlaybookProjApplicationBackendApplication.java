@@ -10,6 +10,6 @@ public class PlaybookProjApplicationBackendApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(PlaybookProjApplicationBackendApplication.class, args);
 	}
-	
+
 
 }
