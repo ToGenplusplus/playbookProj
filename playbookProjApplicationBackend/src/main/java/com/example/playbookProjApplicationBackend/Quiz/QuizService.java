@@ -23,16 +23,18 @@ import java.util.Set;
 public class QuizService {
 
     private QuizRepository QR;
+    private ResponseError responseError;
 
     @Autowired
-    protected QuizService(QuizRepository QR) {
+    protected QuizService(QuizRepository QR, ResponseError responseError) {
         this.QR = QR;
+        this.responseError = responseError;
     }
     public String getQuiz(Long quiz_id){
         try{
-            return new ResponseError(QR.getOne(quiz_id).toJSONObj(),HttpStatus.OK.value()).toJson();
+            return sendResponse(QR.getOne(quiz_id).toJSONObj(),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     @Transactional
@@ -45,7 +47,7 @@ public class QuizService {
             if(quizUpdate.containsKey("name")){
                 for (Quiz quiz1 : team.getQuizzes()){
                     if (quiz1.getId() != quiz.getId() && quiz1.getName().equals((String) quizUpdate.get("name"))){
-                        return new ResponseError("Team already has quiz with with name " + quiz1.getName() + " already exists", HttpStatus.BAD_REQUEST.value()).toJson();
+                        return sendResponse("Team already has quiz with with name " + quiz1.getName() + " already exists", HttpStatus.BAD_REQUEST.value());
                     }
                 }
             }
@@ -57,24 +59,24 @@ public class QuizService {
                     break;
                 }
             }
-            return new ResponseError(quiz.toJSONObj(),HttpStatus.OK.value()).toJson();
+            return sendResponse(quiz.toJSONObj(),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     public String getAllQuizQuestionsForQuiz(Long quiz_id){
         try{
             Quiz quiz = QR.getOne(quiz_id);
-            return new ResponseError(jsonify(quiz.getQuestions()),HttpStatus.OK.value()).toJson();
+            return sendResponse(jsonify(quiz.getQuestions()),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     @Transactional
     public String addNewQuizQuestion(Map<String,Object> newQuestion){
         if(!newQuestion.containsKey("question") ||!newQuestion.containsKey("correct_answer")
                 || !newQuestion.containsKey("wrong_answer1")|| !newQuestion.containsKey("is_active")|| !newQuestion.containsKey("quiz_id")) {
-            return new ResponseError("invalid quiz question", HttpStatus.BAD_REQUEST.value()).toJson();
+            return sendResponse("invalid quiz question", HttpStatus.BAD_REQUEST.value());
         }
         long quiz_id = (Integer) newQuestion.get("quiz_id");
         try{
@@ -83,7 +85,7 @@ public class QuizService {
             String question = (String) newQuestion.get("question");
             for(QuizQuestion question1 :quizQuestions){
                 if (question1.getQuestionText().equals(question)){
-                    return new ResponseError("invalid request, quiz with question "+ question1.getQuestionText() + " already exists",HttpStatus.OK.value()).toJson();
+                    return sendResponse("invalid request, quiz with question "+ question1.getQuestionText() + " already exists",HttpStatus.OK.value());
                 }
             }
             String correct = (String) newQuestion.get("correct_answer");
@@ -95,9 +97,9 @@ public class QuizService {
             QuizQuestion quizquestion = new QuizQuestion(img,question,correct,wrongone,wrongtwo,wrongthree,is_active,quiz);
             quizQuestions.add(quizquestion);
             quiz.setQuestions(quizQuestions);
-            return new ResponseError("Success", HttpStatus.OK.value()).toJson();
+            return sendResponse("Success", HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
@@ -106,9 +108,9 @@ public class QuizService {
             Quiz quiz = QR.getOne(quiz_id);
             Set<QuizQuestion> questions= quiz.getQuestions();
             questions.removeIf(quizQuestion -> quizQuestion.getAnswers().isEmpty());
-            return new ResponseError(jsonify(questions),HttpStatus.OK.value()).toJson();
+            return sendResponse(jsonify(questions),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     public String getAllAnsweredQuestionsForQuizByPlayer(Long quiz_id ,String player_id){
@@ -123,9 +125,9 @@ public class QuizService {
                 }
                 });
             }
-            return new ResponseError(jsonify(answeredQuestions),HttpStatus.OK.value()).toJson();
+            return sendResponse(jsonify(answeredQuestions),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
@@ -138,9 +140,9 @@ public class QuizService {
             for(QuizQuestion question : questions){
                 answers.addAll(question.getAnswers());
             }
-            return new ResponseError(jsonifyPlayerAnswer(answers),HttpStatus.OK.value()).toJson();
+            return sendResponse(jsonifyPlayerAnswer(answers),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     public String getAllPlayerAnswersForQuizQuestion(Long quiz_id, Long question_id){
@@ -153,9 +155,9 @@ public class QuizService {
                     answers = question.getAnswers();
                 }
             }
-            return new ResponseError(jsonifyPlayerAnswer(answers),HttpStatus.OK.value()).toJson();
+            return sendResponse(jsonifyPlayerAnswer(answers),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     public String getAllPlayerAnswersForQuizForPlayer(Long quiz_id,String player_id){
@@ -171,9 +173,9 @@ public class QuizService {
                     }});
 
             }
-            return new ResponseError(jsonifyPlayerAnswer(answers),HttpStatus.OK.value()).toJson();
+            return sendResponse(jsonifyPlayerAnswer(answers),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     public String countQuizPlayerAttempts(Long quiz_id,String player_id){
@@ -185,15 +187,15 @@ public class QuizService {
                 attempts[0] = playerQuiz.getNumberOfAttempts();
             }
             });
-            return new ResponseError(attempts[0],HttpStatus.OK.value()).toJson();
+            return sendResponse(attempts[0],HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     @Transactional
     public String newQuizAttempt(Map<String,Object> attemptData){
         if(!attemptData.containsKey("player_id") || !attemptData.containsKey("quiz_id")){
-            return new ResponseError("invalid request missing fields",HttpStatus.BAD_REQUEST.value()).toJson();
+            return sendResponse("invalid request missing fields",HttpStatus.BAD_REQUEST.value());
         }
         try{
             long quiz_id = (Integer) attemptData.get("quiz_id");
@@ -206,16 +208,16 @@ public class QuizService {
                 }
             }
             if(player == null){
-                return new ResponseError("invalid request player with id " + attemptData.get("player_id") + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+                return sendResponse("invalid request player with id " + attemptData.get("player_id") + " does not exist",HttpStatus.BAD_REQUEST.value());
             }
             PlayerQuiz playerQuiz = new PlayerQuiz(1, LocalDate.now(),player,quiz);
             player.getQuizzesTaken().add(playerQuiz);
             player.setQuizzesTaken(player.getQuizzesTaken());
             quiz.getPlayers().add(playerQuiz);
             quiz.setPlayers(quiz.getPlayers());
-            return new ResponseError(playerQuiz.toJSONObj(),HttpStatus.OK.value()).toJson();
+            return sendResponse(playerQuiz.toJSONObj(),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     @Transactional
@@ -230,7 +232,7 @@ public class QuizService {
                 }
             }
             if(player == null){
-                return new ResponseError("invalid request player with id " + player_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+                return sendResponse("invalid request player with id " + player_id + " does not exist",HttpStatus.BAD_REQUEST.value());
             }
             Set<PlayerQuiz> taken = player.getQuizzesTaken();
             for(PlayerQuiz playerQuiz : taken){
@@ -238,22 +240,22 @@ public class QuizService {
                     playerQuiz.setNumberOfAttempts(playerQuiz.getNumberOfAttempts() + 1);
                 }
             }
-            return new ResponseError("Success",HttpStatus.OK.value()).toJson();
+            return sendResponse("Success",HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     @Transactional
     public String deleteQuiz(Long quiz_id){
         try{
             if(!QR.findById(quiz_id).isPresent()){
-                return new ResponseError("invalid request quiz with id " + quiz_id + " does not exist",HttpStatus.BAD_REQUEST.value()).toJson();
+                return sendResponse("invalid request quiz with id " + quiz_id + " does not exist",HttpStatus.BAD_REQUEST.value());
             }
             Quiz quiz = QR.getOne(quiz_id);
             QR.deleteQuiz(quiz.getId());
-            return new ResponseError(quiz.getId(),HttpStatus.OK.value()).toJson();
+            return sendResponse(quiz.getId(),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
@@ -265,9 +267,9 @@ public class QuizService {
             }
             Quiz quiz = QR.getOne(quiz_id);
             quiz.setActivated(!quiz.isActivated());
-            return new ResponseError(quiz.getId(),HttpStatus.OK.value()).toJson();
+            return sendResponse(quiz.getId(),HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
@@ -291,5 +293,11 @@ public class QuizService {
         }
         quizzesObject.put("questions",quizArray);
         return quizzesObject;
+    }
+
+    private String sendResponse(Object Message, int errorCode){
+        responseError.setMessage(Message);
+        responseError.setErrorCode(errorCode);
+        return responseError.toJson();
     }
 }

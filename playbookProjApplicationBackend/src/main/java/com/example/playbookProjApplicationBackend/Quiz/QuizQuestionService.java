@@ -16,14 +16,16 @@ import java.util.Map;
 public class QuizQuestionService {
 
     private QuizQuestionRepository QR;
+    private ResponseError responseError;
 
     @Autowired
-    public QuizQuestionService(QuizQuestionRepository QR) {
+    public QuizQuestionService(QuizQuestionRepository QR, ResponseError responseError) {
         this.QR = QR;
+        this.responseError = responseError;
     }
 
     public String getAllQuizQuestionsInDatabase(){
-        return new ResponseError(jsonify(QR.findAll()),HttpStatus.OK.value()).toJson();
+        return sendResponse(jsonify(QR.findAll()),HttpStatus.OK.value());
     }
     @Transactional
     public String updateQuizQuestion(Long question_id, Map<String,Object> updates){
@@ -32,7 +34,7 @@ public class QuizQuestionService {
             Quiz quiz = quizQuestion.getQuiz();
             for(QuizQuestion question: quiz.getQuestions()){
                 if (question.getId() != quizQuestion.getId() && question.getQuestionText().equals((String) updates.get("question"))){
-                    return new ResponseError("Quiz question already exists", HttpStatus.BAD_REQUEST.value()).toJson();
+                    return sendResponse("Quiz question already exists", HttpStatus.BAD_REQUEST.value());
                 }
             }
             quizQuestion.setQuestionText(updates.containsKey("question") ? (String) updates.get("question") : quizQuestion.getQuestionText() );
@@ -42,9 +44,9 @@ public class QuizQuestionService {
             quizQuestion.setIncorrectAnswerThree(updates.containsKey("wrong_answer3") ? (String) updates.get("wrong_answer3") : quizQuestion.getIncorrectAnswerThree());
             quizQuestion.setImageLocation(updates.containsKey("img") ?  (String) updates.get("img") : quizQuestion.getImageLocation());
             quiz.setLastModified(LocalDate.now());
-            return new ResponseError("Success", HttpStatus.OK.value()).toJson();
+            return sendResponse("Success", HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     @Transactional
@@ -52,9 +54,9 @@ public class QuizQuestionService {
         try{
             QuizQuestion question = QR.getOne(question_id);
             QR.delete(question);
-            return new ResponseError("Success",HttpStatus.OK.value()).toJson();
+            return sendResponse("Success",HttpStatus.OK.value());
         }catch (Exception e){
-            return new ResponseError(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()).toJson();
+            return sendResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
@@ -66,5 +68,11 @@ public class QuizQuestionService {
         }
         questionObject.put("questions",questionArray);
         return questionObject;
+    }
+
+    private String sendResponse(Object Message, int errorCode){
+        responseError.setMessage(Message);
+        responseError.setErrorCode(errorCode);
+        return responseError.toJson();
     }
 }
